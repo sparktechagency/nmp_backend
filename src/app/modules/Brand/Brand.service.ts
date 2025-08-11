@@ -1,19 +1,19 @@
 import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
-import CategoryModel from "./Category.model";
+import CategoryModel from "./Brand.model";
 import { Types } from "mongoose";
 // import ProductModel from "../Product/Product.model";
-import { TCategoryQuery } from "./Category.interface";
-import { CategorySearchableFields } from "./Category.constant";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
+import { TBrandQuery } from "./Brand.interface";
+import { BrandSearchableFields } from "./Brand.constant";
+import BrandModel from "./Brand.model";
 
 
-
-const createCategoryService = async (name: string) => {
+const createBrandService = async (name: string) => {
     const slug = slugify(name).toLowerCase();
     
     //check category is already existed
-    const category = await CategoryModel.findOne({
+    const category = await BrandModel.findOne({
         slug
     });
 
@@ -21,14 +21,15 @@ const createCategoryService = async (name: string) => {
         throw new ApiError(409, 'This category is already existed');
     }
 
-    const result = await CategoryModel.create({
+
+    const result = await BrandModel.create({
          name,
          slug
     })
     return result;
 }
 
-const getCategoriesService = async (query: TCategoryQuery) => {
+const getBrandsService = async (query: TBrandQuery) => {
   const {
     searchTerm, 
     page = 1, 
@@ -47,11 +48,11 @@ const getCategoriesService = async (query: TCategoryQuery) => {
   //4. setup searching
   let searchQuery = {};
   if (searchTerm) {
-    searchQuery = makeSearchQuery(searchTerm, CategorySearchableFields);
+    searchQuery = makeSearchQuery(searchTerm, BrandSearchableFields);
   }
 
  
-  const result = await CategoryModel.aggregate([
+  const result = await BrandModel.aggregate([
     {
       $match: {
         ...searchQuery, // Apply search query
@@ -69,7 +70,7 @@ const getCategoriesService = async (query: TCategoryQuery) => {
   ]);
 
   // total count
-  const totalCountResult = await CategoryModel.aggregate([
+  const totalCountResult = await BrandModel.aggregate([
     {
       $match: {
         ...searchQuery
@@ -92,33 +93,33 @@ return {
 };
 };
 
-const getCategoryDropDownService = async () => {
+const getBrandDropDownService = async () => {
     const result = await CategoryModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
     return result;
 }
 
 
-const updateCategoryService = async (categoryId: string, name: string) => {
-    if (!Types.ObjectId.isValid(categoryId)) {
+const updateBrandService = async (brandId: string, name: string) => {
+    if (!Types.ObjectId.isValid(brandId)) {
         throw new ApiError(400, "categoryId must be a valid ObjectId")
     }
 
-    const existingCategory = await CategoryModel.findById(categoryId);
+    const existingCategory = await BrandModel.findById(brandId);
     if (!existingCategory) {
-        throw new ApiError(404, 'This categoryId not found');
+        throw new ApiError(404, 'This brandId not found');
     }
 
     const slug = slugify(name).toLowerCase();
-    const categoryExist = await CategoryModel.findOne({
-        _id: { $ne: categoryId },
+    const brandExist = await BrandModel.findOne({
+        _id: { $ne: brandId },
         slug
     })
-    if (categoryExist) {
-        throw new ApiError(409, 'Sorry! This category is already existed');
+    if (brandExist) {
+        throw new ApiError(409, 'Sorry! This brand is already existed');
     }
 
-    const result = await CategoryModel.updateOne(
-        { _id: categoryId },
+    const result = await BrandModel.updateOne(
+        { _id: brandId },
         {
             name,
             slug
@@ -128,7 +129,7 @@ const updateCategoryService = async (categoryId: string, name: string) => {
     return result;
 }
 
-const deleteCategoryService = async (categoryId: string) => {
+const deleteBrandService = async (categoryId: string) => {
     const category = await CategoryModel.findById(categoryId)
     if(!category){
         throw new ApiError(404, 'This categoryId not found');
@@ -149,9 +150,9 @@ const deleteCategoryService = async (categoryId: string) => {
 
 
 export {
-    createCategoryService,
-    getCategoriesService,
-    getCategoryDropDownService,
-    updateCategoryService,
-    deleteCategoryService
+    createBrandService,
+    getBrandsService,
+    getBrandDropDownService,
+    updateBrandService,
+    deleteBrandService
 }

@@ -139,7 +139,7 @@ const deleteCategoryService = async (categoryId: string) => {
     //      categoryId
     // });
     // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failled to delete, This category is associated with Product');
+    //     throw new ApiError(409, 'Failed to delete, This category is associated with Product');
     // }
 
     const result = await CategoryModel.deleteOne({ _id: categoryId})

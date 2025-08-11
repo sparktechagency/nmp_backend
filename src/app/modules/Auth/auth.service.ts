@@ -10,10 +10,8 @@ import hashedPassword from "../../utils/hashedPassword";
 import mongoose, { Types } from "mongoose";
 import verifyToken from "../../utils/verifyToken";
 import { isJWTIssuedBeforePassChanged } from "../../utils/isJWTIssuedBeforePassChanged";
-import OtpModel from "../Otp/otp.model";
 import { IUser } from "../User/user.interface";
 import ApiError from "../../errors/ApiError";
-import jwt from "jsonwebtoken";
 import sendVerificationEmail from "../../utils/sendVerificationEmail";
 
 
@@ -221,13 +219,14 @@ const forgotPassSendOtpService = async (email: string) => {
 
   const otp = Math.floor(100000 + Math.random() * 900000);
 
-  //insert the otp
-  await OtpModel.create({ email, otp });
+  //update the reset otp
+  await UserModel.updateOne({ email }, { resetOtp: otp, resetOtpstatus:0, resetOtpExpires: new Date(+new Date() + 600000)})
 
   //send otp to the email address
   await sendEmailUtility(email, user?.fullName, String(otp));
   return null;
 };
+
 
 
 //step-02
@@ -240,28 +239,28 @@ const forgotPassVerifyOtpService = async (payload: IVerifyOTp) => {
   }
 
   //check otp doesn't exist
-  const otpExist = await OtpModel.findOne({ email, otp, status: 0 });
+  const otpExist = await UserModel.findOne({ email, resetOtp:otp, resetOtpstatus: 0 });
   if (!otpExist) {
     throw new AppError(400, "Invalid Otp Code");
   }
 
   //check otp is expired
-  const otpExpired = await OtpModel.findOne({
+  const otpExpired = await UserModel.findOne({
     email,
-    otp,
-    status: 0,
-    otpExpires: { $gt: new Date(Date.now()) },
+    resetOtp: otp,
+    resetOtpstatus: 0,
+    resetOtpExpires: { $gt: new Date(Date.now()) },
   });
 
   if (!otpExpired) {
-    throw new AppError(400, "This Otp is expired");
+    throw new AppError(400, "Expired Otp Code");
   }
 
 
   //update the otp status
-  await OtpModel.updateOne(
-    { email, otp, status: 0 },
-    { status: 1 }
+  await UserModel.updateOne(
+    { email, resetOtp:otp, resetOtpstatus: 0 },
+    { resetOtpstatus: 1 }
   );
 
   return null;
@@ -277,30 +276,30 @@ const forgotPassCreateNewPassService = async (payload: INewPassword) => {
   }
 
   //check otp exist
-  const OtpExist = await OtpModel.findOne({ email, otp, status: 1 });
-  if (!OtpExist) {
-    throw new AppError(404, `Invalid Otp Code`);
+  const otpExist = await UserModel.findOne({ email, resetOtp: otp, resetOtpstatus: 1 });
+  if (!otpExist) {
+    throw new AppError(400, "Invalid Otp Code");
   }
 
 
 
   //Database Third Process
   //check otp is expired
-  const OtpExpired = await OtpModel.findOne({
+  const OtpExpired = await UserModel.findOne({
     email,
-    otp,
-    status: 1,
-    otpExpires: { $gt: new Date(Date.now()) },
+    resetOtp:otp,
+    resetOtpstatus: 1,
+    resetOtpExpires: { $gt: new Date(Date.now()) },
   });
 
 
   if (!OtpExpired) {
-    throw new AppError(400, `This Otp Code is expired`);
+    throw new AppError(400, `Expired Otp Code`);
   }
 
   //update the password
   const hashPass = await hashedPassword(password);//hashedPassword
-  const result = await UserModel.updateOne({ email: email }, { password: hashPass, passwordChangedAt: new Date() })
+  const result = await UserModel.updateOne({ email: email }, { password: hashPass, passwordChangedAt: new Date(), resetOtp: '000000' })
 
   return result;
 }

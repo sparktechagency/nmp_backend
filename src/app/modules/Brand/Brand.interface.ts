@@ -1,12 +1,12 @@
 
 
-export interface ICategory {
+export interface IBrand {
   name: string;
   slug: string;
 }
 
 
-export type TCategoryQuery = {
+export type TBrandQuery = {
   searchTerm?: string;
   page?: string;
   limit?: string;

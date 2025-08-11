@@ -12,6 +12,9 @@ export interface IUser {
   status: "blocked" | "unblocked";
   otp: string;
   otpExpires: Date,
+  resetOtp: string;
+  resetOtpstatus: number;
+  resetOtpExpires: Date,
 }
 
 

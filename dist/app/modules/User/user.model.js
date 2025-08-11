@@ -64,6 +64,18 @@ const userSchema = new mongoose_1.Schema({
         type: Date,
         default: () => new Date(+new Date() + 600000), // 10 minutes // OTP Code Will be expired within 10 minutes
     },
+    resetOtp: {
+        type: String,
+        trim: true,
+        maxlength: 6,
+        minlength: 6
+    },
+    resetOtpstatus: {
+        type: Number
+    },
+    resetOtpExpires: {
+        type: Date,
+    },
 }, {
     timestamps: true,
     versionKey: false

@@ -56,7 +56,6 @@ const hashedPassword_1 = __importDefault(require("../../utils/hashedPassword"));
 const mongoose_1 = __importStar(require("mongoose"));
 const verifyToken_1 = __importDefault(require("../../utils/verifyToken"));
 const isJWTIssuedBeforePassChanged_1 = require("../../utils/isJWTIssuedBeforePassChanged");
-const otp_model_1 = __importDefault(require("../Otp/otp.model"));
 const ApiError_2 = __importDefault(require("../../errors/ApiError"));
 const sendVerificationEmail_1 = __importDefault(require("../../utils/sendVerificationEmail"));
 const registerUserService = (reqBody) => __awaiter(void 0, void 0, void 0, function* () {
@@ -217,8 +216,8 @@ const forgotPassSendOtpService = (email) => __awaiter(void 0, void 0, void 0, fu
         throw new ApiError_1.default(403, "Your account is blocked !");
     }
     const otp = Math.floor(100000 + Math.random() * 900000);
-    //insert the otp
-    yield otp_model_1.default.create({ email, otp });
+    //update the reset otp
+    yield user_model_1.default.updateOne({ email }, { resetOtp: otp, resetOtpstatus: 0, resetOtpExpires: new Date(+new Date() + 600000) });
     //send otp to the email address
     yield (0, sendEmailUtility_1.default)(email, user === null || user === void 0 ? void 0 : user.fullName, String(otp));
     return null;
@@ -232,22 +231,22 @@ const forgotPassVerifyOtpService = (payload) => __awaiter(void 0, void 0, void 0
         throw new ApiError_1.default(404, `Couldn't find this email address`);
     }
     //check otp doesn't exist
-    const otpExist = yield otp_model_1.default.findOne({ email, otp, status: 0 });
+    const otpExist = yield user_model_1.default.findOne({ email, resetOtp: otp, resetOtpstatus: 0 });
     if (!otpExist) {
         throw new ApiError_1.default(400, "Invalid Otp Code");
     }
     //check otp is expired
-    const otpExpired = yield otp_model_1.default.findOne({
+    const otpExpired = yield user_model_1.default.findOne({
         email,
-        otp,
-        status: 0,
-        otpExpires: { $gt: new Date(Date.now()) },
+        resetOtp: otp,
+        resetOtpstatus: 0,
+        resetOtpExpires: { $gt: new Date(Date.now()) },
     });
     if (!otpExpired) {
-        throw new ApiError_1.default(400, "This Otp is expired");
+        throw new ApiError_1.default(400, "Expired Otp Code");
     }
     //update the otp status
-    yield otp_model_1.default.updateOne({ email, otp, status: 0 }, { status: 1 });
+    yield user_model_1.default.updateOne({ email, resetOtp: otp, resetOtpstatus: 0 }, { resetOtpstatus: 1 });
     return null;
 });
 exports.forgotPassVerifyOtpService = forgotPassVerifyOtpService;
@@ -259,24 +258,24 @@ const forgotPassCreateNewPassService = (payload) => __awaiter(void 0, void 0, vo
         throw new ApiError_1.default(404, `Couldn't find this email address`);
     }
     //check otp exist
-    const OtpExist = yield otp_model_1.default.findOne({ email, otp, status: 1 });
-    if (!OtpExist) {
-        throw new ApiError_1.default(404, `Invalid Otp Code`);
+    const otpExist = yield user_model_1.default.findOne({ email, resetOtp: otp, resetOtpstatus: 1 });
+    if (!otpExist) {
+        throw new ApiError_1.default(400, "Invalid Otp Code");
     }
     //Database Third Process
     //check otp is expired
-    const OtpExpired = yield otp_model_1.default.findOne({
+    const OtpExpired = yield user_model_1.default.findOne({
         email,
-        otp,
-        status: 1,
-        otpExpires: { $gt: new Date(Date.now()) },
+        resetOtp: otp,
+        resetOtpstatus: 1,
+        resetOtpExpires: { $gt: new Date(Date.now()) },
     });
     if (!OtpExpired) {
-        throw new ApiError_1.default(400, `This Otp Code is expired`);
+        throw new ApiError_1.default(400, `Expired Otp Code`);
     }
     //update the password
     const hashPass = yield (0, hashedPassword_1.default)(password); //hashedPassword
-    const result = yield user_model_1.default.updateOne({ email: email }, { password: hashPass, passwordChangedAt: new Date() });
+    const result = yield user_model_1.default.updateOne({ email: email }, { password: hashPass, passwordChangedAt: new Date(), resetOtp: '000000' });
     return result;
 });
 exports.forgotPassCreateNewPassService = forgotPassCreateNewPassService;

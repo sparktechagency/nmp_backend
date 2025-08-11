@@ -1,8 +1,7 @@
-import { model, Schema } from "mongoose";
-import { ICategory } from "./Category.interface";
-
-
-const categorySchema = new Schema<ICategory>({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose_1 = require("mongoose");
+const brandSchema = new mongoose_1.Schema({
     name: {
         type: String,
         required: true,
@@ -18,9 +17,6 @@ const categorySchema = new Schema<ICategory>({
 }, {
     timestamps: true,
     versionKey: false
-})
-
-
-
-const CategoryModel = model<ICategory>("Category", categorySchema);
-export default CategoryModel;
+});
+const BrandModel = (0, mongoose_1.model)("Brand", brandSchema);
+exports.default = BrandModel;

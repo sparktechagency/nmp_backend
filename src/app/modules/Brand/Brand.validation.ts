@@ -2,7 +2,7 @@ import { z } from "zod";
 export const categoryRegex = /^[A-Za-z\s'.\-&,()]+$/;
 
 
-export const categoryValidationSchema = z.object({
+export const brandValidationSchema = z.object({
     name: z
         .string({
             invalid_type_error: "name must be string",
