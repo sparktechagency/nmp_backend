@@ -104,11 +104,11 @@ const resendVerifyEmailService = async (email: string) => {
     throw new ApiError(409, "This Email address is already verified");
   }
 
-  const newToken = jwt.sign({ email }, config.jwt_verify_email_secret as Secret, { expiresIn: config.jwt_verify_email_expires_in as TExpiresIn });
+  const otp = Math.floor(100000 + Math.random() * 900000);
   //update existingUser
-  await UserModel.updateOne({ email }, { verificationToken: newToken });
+  await UserModel.updateOne({ email }, { otp, otpExpires: new Date(+new Date() + 600000) });
   //send verification email
-  await sendVerificationEmail(email, user.fullName, newToken);
+  await sendVerificationEmail(email, user.fullName, otp.toString());
   return null;
 }
 

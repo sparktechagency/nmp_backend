@@ -26,14 +26,14 @@ const sendEmailUtility = (EmailTo, name, otp) => __awaiter(void 0, void 0, void 
         },
     });
     const mailOptions = {
-        from: `MTK Ecommerce ${config_1.default.smtp_from}`, //sender email address//smtp-username
+        from: `NMP Ecommerce ${config_1.default.smtp_from}`, //sender email address//smtp-username
         to: EmailTo, //receiver email address
-        subject: "MTK Ecommerce Reset Password",
+        subject: "NMP Ecommerce Reset Password",
         html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc;">
       <!-- Header -->
       <div style="background-color: #1f2937; padding: 40px 20px; text-align: center; border-radius: 12px 12px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">MTK Ecommerce</h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">NMP Ecommerce</h1>
         <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 16px;">Password Reset Request</p>
       </div>
       

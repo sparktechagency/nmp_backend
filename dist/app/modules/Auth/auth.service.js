@@ -58,7 +58,6 @@ const verifyToken_1 = __importDefault(require("../../utils/verifyToken"));
 const isJWTIssuedBeforePassChanged_1 = require("../../utils/isJWTIssuedBeforePassChanged");
 const otp_model_1 = __importDefault(require("../Otp/otp.model"));
 const ApiError_2 = __importDefault(require("../../errors/ApiError"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const sendVerificationEmail_1 = __importDefault(require("../../utils/sendVerificationEmail"));
 const registerUserService = (reqBody) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, fullName, password } = reqBody;
@@ -129,11 +128,11 @@ const resendVerifyEmailService = (email) => __awaiter(void 0, void 0, void 0, fu
     if (user === null || user === void 0 ? void 0 : user.isVerified) {
         throw new ApiError_2.default(409, "This Email address is already verified");
     }
-    const newToken = jsonwebtoken_1.default.sign({ email }, config_1.default.jwt_verify_email_secret, { expiresIn: config_1.default.jwt_verify_email_expires_in });
+    const otp = Math.floor(100000 + Math.random() * 900000);
     //update existingUser
-    yield user_model_1.default.updateOne({ email }, { verificationToken: newToken });
+    yield user_model_1.default.updateOne({ email }, { otp, otpExpires: new Date(+new Date() + 600000) });
     //send verification email
-    yield (0, sendVerificationEmail_1.default)(email, user.fullName, newToken);
+    yield (0, sendVerificationEmail_1.default)(email, user.fullName, otp.toString());
     return null;
 });
 exports.resendVerifyEmailService = resendVerifyEmailService;
