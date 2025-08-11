@@ -24,7 +24,7 @@ router.post(
   AuthController.registerUser
 );
 
-router.get("/verify-email", AuthController.verifyEmail);
+router.post("/verify-email", validationMiddleware(forgotPassVerifyOtpSchema), AuthController.verifyEmail);
 
 router.post(
   "/resend-verify-email",

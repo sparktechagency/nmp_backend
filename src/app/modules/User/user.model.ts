@@ -29,9 +29,6 @@ const userSchema = new Schema<IUser>({
         type: Boolean,
         default: false
     },
-    verificationToken: {
-        type: String
-    },
     passwordChangedAt: {
         type: Date,
     },
@@ -44,6 +41,17 @@ const userSchema = new Schema<IUser>({
         type: String,
         enum: ['blocked', 'unblocked'],
         default: 'unblocked'
+    },
+    otp: {
+        type: String,
+        required: [true, "otp is required"],
+        trim: true,
+        maxlength: 6,
+        minlength: 6
+    },
+    otpExpires: {
+        type: Date,
+        default: () => new Date(+new Date() + 600000), // 10 minutes // OTP Code Will be expired within 10 minutes
     },
 }, {
     timestamps: true,

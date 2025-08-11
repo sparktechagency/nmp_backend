@@ -7,10 +7,11 @@ export interface IUser {
   address?: string; //for admin
   password: string;
   isVerified: boolean;
-  verificationToken: string;
   passwordChangedAt?: Date;
   role: "user" | "admin" | "super_admin";
   status: "blocked" | "unblocked";
+  otp: string;
+  otpExpires: Date,
 }
 
 

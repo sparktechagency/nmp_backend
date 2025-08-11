@@ -16,8 +16,7 @@ const registerUser = catchAsync(async (req, res) => {
 
 
 const verifyEmail = catchAsync(async (req, res) => {
-  const token = req.query.token;
-  const result = await verifyEmailService(token as string);
+  const result = await verifyEmailService(req.body);
   sendResponse(res, {
     statusCode: 200,
     success: true,

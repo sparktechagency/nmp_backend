@@ -30,60 +30,66 @@ const registerUserService = async (reqBody: IUser) => {
 
   //User exists but not verified → resend verification
   if (existingUser && !existingUser.isVerified) {
-    const newToken = jwt.sign({ email }, config.jwt_verify_email_secret as Secret, { expiresIn: config.jwt_verify_email_expires_in as TExpiresIn });
+    const otp = Math.floor(100000 + Math.random() * 900000);
     //update existingUser
-    await UserModel.updateOne({ email }, { verificationToken: newToken });
+    await UserModel.updateOne({ email }, { otp, otpExpires: new Date(+new Date() + 600000)});
     //send verification email
-    await sendVerificationEmail(email, fullName, newToken);
+    await sendVerificationEmail(email, fullName, otp.toString());
+
     return {
       message: "Verification email resent. Please check your inbox."
     }
   }
 
-  //No user exists → create new one
-  const verificationToken = jwt.sign({ email }, config.jwt_verify_email_secret as Secret, { expiresIn: config.jwt_verify_email_expires_in as TExpiresIn });
-
+  const otp = Math.floor(100000 + Math.random() * 900000);
   //create new user
   await UserModel.create({
     fullName,
     email,
     password,
-    verificationToken
+    otp
   });
 
   //send verification email
-  await sendVerificationEmail(email, fullName, verificationToken);
+  await sendVerificationEmail(email, fullName, otp.toString());
 
   return {
     message: "Please check your email to verify"
   }
 }
 
-const verifyEmailService = async (token: string) => {
-  if (!token) {
-    throw new ApiError(400, "Verification Token is required");
+const verifyEmailService = async (payload: IVerifyOTp) => {
+  const { email, otp } = payload;
+
+  const user = await UserModel.findOne({ email: payload.email });
+
+  if (!user) {
+    throw new ApiError(404, "Couldn't find this email address");
   }
 
-  try {
-    const payload = verifyToken(token, config.jwt_verify_email_secret as Secret);
-    const user = await UserModel.findOne({ email: payload.email });
-
-    if (!user || user.verificationToken !== token) {
-      throw new ApiError(400, "Invalid or expired token");
-    }
-
-    //user is alreay verified
-    if(user?.isVerified){
-      throw new ApiError(409, "This Email is already verified");
-    }
-
-    //update the user 
-    await UserModel.updateOne({ email: user?.email }, { isVerified: true, verificationToken: '' })
-    return null;
+  //user is alreay verified
+  if (user?.isVerified) {
+    throw new ApiError(409, "This Email is already verified");
   }
-  catch {
-    throw new ApiError(400, "Invalid or expired token");
+
+  if (user.otp !== otp) {
+    throw new ApiError(400, "Invalid Otp Code");
   }
+
+  const otpExpired = await UserModel.findOne({
+    email,
+    otp,
+    otpExpires: { $gt: new Date(Date.now()) },
+  });
+
+  if (!otpExpired) {
+    throw new AppError(400, "Expired Otp Code");
+  }
+
+  //update the user 
+  await UserModel.updateOne({ email: user?.email }, { isVerified: true, otp:"000000" })
+  return null;
+
 }
 
 
@@ -155,7 +161,6 @@ const loginUserService = async (payload: ILoginUser) => {
 }
 
 
-
 const loginAdminService = async (payload: ILoginUser) => {
   const user = await UserModel.findOne({ email: payload.email }).select('+password');
   if (!user) {
@@ -195,7 +200,6 @@ const loginAdminService = async (payload: ILoginUser) => {
     message: `${user.role} login success`
   }
 }
-
 
 //forgot password-send-otp
 // step-01
