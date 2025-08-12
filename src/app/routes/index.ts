@@ -4,6 +4,7 @@ import { AuthRoutes } from '../modules/Auth/auth.route';
 import CategoryRoutes from '../modules/Category/Category.route';
 import BrandRoutes from '../modules/Brand/Brand.route';
 import FlavorRoutes from '../modules/Flavor/Flavor.route';
+import ProductRoutes from '../modules/Product/Product.route';
 
 
 
@@ -30,6 +31,10 @@ const moduleRoutes = [
     {
         path: '/flavor',
         route: FlavorRoutes
+    },
+    {
+        path: '/product',
+        route: ProductRoutes
     }
 ]
 
