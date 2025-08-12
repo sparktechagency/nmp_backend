@@ -2,38 +2,38 @@ import express from 'express';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 import validationMiddleware from '../../middlewares/validationMiddleware';
-import BrandController from './Brand.controller';
-import { brandValidationSchema } from './Brand.validation';
+import FlavorController from './Flavor.controller';
+import { flavorValidationSchema } from './Flavor.validation';
 
 const router = express.Router();
 
 router.post(
-  "/create-brand",
+  "/create-flavor",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(brandValidationSchema),
-  BrandController.createBrand
+  validationMiddleware(flavorValidationSchema),
+  FlavorController.createFlavor
 );
 router.get(
-  '/get-brands',
+  '/get-flavors',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  BrandController.getBrands,
+  FlavorController.getFlavors,
 );
 router.get(
-  "/get-brand-drop-down",
-  BrandController.getBrandDropDown
+  "/get-flavor-drop-down",
+  FlavorController.getFlavorDropDown
 );
 router.patch(
-  "/update-brand/:brandId",
+  "/update-flavor/:flavorId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(brandValidationSchema),
-  BrandController.updateBrand
+  validationMiddleware(flavorValidationSchema),
+  FlavorController.updateFlavor
 );
 router.delete(
-  "/delete-brand/:brandId",
+  "/delete-flavor/:flavorId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  BrandController.deleteBrand
+  FlavorController.deleteFlavor
 );
 
 
-const BrandRoutes = router;
-export default BrandRoutes;
+const FlavorRoutes = router;
+export default FlavorRoutes;

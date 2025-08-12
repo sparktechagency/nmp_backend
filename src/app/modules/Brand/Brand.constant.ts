@@ -1,4 +1,4 @@
-export const BrandSearchableFields = ['name', 'hexCode'];
+export const BrandSearchableFields = ['name'];
 
 export const BrandValidFields: string[] = [
   "searchTerm",

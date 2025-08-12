@@ -8,6 +8,7 @@ const user_route_1 = require("../modules/User/user.route");
 const auth_route_1 = require("../modules/Auth/auth.route");
 const Category_route_1 = __importDefault(require("../modules/Category/Category.route"));
 const Brand_route_1 = __importDefault(require("../modules/Brand/Brand.route"));
+const Flavor_route_1 = __importDefault(require("../modules/Flavor/Flavor.route"));
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -25,6 +26,10 @@ const moduleRoutes = [
     {
         path: '/brand',
         route: Brand_route_1.default
+    },
+    {
+        path: '/flavor',
+        route: Flavor_route_1.default
     }
 ];
 moduleRoutes.forEach((item, i) => router.use(item.path, item.route));

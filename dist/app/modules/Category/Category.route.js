@@ -11,7 +11,7 @@ const Category_controller_1 = __importDefault(require("./Category.controller"));
 const Category_validation_1 = require("./Category.validation");
 const router = express_1.default.Router();
 router.post("/create-category", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), (0, validationMiddleware_1.default)(Category_validation_1.categoryValidationSchema), Category_controller_1.default.createCategory);
-router.get('/get-categories', Category_controller_1.default.getCategories);
+router.get('/get-categories', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Category_controller_1.default.getCategories);
 router.get("/get-category-drop-down", Category_controller_1.default.getCategoryDropDown);
 router.patch("/update-category/:categoryId", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), (0, validationMiddleware_1.default)(Category_validation_1.categoryValidationSchema), Category_controller_1.default.updateCategory);
 router.delete("/delete-category/:categoryId", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Category_controller_1.default.deleteCategory);

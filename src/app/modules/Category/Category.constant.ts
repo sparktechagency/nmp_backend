@@ -1,4 +1,4 @@
-export const CategorySearchableFields = ['name', 'hexCode'];
+export const CategorySearchableFields = ['name'];
 
 export const CategoryValidFields: string[] = [
   "searchTerm",

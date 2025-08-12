@@ -15,6 +15,7 @@ router.post(
 );
 router.get(
   '/get-categories',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   CategoryController.getCategories,
 );
 router.get(

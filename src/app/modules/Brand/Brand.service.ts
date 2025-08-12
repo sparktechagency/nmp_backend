@@ -1,24 +1,23 @@
 import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
-import CategoryModel from "./Brand.model";
+import BrandModel from "./Brand.model";
 import { Types } from "mongoose";
 // import ProductModel from "../Product/Product.model";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
 import { TBrandQuery } from "./Brand.interface";
 import { BrandSearchableFields } from "./Brand.constant";
-import BrandModel from "./Brand.model";
 
 
 const createBrandService = async (name: string) => {
     const slug = slugify(name).toLowerCase();
     
-    //check category is already existed
-    const category = await BrandModel.findOne({
+    //check brand is already existed
+    const brand = await BrandModel.findOne({
         slug
     });
 
-    if(category){
-        throw new ApiError(409, 'This category is already existed');
+    if(brand){
+        throw new ApiError(409, 'This brand is already existed');
     }
 
 
@@ -94,18 +93,18 @@ return {
 };
 
 const getBrandDropDownService = async () => {
-    const result = await CategoryModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
+    const result = await BrandModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
     return result;
 }
 
 
 const updateBrandService = async (brandId: string, name: string) => {
     if (!Types.ObjectId.isValid(brandId)) {
-        throw new ApiError(400, "categoryId must be a valid ObjectId")
+        throw new ApiError(400, "brandId must be a valid ObjectId")
     }
 
-    const existingCategory = await BrandModel.findById(brandId);
-    if (!existingCategory) {
+    const existingBrand = await BrandModel.findById(brandId);
+    if (!existingBrand) {
         throw new ApiError(404, 'This brandId not found');
     }
 
@@ -129,21 +128,21 @@ const updateBrandService = async (brandId: string, name: string) => {
     return result;
 }
 
-const deleteBrandService = async (categoryId: string) => {
-    const category = await CategoryModel.findById(categoryId)
-    if(!category){
-        throw new ApiError(404, 'This categoryId not found');
+const deleteBrandService = async (brandId: string) => {
+    const brand = await BrandModel.findById(brandId)
+    if(!brand){
+        throw new ApiError(404, 'This brandId not found');
     }
 
-    //check if categoryId is associated with Product
+    //check if brandId is associated with Product
     // const associateWithProduct = await ProductModel.findOne({
-    //      categoryId
+    //      brandId
     // });
     // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failled to delete, This category is associated with Product');
+    //     throw new ApiError(409, 'Failled to delete, This brand is associated with Product');
     // }
 
-    const result = await CategoryModel.deleteOne({ _id: categoryId})
+    const result = await BrandModel.deleteOne({ _id: brandId})
     return result;
 }
 

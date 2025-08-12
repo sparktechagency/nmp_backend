@@ -23,31 +23,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteBrandService = exports.updateBrandService = exports.getBrandDropDownService = exports.getBrandsService = exports.createBrandService = void 0;
+exports.deleteFlavorService = exports.updateFlavorService = exports.getFlavorDropDownService = exports.getFlavorsService = exports.createFlavorService = void 0;
 const slugify_1 = __importDefault(require("slugify"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
-const Brand_model_1 = __importDefault(require("./Brand.model"));
+const Flavor_model_1 = __importDefault(require("./Flavor.model"));
 const mongoose_1 = require("mongoose");
 // import ProductModel from "../Product/Product.model";
 const QueryBuilder_1 = require("../../helper/QueryBuilder");
-const Brand_constant_1 = require("./Brand.constant");
-const createBrandService = (name) => __awaiter(void 0, void 0, void 0, function* () {
+const Flavor_constant_1 = require("./Flavor.constant");
+const createFlavorService = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const slug = (0, slugify_1.default)(name).toLowerCase();
-    //check brand is already existed
-    const brand = yield Brand_model_1.default.findOne({
+    //check flavor is already existed
+    const flavor = yield Flavor_model_1.default.findOne({
         slug
     });
-    if (brand) {
-        throw new ApiError_1.default(409, 'This brand is already existed');
+    if (flavor) {
+        throw new ApiError_1.default(409, 'This flavor is already existed');
     }
-    const result = yield Brand_model_1.default.create({
+    const result = yield Flavor_model_1.default.create({
         name,
         slug
     });
     return result;
 });
-exports.createBrandService = createBrandService;
-const getBrandsService = (query) => __awaiter(void 0, void 0, void 0, function* () {
+exports.createFlavorService = createFlavorService;
+const getFlavorsService = (query) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const { searchTerm, page = 1, limit = 10, sortOrder = "desc", sortBy = "createdAt" } = query, filters = __rest(query, ["searchTerm", "page", "limit", "sortOrder", "sortBy"]) // Any additional filters
     ;
@@ -58,9 +58,9 @@ const getBrandsService = (query) => __awaiter(void 0, void 0, void 0, function* 
     //4. setup searching
     let searchQuery = {};
     if (searchTerm) {
-        searchQuery = (0, QueryBuilder_1.makeSearchQuery)(searchTerm, Brand_constant_1.BrandSearchableFields);
+        searchQuery = (0, QueryBuilder_1.makeSearchQuery)(searchTerm, Flavor_constant_1.FlavorSearchableFields);
     }
-    const result = yield Brand_model_1.default.aggregate([
+    const result = yield Flavor_model_1.default.aggregate([
         {
             $match: Object.assign({}, searchQuery),
         },
@@ -75,7 +75,7 @@ const getBrandsService = (query) => __awaiter(void 0, void 0, void 0, function* 
         { $limit: Number(limit) },
     ]);
     // total count
-    const totalCountResult = yield Brand_model_1.default.aggregate([
+    const totalCountResult = yield Flavor_model_1.default.aggregate([
         {
             $match: Object.assign({}, searchQuery)
         },
@@ -93,48 +93,48 @@ const getBrandsService = (query) => __awaiter(void 0, void 0, void 0, function* 
         data: result,
     };
 });
-exports.getBrandsService = getBrandsService;
-const getBrandDropDownService = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Brand_model_1.default.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
+exports.getFlavorsService = getFlavorsService;
+const getFlavorDropDownService = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield Flavor_model_1.default.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
     return result;
 });
-exports.getBrandDropDownService = getBrandDropDownService;
-const updateBrandService = (brandId, name) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!mongoose_1.Types.ObjectId.isValid(brandId)) {
-        throw new ApiError_1.default(400, "brandId must be a valid ObjectId");
+exports.getFlavorDropDownService = getFlavorDropDownService;
+const updateFlavorService = (flavorId, name) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!mongoose_1.Types.ObjectId.isValid(flavorId)) {
+        throw new ApiError_1.default(400, "flavorId must be a valid ObjectId");
     }
-    const existingBrand = yield Brand_model_1.default.findById(brandId);
-    if (!existingBrand) {
-        throw new ApiError_1.default(404, 'This brandId not found');
+    const existingFlavor = yield Flavor_model_1.default.findById(flavorId);
+    if (!existingFlavor) {
+        throw new ApiError_1.default(404, 'This flavorId not found');
     }
     const slug = (0, slugify_1.default)(name).toLowerCase();
-    const brandExist = yield Brand_model_1.default.findOne({
-        _id: { $ne: brandId },
+    const flavorExist = yield Flavor_model_1.default.findOne({
+        _id: { $ne: flavorId },
         slug
     });
-    if (brandExist) {
-        throw new ApiError_1.default(409, 'Sorry! This brand is already existed');
+    if (flavorExist) {
+        throw new ApiError_1.default(409, 'Sorry! This flavor is already existed');
     }
-    const result = yield Brand_model_1.default.updateOne({ _id: brandId }, {
+    const result = yield Flavor_model_1.default.updateOne({ _id: flavorId }, {
         name,
         slug
     });
     return result;
 });
-exports.updateBrandService = updateBrandService;
-const deleteBrandService = (brandId) => __awaiter(void 0, void 0, void 0, function* () {
-    const brand = yield Brand_model_1.default.findById(brandId);
-    if (!brand) {
-        throw new ApiError_1.default(404, 'This brandId not found');
+exports.updateFlavorService = updateFlavorService;
+const deleteFlavorService = (flavorId) => __awaiter(void 0, void 0, void 0, function* () {
+    const flavor = yield Flavor_model_1.default.findById(flavorId);
+    if (!flavor) {
+        throw new ApiError_1.default(404, 'This flavorId not found');
     }
-    //check if brandId is associated with Product
+    //check if flavorId is associated with Product
     // const associateWithProduct = await ProductModel.findOne({
-    //      brandId
+    //      flavorId
     // });
     // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failled to delete, This brand is associated with Product');
+    //     throw new ApiError(409, 'Failed to delete, This flavor is associated with Product');
     // }
-    const result = yield Brand_model_1.default.deleteOne({ _id: brandId });
+    const result = yield Flavor_model_1.default.deleteOne({ _id: flavorId });
     return result;
 });
-exports.deleteBrandService = deleteBrandService;
+exports.deleteFlavorService = deleteFlavorService;

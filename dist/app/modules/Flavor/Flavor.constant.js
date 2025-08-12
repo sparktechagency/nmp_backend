@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BrandValidFields = exports.BrandSearchableFields = void 0;
-exports.BrandSearchableFields = ['name'];
-exports.BrandValidFields = [
+exports.FlavorValidFields = exports.FlavorSearchableFields = void 0;
+exports.FlavorSearchableFields = ['name', 'hexCode'];
+exports.FlavorValidFields = [
     "searchTerm",
     "page",
     "limit",
