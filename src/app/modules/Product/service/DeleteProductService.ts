@@ -2,6 +2,9 @@ import mongoose, { Types } from "mongoose";
 import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
 import ObjectId from "../../../utils/ObjectId";
+import OrderModel from "../../Order/Order.model";
+import CartModel from "../../Cart/Cart.model";
+import ReviewModel from "../../Review/review.model";
 
 
 const DeleteProductService = async (productId: string) => {
@@ -14,13 +17,13 @@ const DeleteProductService = async (productId: string) => {
   }
 
   //check product is associated with order
-  // const associateWithOrder = await OrderModel.findOne({
-  //   'products.productId': productId
-  // });
+  const associateWithOrder = await OrderModel.findOne({
+    'products.productId': productId
+  });
 
-  // if(associateWithOrder) {
-  //   throw new ApiError(409, 'Failled to delete, This product is associated with Order');
-  // }
+  if(associateWithOrder) {
+    throw new ApiError(409, 'Failled to delete, This product is associated with Order');
+  }
 
 
    //transaction & rollback
@@ -29,23 +32,17 @@ const DeleteProductService = async (productId: string) => {
   try {
     session.startTransaction();
 
-    //delete favourite list
-    // await FavouriteModel.deleteMany(
-    //   { productId: new ObjectId(productId) },
-    //   { session }
-    // );
-
     // //delete from cart list
-    // await CartModel.deleteMany(
-    //   { productId: new ObjectId(productId) },
-    //   { session }
-    // );
+    await CartModel.deleteMany(
+      { productId: new ObjectId(productId) },
+      { session }
+    );
 
     //delete the reviews
-    // await ReviewModel.deleteMany(
-    //   { restaurantId: new ObjectId(restaurant._id) },
-    //   { session }
-    // );
+    await ReviewModel.deleteMany(
+      { productId: new ObjectId(productId) },
+      { session }
+    );
 
 
     //delete product

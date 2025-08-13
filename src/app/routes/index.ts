@@ -8,6 +8,7 @@ import ProductRoutes from '../modules/Product/Product.route';
 import CartRoutes from '../modules/Cart/Cart.route';
 import OrderRoutes from '../modules/Order/Order.route';
 import ContactRoutes from '../modules/Contact/Contact.route';
+import ReviewRoutes from '../modules/Review/review.route';
 
 
 
@@ -50,6 +51,10 @@ const moduleRoutes = [
     {
         path: "/contact",
         route: ContactRoutes
+    },
+    {
+        path: "/review",
+        route: ReviewRoutes
     }
 ]
 

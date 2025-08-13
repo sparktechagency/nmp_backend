@@ -49,6 +49,9 @@ const mongoose_1 = __importStar(require("mongoose"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const Product_model_1 = __importDefault(require("../Product.model"));
 const ObjectId_1 = __importDefault(require("../../../utils/ObjectId"));
+const Order_model_1 = __importDefault(require("../../Order/Order.model"));
+const Cart_model_1 = __importDefault(require("../../Cart/Cart.model"));
+const review_model_1 = __importDefault(require("../../Review/review.model"));
 const DeleteProductService = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     if (!mongoose_1.Types.ObjectId.isValid(productId)) {
         throw new ApiError_1.default(400, "productId must be a valid ObjectId");
@@ -58,31 +61,20 @@ const DeleteProductService = (productId) => __awaiter(void 0, void 0, void 0, fu
         throw new ApiError_1.default(404, "Product Not Found");
     }
     //check product is associated with order
-    // const associateWithOrder = await OrderModel.findOne({
-    //   'products.productId': productId
-    // });
-    // if(associateWithOrder) {
-    //   throw new ApiError(409, 'Failled to delete, This product is associated with Order');
-    // }
+    const associateWithOrder = yield Order_model_1.default.findOne({
+        'products.productId': productId
+    });
+    if (associateWithOrder) {
+        throw new ApiError_1.default(409, 'Failled to delete, This product is associated with Order');
+    }
     //transaction & rollback
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
-        //delete favourite list
-        // await FavouriteModel.deleteMany(
-        //   { productId: new ObjectId(productId) },
-        //   { session }
-        // );
         // //delete from cart list
-        // await CartModel.deleteMany(
-        //   { productId: new ObjectId(productId) },
-        //   { session }
-        // );
+        yield Cart_model_1.default.deleteMany({ productId: new ObjectId_1.default(productId) }, { session });
         //delete the reviews
-        // await ReviewModel.deleteMany(
-        //   { restaurantId: new ObjectId(restaurant._id) },
-        //   { session }
-        // );
+        yield review_model_1.default.deleteMany({ productId: new ObjectId_1.default(productId) }, { session });
         //delete product
         const result = yield Product_model_1.default.deleteOne({ _id: new ObjectId_1.default(productId) }, { session });
         //transaction success
