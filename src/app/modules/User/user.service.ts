@@ -119,8 +119,8 @@ const getMeForSuperAdminService = async (userId: string) => {
 }
 
 
-const getMeService = async (userId: string) => {
-  const user = await UserModel.findById(userId).select("fullName email phone -_id");
+const getMyProfileService = async (userId: string) => {
+  const user = await UserModel.findById(userId).select("fullName email phone profile_img -_id");
   if(!user){
     throw new AppError(404, "No User Found");
   }
@@ -240,7 +240,7 @@ export {
   getUsersService,
   getSingleUserService,
   getMeForSuperAdminService,
-  getMeService,
+  getMyProfileService,
   editMyProfileService,
   updateProfileImgService,
   getUserOverviewService,

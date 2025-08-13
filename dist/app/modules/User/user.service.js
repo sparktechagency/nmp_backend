@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserOverviewService = exports.updateProfileImgService = exports.editMyProfileService = exports.getMeService = exports.getMeForSuperAdminService = exports.getSingleUserService = exports.getUsersService = void 0;
+exports.getUserOverviewService = exports.updateProfileImgService = exports.editMyProfileService = exports.getMyProfileService = exports.getMeForSuperAdminService = exports.getSingleUserService = exports.getUsersService = void 0;
 const user_model_1 = __importDefault(require("./user.model"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const QueryBuilder_1 = require("../../helper/QueryBuilder");
@@ -116,14 +116,14 @@ const getMeForSuperAdminService = (userId) => __awaiter(void 0, void 0, void 0, 
     return returnData;
 });
 exports.getMeForSuperAdminService = getMeForSuperAdminService;
-const getMeService = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.default.findById(userId).select("fullName email phone -_id");
+const getMyProfileService = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.default.findById(userId).select("fullName email phone profile_img -_id");
     if (!user) {
         throw new ApiError_1.default(404, "No User Found");
     }
     return user;
 });
-exports.getMeService = getMeService;
+exports.getMyProfileService = getMyProfileService;
 const editMyProfileService = (loginUserId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = user_model_1.default.updateOne({ _id: loginUserId }, payload, { runValidators: true });
     return result;

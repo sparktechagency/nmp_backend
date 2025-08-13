@@ -53,6 +53,10 @@ const userSchema = new mongoose_1.Schema({
         enum: ['blocked', 'unblocked'],
         default: 'unblocked'
     },
+    profile_img: {
+        type: String,
+        default: ""
+    },
     otp: {
         type: String,
         required: [true, "otp is required"],

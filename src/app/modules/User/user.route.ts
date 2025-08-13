@@ -20,9 +20,9 @@ router.get(
   UserController.getSingleUser
 );
 router.get(
-  "/get-me",
+  "/get-my-profile",
   AuthMiddleware(UserRole.super_admin, UserRole.user, UserRole.user, UserRole.admin),
-  UserController.getMe
+  UserController.getMyProfile
 );
 
 router.get(

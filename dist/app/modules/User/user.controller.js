@@ -48,9 +48,9 @@ const getMeForSuperAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         data: result
     });
 }));
-const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginUserId = req.headers.id;
-    const result = yield (0, user_service_1.getMeService)(loginUserId);
+    const result = yield (0, user_service_1.getMyProfileService)(loginUserId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -91,7 +91,7 @@ const getUserOverview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
 const UserController = {
     getUsers,
     getSingleUser,
-    getMe,
+    getMyProfile,
     getMeForSuperAdmin,
     editMyProfile,
     updateProfileImg,

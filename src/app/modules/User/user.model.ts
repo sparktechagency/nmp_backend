@@ -42,6 +42,10 @@ const userSchema = new Schema<IUser>({
         enum: ['blocked', 'unblocked'],
         default: 'unblocked'
     },
+    profile_img: {
+        type: String,
+        default: ""
+    },
     otp: {
         type: String,
         required: [true, "otp is required"],

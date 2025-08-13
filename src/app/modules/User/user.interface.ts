@@ -10,6 +10,7 @@ export interface IUser {
   passwordChangedAt?: Date;
   role: "user" | "admin" | "super_admin";
   status: "blocked" | "unblocked";
+  profile_img?: string;
   otp: string;
   otpExpires: Date,
   resetOtp: string;

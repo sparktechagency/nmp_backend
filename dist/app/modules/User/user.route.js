@@ -14,7 +14,7 @@ const upload_1 = __importDefault(require("../../helper/upload"));
 const router = express_1.default.Router();
 router.get("/get-users", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.admin), user_controller_1.default.getUsers);
 router.get("/get-single-user/:id", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.admin), user_controller_1.default.getSingleUser);
-router.get("/get-me", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.user, user_constant_1.UserRole.user, user_constant_1.UserRole.admin), user_controller_1.default.getMe);
+router.get("/get-my-profile", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.user, user_constant_1.UserRole.user, user_constant_1.UserRole.admin), user_controller_1.default.getMyProfile);
 router.get("/get-me-for-super-admin", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin), user_controller_1.default.getMeForSuperAdmin);
 router.patch("/edit-my-profile", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.user, user_constant_1.UserRole.user, user_constant_1.UserRole.admin), upload_1.default.single('file'), (0, validationMiddleware_1.default)(user_validation_1.updateProfileValidationSchema), user_controller_1.default.editMyProfile);
 router.patch("/update-profile-img", (0, AuthMiddleware_1.default)(user_constant_1.UserRole.super_admin, user_constant_1.UserRole.user, user_constant_1.UserRole.user, user_constant_1.UserRole.admin), upload_1.default.single('file'), user_controller_1.default.updateProfileImg);
