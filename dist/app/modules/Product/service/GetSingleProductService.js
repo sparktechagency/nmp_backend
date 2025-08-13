@@ -82,7 +82,7 @@ const GetSingleProductService = (productId) => __awaiter(void 0, void 0, void 0,
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 introduction: "$introduction",
                 description: "$description",
                 stockStatus: "$stockStatus"

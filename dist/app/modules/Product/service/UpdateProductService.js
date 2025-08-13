@@ -16,6 +16,9 @@ const mongoose_1 = require("mongoose");
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const Product_model_1 = __importDefault(require("../Product.model"));
 const slugify_1 = __importDefault(require("slugify"));
+const Category_model_1 = __importDefault(require("../../Category/Category.model"));
+const Brand_model_1 = __importDefault(require("../../Brand/Brand.model"));
+const Flavor_model_1 = __importDefault(require("../../Flavor/Flavor.model"));
 const UpdateProductService = (req, productId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!mongoose_1.Types.ObjectId.isValid(productId)) {
         throw new ApiError_1.default(400, "productId must be a valid ObjectId");
@@ -24,9 +27,6 @@ const UpdateProductService = (req, productId, payload) => __awaiter(void 0, void
     const product = yield Product_model_1.default.findById(productId);
     if (!product) {
         throw new ApiError_1.default(404, "Product Not Found");
-    }
-    if (Number(payload.originalPrice) > 0) {
-        console.log("log", payload.originalPrice);
     }
     if ((Number(payload.originalPrice) > 0) && !payload.currentPrice) {
         if (product.currentPrice > Number(payload.originalPrice)) {
@@ -44,7 +44,28 @@ const UpdateProductService = (req, productId, payload) => __awaiter(void 0, void
         }
     }
     //desctructuring the payload
-    const { name } = payload;
+    const { name, categoryId, brandId, flavorId } = payload;
+    //check categoryId
+    if (categoryId) {
+        const category = yield Category_model_1.default.findById(categoryId);
+        if (!category) {
+            throw new ApiError_1.default(404, 'This categoryId not found');
+        }
+    }
+    //check brandId
+    if (brandId) {
+        const brand = yield Brand_model_1.default.findById(brandId);
+        if (!brand) {
+            throw new ApiError_1.default(404, 'This brandId not found');
+        }
+    }
+    //check flavorId
+    if (flavorId) {
+        const flavor = yield Flavor_model_1.default.findById(flavorId);
+        if (!flavor) {
+            throw new ApiError_1.default(404, 'This flavorId not found');
+        }
+    }
     //check product name is already existed
     if (name) {
         const slug = (0, slugify_1.default)(name).toLowerCase();

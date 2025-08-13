@@ -45,7 +45,6 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
         filterQuery = (0, QueryBuilder_1.makeFilterQuery)(filters);
     }
     const result = yield Product_model_1.default.aggregate([
-        { $sort: { [sortBy]: sortDirection } },
         {
             $lookup: {
                 from: "categories",
@@ -92,6 +91,7 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
                 totalReview: { $size: "$reviews" },
             },
         },
+        { $sort: { [sortBy]: sortDirection } },
         {
             $project: {
                 _id: 1,
@@ -104,7 +104,7 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
@@ -112,7 +112,6 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
         {
             $match: Object.assign(Object.assign({}, searchQuery), filterQuery)
         },
-        { $sort: { ratings: -1 } },
         { $skip: skip },
         { $limit: Number(limit) },
     ]);
@@ -152,25 +151,9 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
             $unwind: "$flavor"
         },
         {
-            $lookup: {
-                from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
-        },
-        {
-            $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
-        },
-        {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                brandId: 1,
-                flavorId: 1,
                 category: "$category.name",
                 brand: "$brand.name",
                 flavor: "$flavor.name",
@@ -178,26 +161,14 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
-                totalReview: "$totalReview",
-                images: "$images",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
         },
         {
-            $match: Object.assign(Object.assign(Object.assign({}, searchQuery), filterQuery), { status: "visible" })
+            $match: Object.assign(Object.assign({}, searchQuery), filterQuery)
         },
-        {
-            $project: {
-                categoryId: 0,
-                brandId: 0,
-                flavorId: 0,
-                status: 0,
-            }
-        },
-        { $sort: { ratings: -1 } },
-        { $skip: skip },
-        { $limit: Number(limit) },
+        { $count: "totalCount" }
     ]);
     const totalCount = ((_a = totalCountResult[0]) === null || _a === void 0 ? void 0 : _a.totalCount) || 0;
     const totalPages = Math.ceil(totalCount / Number(limit));

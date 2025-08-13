@@ -20,6 +20,24 @@ exports.updateProductValidationSchema = zod_1.z.object({
         .refine((id) => mongoose_1.Types.ObjectId.isValid(id), {
         message: "categoryId must be a valid ObjectId",
     }).optional(),
+    brandId: zod_1.z
+        .string({
+        invalid_type_error: "brandId must be a string",
+        required_error: "brandId is required!",
+    })
+        .refine((id) => mongoose_1.Types.ObjectId.isValid(id), {
+        message: "brandId must be a valid ObjectId",
+    })
+        .optional(),
+    flavorId: zod_1.z
+        .string({
+        invalid_type_error: "flavorId must be a string",
+        required_error: "flavorId is required!",
+    })
+        .refine((id) => mongoose_1.Types.ObjectId.isValid(id), {
+        message: "flavorId must be a valid ObjectId",
+    })
+        .optional(),
     currentPrice: zod_1.z
         .preprocess((val) => (val === '' || val === undefined || val === null ? undefined : Number(val)), zod_1.z
         .number({
@@ -42,42 +60,6 @@ exports.updateProductValidationSchema = zod_1.z.object({
         .optional(),
     discount: zod_1.z.string({
         invalid_type_error: "discount must be string"
-    }).optional(),
-    colors: zod_1.z.array(zod_1.z.string()
-        .refine((id) => mongoose_1.Types.ObjectId.isValid(id), {
-        message: "colors must be an array of valid ObjectId",
-    }), {
-        invalid_type_error: "colors must be an array",
-        required_error: "colors must be at least one value"
-    }).default([])
-        .superRefine((arr, ctx) => {
-        const duplicates = arr.filter((item, index) => arr.indexOf(item) !== index);
-        if (duplicates.length > 0) {
-            ctx.addIssue({
-                code: zod_1.z.ZodIssueCode.custom,
-                message: "colors array must not contain duplicate values",
-            });
-        }
-    }),
-    sizes: zod_1.z.array(zod_1.z.string()
-        .refine((id) => mongoose_1.Types.ObjectId.isValid(id), {
-        message: "sizes must be an array of valid ObjectId",
-    }), {
-        invalid_type_error: "sizes must be an array",
-        required_error: "sizes must be at least one value"
-    }).default([])
-        .superRefine((arr, ctx) => {
-        const duplicates = arr.filter((item, index) => arr.indexOf(item) !== index);
-        if (duplicates.length > 0) {
-            ctx.addIssue({
-                code: zod_1.z.ZodIssueCode.custom,
-                message: "sizes array must not contain duplicate values",
-            });
-        }
-    }),
-    introduction: zod_1.z.string({
-        invalid_type_error: "introduction must be string",
-        required_error: "introduction is required"
     }).optional(),
     description: zod_1.z
         .string({

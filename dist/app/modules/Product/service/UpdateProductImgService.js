@@ -15,29 +15,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cloudinary_1 = __importDefault(require("../../../helper/cloudinary"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const Product_model_1 = __importDefault(require("../Product.model"));
+const mongoose_1 = require("mongoose");
 const UpdateProductImgService = (req, productId) => __awaiter(void 0, void 0, void 0, function* () {
-    let images = [];
-    if (req.files && req.files.length > 0) {
-        const files = req.files;
-        // for (const file of files) {
-        //   const path = `${req.protocol}://${req.get("host")}/uploads/${file?.filename}`;  //for local machine
-        //   images.push(path)
-        // }
-        images = yield Promise.all(files === null || files === void 0 ? void 0 : files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
-            const result = yield cloudinary_1.default.uploader.upload(file.path, {
-                folder: 'MTK-Ecommerce',
-                // width: 300,
-                // crop: 'scale',
-            });
-            // Delete local file (non-blocking)
-            // fs.unlink(file.path);
-            return result.secure_url;
-        })));
+    if (!mongoose_1.Types.ObjectId.isValid(productId)) {
+        throw new ApiError_1.default(400, "productId must be a valid ObjectId");
     }
-    else {
-        throw new ApiError_1.default(400, "Minimum one image required");
+    //check product
+    const product = yield Product_model_1.default.findById(productId);
+    if (!product) {
+        throw new ApiError_1.default(404, "Product Not Found");
     }
-    const result = yield Product_model_1.default.updateOne({ _id: productId }, { images }, { runValidators: true });
+    const file = req.file;
+    if (!file) {
+        throw new ApiError_1.default(400, "Upload image");
+    }
+    //upload a image
+    let image = "";
+    if (req.file && req.file) {
+        const file = req.file;
+        const cloudinaryRes = yield cloudinary_1.default.uploader.upload(file.path, {
+            folder: 'NMP-Ecommerce',
+            // width: 300,
+            // crop: 'scale',
+        });
+        image = cloudinaryRes === null || cloudinaryRes === void 0 ? void 0 : cloudinaryRes.secure_url;
+        // fs.unlink(file.path);
+    }
+    if (!image) {
+        throw new ApiError_1.default(400, "upload a image");
+    }
+    const result = yield Product_model_1.default.updateOne({ _id: productId }, { image }, { runValidators: true });
     return result;
 });
 exports.default = UpdateProductImgService;

@@ -10,6 +10,8 @@ const Category_route_1 = __importDefault(require("../modules/Category/Category.r
 const Brand_route_1 = __importDefault(require("../modules/Brand/Brand.route"));
 const Flavor_route_1 = __importDefault(require("../modules/Flavor/Flavor.route"));
 const Product_route_1 = __importDefault(require("../modules/Product/Product.route"));
+const Cart_route_1 = __importDefault(require("../modules/Cart/Cart.route"));
+const Order_route_1 = __importDefault(require("../modules/Order/Order.route"));
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -35,6 +37,14 @@ const moduleRoutes = [
     {
         path: '/product',
         route: Product_route_1.default
+    },
+    {
+        path: '/cart',
+        route: Cart_route_1.default
+    },
+    {
+        path: '/order',
+        route: Order_route_1.default
     }
 ];
 moduleRoutes.forEach((item, i) => router.use(item.path, item.route));

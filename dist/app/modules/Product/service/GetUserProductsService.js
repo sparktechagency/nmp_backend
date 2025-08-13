@@ -202,7 +202,7 @@ const GetUserProductsService = (query) => __awaiter(void 0, void 0, void 0, func
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
@@ -285,7 +285,7 @@ const GetUserProductsService = (query) => __awaiter(void 0, void 0, void 0, func
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },

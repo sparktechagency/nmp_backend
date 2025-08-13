@@ -6,6 +6,7 @@ import BrandRoutes from '../modules/Brand/Brand.route';
 import FlavorRoutes from '../modules/Flavor/Flavor.route';
 import ProductRoutes from '../modules/Product/Product.route';
 import CartRoutes from '../modules/Cart/Cart.route';
+import OrderRoutes from '../modules/Order/Order.route';
 
 
 
@@ -40,6 +41,10 @@ const moduleRoutes = [
     {
         path: '/cart',
         route: CartRoutes
+    },
+    {
+        path: '/order',
+        route: OrderRoutes
     }
 ]
 

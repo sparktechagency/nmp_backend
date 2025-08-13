@@ -85,7 +85,7 @@ const getProductService = (productId) => __awaiter(void 0, void 0, void 0, funct
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 introduction: "$introduction",
                 description: "$description",
                 status: "$status",
