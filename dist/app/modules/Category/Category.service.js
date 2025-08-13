@@ -30,6 +30,7 @@ const Category_model_1 = __importDefault(require("./Category.model"));
 const mongoose_1 = require("mongoose");
 const Category_constant_1 = require("./Category.constant");
 const QueryBuilder_1 = require("../../helper/QueryBuilder");
+const Product_model_1 = __importDefault(require("../Product/Product.model"));
 const createCategoryService = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const slug = (0, slugify_1.default)(name).toLowerCase();
     //check category is already existed
@@ -127,12 +128,12 @@ const deleteCategoryService = (categoryId) => __awaiter(void 0, void 0, void 0, 
         throw new ApiError_1.default(404, 'This categoryId not found');
     }
     //check if categoryId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      categoryId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failed to delete, This category is associated with Product');
-    // }
+    const associateWithProduct = yield Product_model_1.default.findOne({
+        categoryId
+    });
+    if (associateWithProduct) {
+        throw new ApiError_1.default(409, 'Failed to delete, This category is associated with Product');
+    }
     const result = yield Category_model_1.default.deleteOne({ _id: categoryId });
     return result;
 });

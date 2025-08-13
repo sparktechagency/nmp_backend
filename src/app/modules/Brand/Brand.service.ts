@@ -2,10 +2,10 @@ import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
 import BrandModel from "./Brand.model";
 import { Types } from "mongoose";
-// import ProductModel from "../Product/Product.model";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
 import { TBrandQuery } from "./Brand.interface";
 import { BrandSearchableFields } from "./Brand.constant";
+import ProductModel from "../Product/Product.model";
 
 
 const createBrandService = async (name: string) => {
@@ -135,12 +135,12 @@ const deleteBrandService = async (brandId: string) => {
     }
 
     //check if brandId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      brandId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failled to delete, This brand is associated with Product');
-    // }
+    const associateWithProduct = await ProductModel.findOne({
+         brandId
+    });
+    if(associateWithProduct){
+        throw new ApiError(409, 'Failed to delete, This brand is associated with Product');
+    }
 
     const result = await BrandModel.deleteOne({ _id: brandId})
     return result;

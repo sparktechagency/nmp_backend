@@ -28,9 +28,9 @@ const slugify_1 = __importDefault(require("slugify"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const Brand_model_1 = __importDefault(require("./Brand.model"));
 const mongoose_1 = require("mongoose");
-// import ProductModel from "../Product/Product.model";
 const QueryBuilder_1 = require("../../helper/QueryBuilder");
 const Brand_constant_1 = require("./Brand.constant");
+const Product_model_1 = __importDefault(require("../Product/Product.model"));
 const createBrandService = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const slug = (0, slugify_1.default)(name).toLowerCase();
     //check brand is already existed
@@ -128,12 +128,12 @@ const deleteBrandService = (brandId) => __awaiter(void 0, void 0, void 0, functi
         throw new ApiError_1.default(404, 'This brandId not found');
     }
     //check if brandId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      brandId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failled to delete, This brand is associated with Product');
-    // }
+    const associateWithProduct = yield Product_model_1.default.findOne({
+        brandId
+    });
+    if (associateWithProduct) {
+        throw new ApiError_1.default(409, 'Failed to delete, This brand is associated with Product');
+    }
     const result = yield Brand_model_1.default.deleteOne({ _id: brandId });
     return result;
 });

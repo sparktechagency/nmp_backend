@@ -13,6 +13,7 @@ const upload_1 = __importDefault(require("../../helper/upload"));
 const router = express_1.default.Router();
 router.post('/create-product', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), upload_1.default.single("image"), Product_controller_1.default.createProduct);
 router.get('/get-single-product/:productId', Product_controller_1.default.getSingleProduct);
+router.get('/get-product/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Product_controller_1.default.getProduct);
 router.patch('/update-product/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), (0, validationMiddleware_1.default)(Product_validation_1.updateProductValidationSchema), Product_controller_1.default.updateProduct);
 router.patch('/update-product-img/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), upload_1.default.array("image", 5), Product_controller_1.default.updateProductImg);
 router.delete('/delete-product/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Product_controller_1.default.deleteProduct);

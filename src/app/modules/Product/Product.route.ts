@@ -20,6 +20,12 @@ router.get(
   ProductController.getSingleProduct,
 );
 
+router.get(
+  '/get-product/:productId',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  ProductController.getProduct,
+);
+
 router.patch(
   '/update-product/:productId',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),

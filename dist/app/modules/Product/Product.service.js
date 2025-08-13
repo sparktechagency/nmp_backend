@@ -56,7 +56,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductService = exports.updateProductImgService = exports.updateProductService = exports.getSingleProductService = exports.getProductsService = exports.getUserProductsService = exports.createProductService = void 0;
+exports.deleteProductService = exports.updateProductImgService = exports.updateProductService = exports.getProductService = exports.getSingleProductService = exports.getProductsService = exports.getUserProductsService = exports.createProductService = void 0;
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const Product_constant_1 = require("./Product.constant");
 const Product_model_1 = __importDefault(require("./Product.model"));
@@ -591,7 +591,6 @@ const getProductsService = (query) => __awaiter(void 0, void 0, void 0, function
 });
 exports.getProductsService = getProductsService;
 const getSingleProductService = (productId) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     if (!mongoose_1.Types.ObjectId.isValid(productId)) {
         throw new ApiError_1.default(400, "productId must be a valid ObjectId");
     }
@@ -612,19 +611,25 @@ const getSingleProductService = (productId) => __awaiter(void 0, void 0, void 0,
         },
         {
             $lookup: {
-                from: "colors",
-                localField: "colors",
+                from: "brands",
+                localField: "brandId",
                 foreignField: "_id",
-                as: "colors"
+                as: "brand"
             }
         },
         {
+            $unwind: "$brand"
+        },
+        {
             $lookup: {
-                from: "sizes",
-                localField: "sizes",
+                from: "flavors",
+                localField: "flavorId",
                 foreignField: "_id",
-                as: "sizes"
+                as: "flavor"
             }
+        },
+        {
+            $unwind: "$flavor"
         },
         {
             $lookup: {
@@ -643,38 +648,17 @@ const getSingleProductService = (productId) => __awaiter(void 0, void 0, void 0,
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                categoryName: "$category.name",
+                category: "$category.name",
+                brand: "$brand.name",
+                flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
                 images: "$images",
-                colors: {
-                    $map: {
-                        input: "$colors",
-                        as: "color",
-                        in: {
-                            _id: "$$color._id",
-                            name: "$$color.name",
-                            hexCode: "$$color.hexCode"
-                        }
-                    }
-                },
-                sizes: {
-                    $map: {
-                        input: "$sizes",
-                        as: "size",
-                        in: {
-                            _id: "$$size._id",
-                            size: "$$size.size",
-                        }
-                    }
-                },
                 introduction: "$introduction",
                 description: "$description",
-                status: "$status",
                 stockStatus: "$stockStatus"
             },
         },
@@ -682,28 +666,16 @@ const getSingleProductService = (productId) => __awaiter(void 0, void 0, void 0,
     if (product.length === 0) {
         throw new ApiError_1.default(404, 'Product Not Found');
     }
-    const categoryId = (_a = product[0]) === null || _a === void 0 ? void 0 : _a.categoryId;
-    //find related products
-    const relatedProducts = yield Product_model_1.default.aggregate([
+    return product[0];
+});
+exports.getSingleProductService = getSingleProductService;
+const getProductService = (productId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!mongoose_1.Types.ObjectId.isValid(productId)) {
+        throw new ApiError_1.default(400, "productId must be a valid ObjectId");
+    }
+    const product = yield Product_model_1.default.aggregate([
         {
-            $match: {
-                _id: { $ne: new mongoose_1.Types.ObjectId(productId) },
-                categoryId: categoryId,
-                status: "visible"
-            }
-        },
-        {
-            $lookup: {
-                from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
-        },
-        {
-            $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
+            $match: { _id: new ObjectId_1.default(productId) }
         },
         {
             $lookup: {
@@ -717,27 +689,69 @@ const getSingleProductService = (productId) => __awaiter(void 0, void 0, void 0,
             $unwind: "$category"
         },
         {
+            $lookup: {
+                from: "brands",
+                localField: "brandId",
+                foreignField: "_id",
+                as: "brand"
+            }
+        },
+        {
+            $unwind: "$brand"
+        },
+        {
+            $lookup: {
+                from: "flavors",
+                localField: "flavorId",
+                foreignField: "_id",
+                as: "flavor"
+            }
+        },
+        {
+            $unwind: "$flavor"
+        },
+        {
+            $lookup: {
+                from: "reviews",
+                localField: "_id",
+                foreignField: "productId",
+                as: "reviews",
+            },
+        },
+        {
+            $addFields: {
+                totalReview: { $size: "$reviews" },
+            },
+        },
+        {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                categoryName: "$category.name",
+                categoryId: "$categoryId",
+                category: "$category.name",
+                brandId: "$brandId",
+                brand: "$brand.name",
+                flavorId: "$flavorId",
+                flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
                 images: "$images",
-                status: "$status"
+                introduction: "$introduction",
+                description: "$description",
+                status: "$status",
+                stockStatus: "$stockStatus"
             },
         },
     ]);
-    return {
-        product: product[0],
-        relatedProducts
-    };
+    if (product.length === 0) {
+        throw new ApiError_1.default(404, 'Product Not Found');
+    }
+    return product[0];
 });
-exports.getSingleProductService = getSingleProductService;
+exports.getProductService = getProductService;
 const updateProductService = (req, productId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!mongoose_1.Types.ObjectId.isValid(productId)) {
         throw new ApiError_1.default(400, "productId must be a valid ObjectId");

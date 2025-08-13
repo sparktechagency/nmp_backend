@@ -36,6 +36,16 @@ const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const getProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { productId } = req.params;
+    const result = yield (0, Product_service_1.getProductService)(productId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Product is retrieved successfully',
+        data: result,
+    });
+}));
 const getUserProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const validatedQuery = (0, pickValidFields_1.default)(req.query, Product_constant_1.UserProductValidFields);
     const result = yield (0, Product_service_1.getUserProductsService)(validatedQuery);
@@ -91,6 +101,7 @@ const deleteProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 const ProductController = {
     createProduct,
     getSingleProduct,
+    getProduct,
     getUserProducts,
     getProducts,
     updateProduct,

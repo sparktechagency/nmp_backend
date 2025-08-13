@@ -117,7 +117,7 @@ const getMeForSuperAdminService = (userId) => __awaiter(void 0, void 0, void 0, 
 });
 exports.getMeForSuperAdminService = getMeForSuperAdminService;
 const getMeService = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.default.findById(userId).select("fullName email phone");
+    const user = yield user_model_1.default.findById(userId).select("fullName email phone -_id");
     if (!user) {
         throw new ApiError_1.default(404, "No User Found");
     }

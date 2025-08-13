@@ -28,9 +28,9 @@ const slugify_1 = __importDefault(require("slugify"));
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const Flavor_model_1 = __importDefault(require("./Flavor.model"));
 const mongoose_1 = require("mongoose");
-// import ProductModel from "../Product/Product.model";
 const QueryBuilder_1 = require("../../helper/QueryBuilder");
 const Flavor_constant_1 = require("./Flavor.constant");
+const Product_model_1 = __importDefault(require("../Product/Product.model"));
 const createFlavorService = (name) => __awaiter(void 0, void 0, void 0, function* () {
     const slug = (0, slugify_1.default)(name).toLowerCase();
     //check flavor is already existed
@@ -128,12 +128,12 @@ const deleteFlavorService = (flavorId) => __awaiter(void 0, void 0, void 0, func
         throw new ApiError_1.default(404, 'This flavorId not found');
     }
     //check if flavorId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      flavorId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failed to delete, This flavor is associated with Product');
-    // }
+    const associateWithProduct = yield Product_model_1.default.findOne({
+        flavorId
+    });
+    if (associateWithProduct) {
+        throw new ApiError_1.default(409, 'Failed to delete, This flavor is associated with Product');
+    }
     const result = yield Flavor_model_1.default.deleteOne({ _id: flavorId });
     return result;
 });

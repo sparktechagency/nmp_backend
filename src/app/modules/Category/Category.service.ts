@@ -2,10 +2,10 @@ import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
 import CategoryModel from "./Category.model";
 import { Types } from "mongoose";
-// import ProductModel from "../Product/Product.model";
 import { TCategoryQuery } from "./Category.interface";
 import { CategorySearchableFields } from "./Category.constant";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
+import ProductModel from "../Product/Product.model";
 
 
 
@@ -135,12 +135,12 @@ const deleteCategoryService = async (categoryId: string) => {
     }
 
     //check if categoryId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      categoryId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failed to delete, This category is associated with Product');
-    // }
+    const associateWithProduct = await ProductModel.findOne({
+         categoryId
+    });
+    if(associateWithProduct){
+        throw new ApiError(409, 'Failed to delete, This category is associated with Product');
+    }
 
     const result = await CategoryModel.deleteOne({ _id: categoryId})
     return result;

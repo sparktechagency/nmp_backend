@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { getSingleProductService, updateProductService, deleteProductService, getProductsService, updateProductImgService, getUserProductsService, createProductService } from './Product.service';
+import { getSingleProductService, updateProductService, deleteProductService, getProductsService, updateProductImgService, getUserProductsService, createProductService, getProductService } from './Product.service';
 import pickValidFields from '../../utils/pickValidFields';
 import { ProductValidFields, UserProductValidFields } from './Product.constant';
 
@@ -20,6 +20,18 @@ const createProduct = catchAsync(async (req, res) => {
 const getSingleProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
   const result = await getSingleProductService(productId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Product is retrieved successfully',
+    data: result,
+  });
+});
+
+const getProduct = catchAsync(async (req, res) => {
+  const { productId } = req.params;
+  const result = await getProductService(productId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -92,6 +104,7 @@ const deleteProduct = catchAsync(async (req, res) => {
 const ProductController = {
   createProduct,
   getSingleProduct,
+  getProduct,
   getUserProducts,
   getProducts,
   updateProduct,

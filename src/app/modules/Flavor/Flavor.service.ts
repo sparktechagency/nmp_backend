@@ -2,10 +2,10 @@ import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
 import FlavorModel from "./Flavor.model";
 import { Types } from "mongoose";
-// import ProductModel from "../Product/Product.model";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
 import { FlavorSearchableFields } from "./Flavor.constant";
 import { TFlavorQuery } from "./Flavor.interface";
+import ProductModel from "../Product/Product.model";
 
 
 
@@ -135,12 +135,12 @@ const deleteFlavorService = async (flavorId: string) => {
     }
 
     //check if flavorId is associated with Product
-    // const associateWithProduct = await ProductModel.findOne({
-    //      flavorId
-    // });
-    // if(associateWithProduct){
-    //     throw new ApiError(409, 'Failed to delete, This flavor is associated with Product');
-    // }
+    const associateWithProduct = await ProductModel.findOne({
+         flavorId
+    });
+    if(associateWithProduct){
+        throw new ApiError(409, 'Failed to delete, This flavor is associated with Product');
+    }
 
     const result = await FlavorModel.deleteOne({ _id: flavorId})
     return result;
