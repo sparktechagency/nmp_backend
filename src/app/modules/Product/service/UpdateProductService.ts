@@ -4,6 +4,9 @@ import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
 import slugify from "slugify";
 import { Request } from "express";
+import CategoryModel from "../../Category/Category.model";
+import BrandModel from "../../Brand/Brand.model";
+import FlavorModel from "../../Flavor/Flavor.model";
 
 
 const UpdateProductService = async (req:Request, productId: string, payload: Partial<IProduct>) => {
@@ -15,10 +18,6 @@ const UpdateProductService = async (req:Request, productId: string, payload: Par
   const product = await ProductModel.findById(productId);
   if (!product) {
     throw new ApiError(404, "Product Not Found");
-  }
-
-  if(Number(payload.originalPrice) > 0){
-    console.log("log", payload.originalPrice)
   }
 
   if((Number(payload.originalPrice) > 0) && !payload.currentPrice){
@@ -41,7 +40,31 @@ const UpdateProductService = async (req:Request, productId: string, payload: Par
 
 
   //desctructuring the payload
-  const { name } = payload;
+  const { name, categoryId, brandId, flavorId } = payload;
+
+  //check categoryId
+  if (categoryId) {
+    const category = await CategoryModel.findById(categoryId)
+    if (!category) {
+      throw new ApiError(404, 'This categoryId not found');
+    }
+  }
+
+  //check brandId
+  if (brandId) {
+    const brand = await BrandModel.findById(brandId)
+    if (!brand) {
+      throw new ApiError(404, 'This brandId not found');
+    }
+  }
+
+  //check flavorId
+  if (flavorId) {
+    const flavor = await FlavorModel.findById(flavorId)
+    if (!flavor) {
+      throw new ApiError(404, 'This flavorId not found');
+    }
+  }
  
   //check product name is already existed
   if (name) {

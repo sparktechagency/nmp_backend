@@ -71,7 +71,7 @@ const GetSingleProductService = async (productId: string) => {
         discount: "$discount",
         ratings: "$ratings",
         totalReview: "$totalReview",
-        images: "$images",
+        image: "$image",
         introduction: "$introduction",
         description: "$description",
         stockStatus: "$stockStatus"

@@ -32,7 +32,6 @@ const GetProductsService = async (query: TProductQuery) => {
         filterQuery = makeFilterQuery(filters);
     }
     const result = await ProductModel.aggregate([
-        { $sort: { [sortBy]: sortDirection } },
         {
             $lookup: {
                 from: "categories",
@@ -79,6 +78,7 @@ const GetProductsService = async (query: TProductQuery) => {
                 totalReview: { $size: "$reviews" },
             },
         },
+        { $sort: { [sortBy]: sortDirection } },
         {
             $project: {
                 _id: 1,
@@ -91,7 +91,7 @@ const GetProductsService = async (query: TProductQuery) => {
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
@@ -102,7 +102,6 @@ const GetProductsService = async (query: TProductQuery) => {
                 ...filterQuery,
             }
         },
-        { $sort: { ratings: -1 } },
         { $skip: skip },
         { $limit: Number(limit) },
     ]);
@@ -143,25 +142,9 @@ const GetProductsService = async (query: TProductQuery) => {
             $unwind: "$flavor"
         },
         {
-            $lookup: {
-                from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
-        },
-        {
-            $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
-        },
-        {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                brandId: 1,
-                flavorId: 1,
                 category: "$category.name",
                 brand: "$brand.name",
                 flavor: "$flavor.name",
@@ -169,8 +152,6 @@ const GetProductsService = async (query: TProductQuery) => {
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
-                totalReview: "$totalReview",
-                images: "$images",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
@@ -179,20 +160,9 @@ const GetProductsService = async (query: TProductQuery) => {
             $match: {
                 ...searchQuery,
                 ...filterQuery,
-                status: "visible"
             }
         },
-        {
-            $project: {
-                categoryId: 0,
-                brandId: 0,
-                flavorId: 0,
-                status: 0,
-            }
-        },
-        { $sort: { ratings: -1 } },
-        { $skip: skip },
-        { $limit: Number(limit) },
+        { $count: "totalCount" }
     ]);
 
 

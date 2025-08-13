@@ -36,7 +36,7 @@ router.patch(
 router.patch(
   '/update-product-img/:productId',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  upload.array("image", 5),
+   upload.single("image"),
   ProductController.updateProductImg,
 );
 

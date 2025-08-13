@@ -2,40 +2,46 @@ import { Request } from "express";
 import cloudinary from "../../../helper/cloudinary";
 import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
+import { Types } from "mongoose";
 
 
 const UpdateProductImgService = async (req: Request, productId: string) => {
-  let images: string[] = [];
-  if (req.files && (req.files as Express.Multer.File[]).length > 0) {
-    const files = req.files as Express.Multer.File[];
-    // for (const file of files) {
-    //   const path = `${req.protocol}://${req.get("host")}/uploads/${file?.filename}`;  //for local machine
-    //   images.push(path)
-    // }
-    images = await Promise.all(
-      files?.map(async (file) => {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'MTK-Ecommerce',
-          // width: 300,
-          // crop: 'scale',
-        });
-
-        // Delete local file (non-blocking)
-        // fs.unlink(file.path);
-
-        return result.secure_url;
-      })
-    );
-
+  if (!Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, "productId must be a valid ObjectId")
   }
-  else {
-    throw new ApiError(400, "Minimum one image required");
-  } 
+
+  //check product
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    throw new ApiError(404, "Product Not Found");
+  }
+
+  const file = req.file as Express.Multer.File;
+  if (!file) {
+    throw new ApiError(400, "Upload image");
+  }
+
+  //upload a image
+  let image: string = "";
+  if (req.file && (req.file as Express.Multer.File)) {
+    const file = req.file as Express.Multer.File;
+    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
+      folder: 'NMP-Ecommerce',
+      // width: 300,
+      // crop: 'scale',
+    });
+    image = cloudinaryRes?.secure_url;
+    // fs.unlink(file.path);
+  }
+
+  if (!image) {
+    throw new ApiError(400, "upload a image")
+  }
 
   const result = await ProductModel.updateOne(
     { _id: productId },
-    { images },
-    { runValidators: true}
+    { image },
+    { runValidators: true }
   );
 
   return result;

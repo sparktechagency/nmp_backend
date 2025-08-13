@@ -5,6 +5,7 @@ import CategoryRoutes from '../modules/Category/Category.route';
 import BrandRoutes from '../modules/Brand/Brand.route';
 import FlavorRoutes from '../modules/Flavor/Flavor.route';
 import ProductRoutes from '../modules/Product/Product.route';
+import CartRoutes from '../modules/Cart/Cart.route';
 
 
 
@@ -35,6 +36,10 @@ const moduleRoutes = [
     {
         path: '/product',
         route: ProductRoutes
+    },
+    {
+        path: '/cart',
+        route: CartRoutes
     }
 ]
 

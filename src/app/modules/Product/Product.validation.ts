@@ -21,6 +21,24 @@ export const updateProductValidationSchema = z.object({
     .refine((id) => Types.ObjectId.isValid(id), {
       message: "categoryId must be a valid ObjectId",
     }).optional(),
+  brandId: z
+    .string({
+      invalid_type_error: "brandId must be a string",
+      required_error: "brandId is required!",
+    })
+    .refine((id) => Types.ObjectId.isValid(id), {
+      message: "brandId must be a valid ObjectId",
+    })
+    .optional(),
+  flavorId: z
+    .string({
+      invalid_type_error: "flavorId must be a string",
+      required_error: "flavorId is required!",
+    })
+    .refine((id) => Types.ObjectId.isValid(id), {
+      message: "flavorId must be a valid ObjectId",
+    })
+    .optional(),
   currentPrice: z
     .preprocess(
       (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
@@ -50,48 +68,6 @@ export const updateProductValidationSchema = z.object({
     .optional(),
   discount: z.string({
     invalid_type_error: "discount must be string"
-  }).optional(),
-  colors: z.array(
-    z.string()
-      .refine((id) => Types.ObjectId.isValid(id), {
-        message: "colors must be an array of valid ObjectId",
-      }),
-    {
-      invalid_type_error: "colors must be an array",
-      required_error: "colors must be at least one value"
-    }
-  ).default([])
-    .superRefine((arr, ctx) => {
-      const duplicates = arr.filter((item, index) => arr.indexOf(item) !== index);
-      if (duplicates.length > 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "colors array must not contain duplicate values",
-        });
-      }
-    }),
-  sizes: z.array(
-    z.string()
-      .refine((id) => Types.ObjectId.isValid(id), {
-        message: "sizes must be an array of valid ObjectId",
-      }),
-    {
-      invalid_type_error: "sizes must be an array",
-      required_error: "sizes must be at least one value"
-    }
-  ).default([])
-    .superRefine((arr, ctx) => {
-      const duplicates = arr.filter((item, index) => arr.indexOf(item) !== index);
-      if (duplicates.length > 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "sizes array must not contain duplicate values",
-        });
-      }
-    }),
-  introduction: z.string({
-    invalid_type_error: "introduction must be string",
-    required_error: "introduction is required"
   }).optional(),
   description: z
     .string({

@@ -239,7 +239,7 @@ const GetUserProductsService = async (query: TProductQuery) => {
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
@@ -327,7 +327,7 @@ const GetUserProductsService = async (query: TProductQuery) => {
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                images: "$images",
+                image: "$image",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
