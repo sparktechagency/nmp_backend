@@ -14,11 +14,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
-const Product_service_1 = require("./Product.service");
 const pickValidFields_1 = __importDefault(require("../../utils/pickValidFields"));
 const Product_constant_1 = require("./Product.constant");
+const CreateProductService_1 = __importDefault(require("./service/CreateProductService"));
+const GetSingleProductService_1 = __importDefault(require("./service/GetSingleProductService"));
+const GetUserProductsService_1 = __importDefault(require("./service/GetUserProductsService"));
+const GetProductsService_1 = __importDefault(require("./service/GetProductsService"));
+const GetProductService_1 = __importDefault(require("./service/GetProductService"));
+const UpdateProductService_1 = __importDefault(require("./service/UpdateProductService"));
+const UpdateProductImgService_1 = __importDefault(require("./service/UpdateProductImgService"));
+const DeleteProductService_1 = __importDefault(require("./service/DeleteProductService"));
 const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield (0, Product_service_1.createProductService)(req, req.body);
+    const result = yield (0, CreateProductService_1.default)(req, req.body);
     return (0, sendResponse_1.default)(res, {
         statusCode: 201,
         success: true,
@@ -28,7 +35,7 @@ const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 }));
 const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.params;
-    const result = yield (0, Product_service_1.getSingleProductService)(productId);
+    const result = yield (0, GetSingleProductService_1.default)(productId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -38,7 +45,7 @@ const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 
 }));
 const getProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.params;
-    const result = yield (0, Product_service_1.getProductService)(productId);
+    const result = yield (0, GetProductService_1.default)(productId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -48,7 +55,7 @@ const getProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 }));
 const getUserProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const validatedQuery = (0, pickValidFields_1.default)(req.query, Product_constant_1.UserProductValidFields);
-    const result = yield (0, Product_service_1.getUserProductsService)(validatedQuery);
+    const result = yield (0, GetUserProductsService_1.default)(validatedQuery);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -59,7 +66,7 @@ const getUserProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
 }));
 const getProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const validatedQuery = (0, pickValidFields_1.default)(req.query, Product_constant_1.ProductValidFields);
-    const result = yield (0, Product_service_1.getProductsService)(validatedQuery);
+    const result = yield (0, GetProductsService_1.default)(validatedQuery);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -70,7 +77,7 @@ const getProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
 }));
 const updateProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.params;
-    const result = yield (0, Product_service_1.updateProductService)(req, productId, req.body);
+    const result = yield (0, UpdateProductService_1.default)(req, productId, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -80,7 +87,7 @@ const updateProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 }));
 const updateProductImg = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.params;
-    const result = yield (0, Product_service_1.updateProductImgService)(req, productId);
+    const result = yield (0, UpdateProductImgService_1.default)(req, productId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -90,7 +97,7 @@ const updateProductImg = (0, catchAsync_1.default)((req, res) => __awaiter(void 
 }));
 const deleteProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { productId } = req.params;
-    const result = yield (0, Product_service_1.deleteProductService)(productId);
+    const result = yield (0, DeleteProductService_1.default)(productId);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,

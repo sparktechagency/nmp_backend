@@ -1,12 +1,18 @@
-import { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { getSingleProductService, updateProductService, deleteProductService, getProductsService, updateProductImgService, getUserProductsService, createProductService, getProductService } from './Product.service';
 import pickValidFields from '../../utils/pickValidFields';
 import { ProductValidFields, UserProductValidFields } from './Product.constant';
+import CreateProductService from './service/CreateProductService';
+import GetSingleProductService from './service/GetSingleProductService';
+import GetUserProductsService from './service/GetUserProductsService';
+import GetProductsService from './service/GetProductsService';
+import getProductService from './service/GetProductService';
+import UpdateProductService from './service/UpdateProductService';
+import UpdateProductImgService from './service/UpdateProductImgService';
+import DeleteProductService from './service/DeleteProductService';
 
 const createProduct = catchAsync(async (req, res) => {
-  const result = await createProductService(req, req.body);
+  const result = await CreateProductService(req, req.body);
 
  return sendResponse(res, {
     statusCode: 201,
@@ -19,7 +25,7 @@ const createProduct = catchAsync(async (req, res) => {
 
 const getSingleProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await getSingleProductService(productId);
+  const result = await GetSingleProductService(productId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -43,7 +49,7 @@ const getProduct = catchAsync(async (req, res) => {
 
 const getUserProducts = catchAsync(async (req, res) => {
   const validatedQuery = pickValidFields(req.query, UserProductValidFields);
-  const result = await getUserProductsService(validatedQuery);
+  const result = await GetUserProductsService(validatedQuery);
 
   sendResponse(res, {
     statusCode: 200,
@@ -53,9 +59,10 @@ const getUserProducts = catchAsync(async (req, res) => {
     data: result.data,
   });
 });
+
 const getProducts = catchAsync(async (req, res) => {
   const validatedQuery = pickValidFields(req.query, ProductValidFields);
-  const result = await getProductsService(validatedQuery);
+  const result = await GetProductsService(validatedQuery);
 
   sendResponse(res, {
     statusCode: 200,
@@ -68,7 +75,7 @@ const getProducts = catchAsync(async (req, res) => {
 
 const updateProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await updateProductService(req, productId, req.body);
+  const result = await UpdateProductService(req, productId, req.body);
 
   sendResponse(res, {
     statusCode: 200,
@@ -79,7 +86,7 @@ const updateProduct = catchAsync(async (req, res) => {
 });
 const updateProductImg = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await updateProductImgService(req, productId);
+  const result = await UpdateProductImgService(req, productId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -91,7 +98,7 @@ const updateProductImg = catchAsync(async (req, res) => {
 
 const deleteProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await deleteProductService(productId);
+  const result = await DeleteProductService(productId);
 
   sendResponse(res, {
     statusCode: 200,

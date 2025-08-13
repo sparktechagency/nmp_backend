@@ -1,0 +1,43 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const cloudinary_1 = __importDefault(require("../../../helper/cloudinary"));
+const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
+const Product_model_1 = __importDefault(require("../Product.model"));
+const UpdateProductImgService = (req, productId) => __awaiter(void 0, void 0, void 0, function* () {
+    let images = [];
+    if (req.files && req.files.length > 0) {
+        const files = req.files;
+        // for (const file of files) {
+        //   const path = `${req.protocol}://${req.get("host")}/uploads/${file?.filename}`;  //for local machine
+        //   images.push(path)
+        // }
+        images = yield Promise.all(files === null || files === void 0 ? void 0 : files.map((file) => __awaiter(void 0, void 0, void 0, function* () {
+            const result = yield cloudinary_1.default.uploader.upload(file.path, {
+                folder: 'MTK-Ecommerce',
+                // width: 300,
+                // crop: 'scale',
+            });
+            // Delete local file (non-blocking)
+            // fs.unlink(file.path);
+            return result.secure_url;
+        })));
+    }
+    else {
+        throw new ApiError_1.default(400, "Minimum one image required");
+    }
+    const result = yield Product_model_1.default.updateOne({ _id: productId }, { images }, { runValidators: true });
+    return result;
+});
+exports.default = UpdateProductImgService;
