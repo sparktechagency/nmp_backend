@@ -46,10 +46,18 @@ export const updateProfileValidationSchema = z.object({
         "fullName can only contain letters, spaces, apostrophes, hyphens, and dots.",
     }).optional(),
   phone: z
-    .string()
+    .string({
+      invalid_type_error: "phone must be string",
+      required_error: "phone is required",
+    })
+    .trim()
+    .min(1, "phone is required")
     // .regex(onlyInternationalFormate, {
     //   message: "Invalid phone number format",
     // }),
+    .regex(/^\+?\d+$/, {
+      message: "Phone number can contain only numbers and +",
+    }),
 });
 
 

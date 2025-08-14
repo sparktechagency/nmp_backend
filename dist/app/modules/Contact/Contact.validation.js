@@ -26,7 +26,10 @@ exports.createContactValidationSchema = zod_1.z.object({
         required_error: "phone is required",
     })
         .trim()
-        .min(1, "phone is required"),
+        .min(1, "phone is required")
+        .regex(/^\+?\d+$/, {
+        message: "Phone number can contain only numbers and +",
+    }),
     message: zod_1.z
         .string({
         invalid_type_error: "message must be string",
