@@ -11,6 +11,7 @@ import ContactRoutes from '../modules/Contact/Contact.route';
 import ReviewRoutes from '../modules/Review/review.route';
 import NewsletterRoutes from '../modules/Newsletter/Newsletter.route';
 import InformationRoutes from '../modules/Information/Information.route';
+import PolicyRoutes from '../modules/Policy/Policy.route';
 
 
 
@@ -65,6 +66,14 @@ const moduleRoutes = [
     {
         path: "/information",
         route: InformationRoutes
+    },
+    {
+        path: "/information",
+        route: InformationRoutes
+    },
+    {
+        path: "/policy",
+        route: PolicyRoutes
     }
 ]
 
