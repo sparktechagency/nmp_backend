@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateProductValidationSchema = void 0;
 const zod_1 = require("zod");
-const Category_validation_1 = require("../Category/Category.validation");
 const mongoose_1 = require("mongoose");
 exports.updateProductValidationSchema = zod_1.z.object({
     name: zod_1.z.string({
@@ -10,7 +9,10 @@ exports.updateProductValidationSchema = zod_1.z.object({
         required_error: "name is required",
     })
         .min(1, "name is required")
-        .regex(Category_validation_1.categoryRegex, "name only contain letters and valid symbols (' . - & , ( )) are allowed.")
+        // .regex(
+        //   categoryRegex,
+        //   "name only contain letters and valid symbols (' . - & , ( )) are allowed."
+        // )
         .trim().optional(),
     categoryId: zod_1.z
         .string({
