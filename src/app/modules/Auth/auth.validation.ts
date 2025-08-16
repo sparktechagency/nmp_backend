@@ -107,7 +107,16 @@ export const changePasswordSchema = z.object({
     .min(6, "New Password minimum 6 characters long")
     .max(60, "New Password maximum 60 characters long")
     .trim(),
-});
+})
+  .superRefine((data, ctx) => {
+    if (data.newPassword === data.currentPassword) {
+      ctx.addIssue({
+        path: ["newPassword"],
+        message: "New password must be different from the current password.",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  });
 
 export const changeStatusValidationSchema = z.object({
   status: z

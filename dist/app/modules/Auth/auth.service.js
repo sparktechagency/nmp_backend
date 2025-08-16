@@ -286,10 +286,7 @@ const changePasswordService = (loginUserId, payload) => __awaiter(void 0, void 0
     //checking if the password is not correct
     const isPasswordMatched = yield (0, checkPassword_1.default)(currentPassword, user === null || user === void 0 ? void 0 : user.password);
     if (!isPasswordMatched) {
-        throw new ApiError_1.default(400, 'Current Password is not correct');
-    }
-    if (currentPassword === newPassword) {
-        throw new ApiError_2.default(403, "New password must be different from the current password.");
+        throw new ApiError_1.default(400, 'Wrong Current Password');
     }
     //hash the newPassword
     const hashPass = yield (0, hashedPassword_1.default)(newPassword);

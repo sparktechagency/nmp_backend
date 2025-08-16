@@ -17,6 +17,8 @@ const review_route_1 = __importDefault(require("../modules/Review/review.route")
 const Newsletter_route_1 = __importDefault(require("../modules/Newsletter/Newsletter.route"));
 const Information_route_1 = __importDefault(require("../modules/Information/Information.route"));
 const Policy_route_1 = __importDefault(require("../modules/Policy/Policy.route"));
+const admin_route_1 = __importDefault(require("../modules/Admin/admin.route"));
+const Dashboard_route_1 = __importDefault(require("../modules/Dashboard/Dashboard.route"));
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -26,6 +28,10 @@ const moduleRoutes = [
     {
         path: '/user',
         route: user_route_1.UserRoutes
+    },
+    {
+        path: '/admin',
+        route: admin_route_1.default
     },
     {
         path: '/category',
@@ -68,12 +74,12 @@ const moduleRoutes = [
         route: Information_route_1.default
     },
     {
-        path: "/information",
-        route: Information_route_1.default
-    },
-    {
         path: "/policy",
         route: Policy_route_1.default
+    },
+    {
+        path: "/dashboard",
+        route: Dashboard_route_1.default
     }
 ];
 moduleRoutes.forEach((item, i) => router.use(item.path, item.route));

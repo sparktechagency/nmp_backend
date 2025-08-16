@@ -91,16 +91,6 @@ const verifySession = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-const getIncomeOverview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { year } = req.params;
-    const result = yield (0, Order_service_1.getIncomeOverviewService)(year);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: 'Income overview is retrieved successfully',
-        data: result,
-    });
-}));
 const OrderController = {
     createOrder,
     getSingleOrder,
@@ -109,6 +99,5 @@ const OrderController = {
     updateOrder,
     deleteOrder,
     verifySession,
-    getIncomeOverview
 };
 exports.default = OrderController;

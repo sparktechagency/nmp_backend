@@ -479,83 +479,7 @@ const verifySessionService = async (sessionId: string) => {
 };
 
 
-const getIncomeOverviewService = async (year: string) => {
-  if(!isValidYearFormat(year)){
-    throw new ApiError(400, "Invalid year, year should be in 'YYYY' format.")
-  }
 
-  const start = `${year}-01-01T00:00:00.000+00:00`;
-  const end = `${year}-12-31T00:00:00.000+00:00`;
-
-  const result = await OrderModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: new Date(start), $lte: new Date(end) },
-        paymentStatus: "paid"
-      }
-    },
-    {
-      $group: {
-        _id: {
-          year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" },
-        },
-        income: { $sum: "$totalPrice" },
-      },
-    },
-    {
-      $sort: {
-        "_id.year": 1,
-        "_id.month": 1,
-      },
-    },
-    {
-      $addFields: {
-        month: {
-          $arrayElemAt: [
-            [
-              "",
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
-            "$_id.month",
-          ],
-        },
-      },
-    },
-    {
-      $project: {
-        _id:0
-      }
-    }
-  ])
-
-  // Fill in missing months
-  const allMonths = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-  const filledData = allMonths.map((month) => {
-    const found = result?.find((item) => item.month === month);
-    return {
-      month,
-      income: found ? found.income : 0
-    };
-  });
- 
-  return filledData;
-}
 
 export {
   createOrderService,
@@ -565,5 +489,4 @@ export {
   updateOrderService,
   deleteOrderService,
   verifySessionService,
-  getIncomeOverviewService
 };

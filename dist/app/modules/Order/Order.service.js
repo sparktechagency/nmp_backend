@@ -56,7 +56,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIncomeOverviewService = exports.verifySessionService = exports.deleteOrderService = exports.updateOrderService = exports.getSingleOrderService = exports.getAllOrdersService = exports.getUserOrdersService = exports.createOrderService = void 0;
+exports.verifySessionService = exports.deleteOrderService = exports.updateOrderService = exports.getSingleOrderService = exports.getAllOrdersService = exports.getUserOrdersService = exports.createOrderService = void 0;
 const ApiError_1 = __importDefault(require("../../errors/ApiError"));
 const Order_constant_1 = require("./Order.constant");
 const Order_model_1 = __importDefault(require("./Order.model"));
@@ -67,7 +67,6 @@ const mongoose_1 = __importStar(require("mongoose"));
 const generateTransactionId_1 = __importDefault(require("../../utils/generateTransactionId"));
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = __importDefault(require("../../config"));
-const isValidateYearFormat_1 = __importDefault(require("../../utils/isValidateYearFormat"));
 const stripe = new stripe_1.default(config_1.default.stripe_secret_key);
 const createOrderService = (loginUserId, userEmail, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const carts = yield Cart_model_1.default.aggregate([
@@ -460,76 +459,3 @@ const verifySessionService = (sessionId) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.verifySessionService = verifySessionService;
-const getIncomeOverviewService = (year) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!(0, isValidateYearFormat_1.default)(year)) {
-        throw new ApiError_1.default(400, "Invalid year, year should be in 'YYYY' format.");
-    }
-    const start = `${year}-01-01T00:00:00.000+00:00`;
-    const end = `${year}-12-31T00:00:00.000+00:00`;
-    const result = yield Order_model_1.default.aggregate([
-        {
-            $match: {
-                createdAt: { $gte: new Date(start), $lte: new Date(end) },
-                paymentStatus: "paid"
-            }
-        },
-        {
-            $group: {
-                _id: {
-                    year: { $year: "$createdAt" },
-                    month: { $month: "$createdAt" },
-                },
-                income: { $sum: "$totalPrice" },
-            },
-        },
-        {
-            $sort: {
-                "_id.year": 1,
-                "_id.month": 1,
-            },
-        },
-        {
-            $addFields: {
-                month: {
-                    $arrayElemAt: [
-                        [
-                            "",
-                            "Jan",
-                            "Feb",
-                            "Mar",
-                            "Apr",
-                            "May",
-                            "Jun",
-                            "Jul",
-                            "Aug",
-                            "Sep",
-                            "Oct",
-                            "Nov",
-                            "Dec",
-                        ],
-                        "$_id.month",
-                    ],
-                },
-            },
-        },
-        {
-            $project: {
-                _id: 0
-            }
-        }
-    ]);
-    // Fill in missing months
-    const allMonths = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    const filledData = allMonths.map((month) => {
-        const found = result === null || result === void 0 ? void 0 : result.find((item) => item.month === month);
-        return {
-            month,
-            income: found ? found.income : 0
-        };
-    });
-    return filledData;
-});
-exports.getIncomeOverviewService = getIncomeOverviewService;

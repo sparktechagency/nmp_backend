@@ -41,7 +41,6 @@ router.get(
 );
 
 router.get('/verify-session', OrderController.verifySession);
-router.get('/get-income-overview/:year', AuthMiddleware("super_admin", "admin"), OrderController.getIncomeOverview);
 
 const OrderRoutes = router;
 export default OrderRoutes;

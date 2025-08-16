@@ -17,6 +17,5 @@ router.delete('/delete-order/:orderId', Order_controller_1.default.deleteOrder);
 router.get('/get-user-orders', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.user), Order_controller_1.default.getUserOrders);
 router.get('/get-all-orders', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Order_controller_1.default.getAllOrders);
 router.get('/verify-session', Order_controller_1.default.verifySession);
-router.get('/get-income-overview/:year', (0, AuthMiddleware_1.default)("super_admin", "admin"), Order_controller_1.default.getIncomeOverview);
 const OrderRoutes = router;
 exports.default = OrderRoutes;

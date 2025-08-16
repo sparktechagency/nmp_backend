@@ -2,7 +2,7 @@ import catchAsync from '../../utils/catchAsync';
 import pickValidFields from '../../utils/pickValidFields';
 import sendResponse from '../../utils/sendResponse';
 import { OrderValidFields, UserOrderValidFields } from './Order.constant';
-import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService, getIncomeOverviewService } from './Order.service';
+import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService } from './Order.service';
 
 const createOrder = catchAsync(async (req, res) => {
   const loginUserId = req.headers.id;
@@ -95,17 +95,6 @@ const verifySession = catchAsync(async (req, res) => {
 });
 
 
-const getIncomeOverview = catchAsync(async (req, res) => {
-  const { year } = req.params;
-  const result = await getIncomeOverviewService(year);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Income overview is retrieved successfully',
-    data: result,
-  });
-});
 
 const OrderController = {
   createOrder,
@@ -115,6 +104,5 @@ const OrderController = {
   updateOrder,
   deleteOrder,
   verifySession,
-  getIncomeOverview
 };
 export default OrderController;

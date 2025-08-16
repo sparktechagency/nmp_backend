@@ -12,6 +12,8 @@ import ReviewRoutes from '../modules/Review/review.route';
 import NewsletterRoutes from '../modules/Newsletter/Newsletter.route';
 import InformationRoutes from '../modules/Information/Information.route';
 import PolicyRoutes from '../modules/Policy/Policy.route';
+import AdminRoutes from '../modules/Admin/admin.route';
+import DashboardRoutes from '../modules/Dashboard/Dashboard.route';
 
 
 
@@ -26,6 +28,10 @@ const moduleRoutes = [
     {
         path: '/user',
         route: UserRoutes
+    },
+    {
+        path: '/admin',
+        route: AdminRoutes
     },
     {
         path: '/category',
@@ -68,12 +74,12 @@ const moduleRoutes = [
         route: InformationRoutes
     },
     {
-        path: "/information",
-        route: InformationRoutes
-    },
-    {
         path: "/policy",
         route: PolicyRoutes
+    },
+    {
+        path: "/dashboard",
+        route: DashboardRoutes
     }
 ]
 

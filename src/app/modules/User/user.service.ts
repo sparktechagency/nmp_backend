@@ -1,11 +1,11 @@
 import UserModel from "./user.model";
 import { IUser, TUserQuery } from "./user.interface";
-import AppError from "../../errors/ApiError";
+
 import { Request } from "express";
 import { makeFilterQuery, makeSearchQuery } from "../../helper/QueryBuilder";
 import { UserSearchFields } from "./user.constant";
 import ObjectId from "../../utils/ObjectId";
-import isValidYearFormat from "../../utils/isValidateYearFormat";
+import cloudinary from "../../helper/cloudinary";
 import ApiError from "../../errors/ApiError";
 
 
@@ -84,7 +84,7 @@ const getUsersService = async (query: TUserQuery) => {
 const getSingleUserService = async (userId: string) => {
   const user = await UserModel.findById(userId).select('-role -status -address');
   if(!user){
-    throw new AppError(404, "No User Found");
+    throw new ApiError(404, "No User Found");
   }
   return user;
 }
@@ -120,9 +120,9 @@ const getMeForSuperAdminService = async (userId: string) => {
 
 
 const getMyProfileService = async (userId: string) => {
-  const user = await UserModel.findById(userId).select("fullName email phone profile_img -_id");
+  const user = await UserModel.findById(userId).select("fullName email phone profile_img");
   if(!user){
-    throw new AppError(404, "No User Found");
+    throw new ApiError(404, "No User Found");
   }
   return user;
 }
@@ -141,15 +141,21 @@ const editMyProfileService = async (loginUserId: string, payload: Partial<IUser>
 const updateProfileImgService = async (req:Request, loginUserId: string) => {
 
   if(!req.file){
-    throw new AppError(400, "image is required");
+    throw new ApiError(400, "image is required");
   }
 
   //uploaded-image
   //const image = await uploadImage(req);
+  const cloudinaryRes = await cloudinary.uploader.upload(req?.file?.path, {
+    folder: 'NMP-Ecommerce',
+    // width: 300,
+    // crop: 'scale',
+  });
+
   
   const result = await UserModel.updateOne(
     { _id: loginUserId },
-    { profileImg : "image" }
+    { profile_img : cloudinaryRes?.secure_url }
   )
 
   return result;
@@ -157,83 +163,6 @@ const updateProfileImgService = async (req:Request, loginUserId: string) => {
 };
 
 
-const getUserOverviewService = async (year: string) => {
-  if(!isValidYearFormat(year)){
-    throw new ApiError(400, "Invalid year, year should be in 'YYYY' format.")
-  }
-
-  const start = `${year}-01-01T00:00:00.000+00:00`;
-  const end = `${year}-12-31T00:00:00.000+00:00`;
-
-  const result = await UserModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: new Date(start), $lte: new Date(end) },
-        role: "user"
-      }
-    },
-    {
-      $group: {
-        _id: {
-          year: { $year: "$createdAt" },
-          month: { $month: "$createdAt" },
-        },
-        users: { $sum: 1 },
-      },
-    },
-    {
-      $sort: {
-        "_id.year": 1,
-        "_id.month": 1,
-      },
-    },
-    {
-      $addFields: {
-        month: {
-          $arrayElemAt: [
-            [
-              "",
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
-            "$_id.month",
-          ],
-        },
-      },
-    },
-    {
-      $project: {
-        _id:0
-      }
-    }
-  ])
-
-  //Fill in missing months
-  const allMonths = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
-
-  const filledData = allMonths.map((month) => {
-    const found = result?.find((item) => item.month === month);
-    return {
-      month,
-      users: found ? found.users : 0
-    };
-  });
- 
-  return filledData;
-}
 
 
 export {
@@ -243,5 +172,4 @@ export {
   getMyProfileService,
   editMyProfileService,
   updateProfileImgService,
-  getUserOverviewService,
 };

@@ -33,7 +33,7 @@ router.get(
 
 
 router.patch(
-  "/edit-my-profile",
+  "/update-my-profile",
    AuthMiddleware(UserRole.super_admin, UserRole.user, UserRole.user, UserRole.admin),
   upload.single('file'),
   validationMiddleware(updateProfileValidationSchema),
@@ -47,7 +47,6 @@ router.patch(
   UserController.updateProfileImg
 );
 
-router.get('/get-user-overview/:year', AuthMiddleware("super_admin", "admin"), UserController.getUserOverview);
 
 
 export const UserRoutes = router;

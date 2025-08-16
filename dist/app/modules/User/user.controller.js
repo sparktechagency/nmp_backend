@@ -78,23 +78,12 @@ const updateProfileImg = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
-const getUserOverview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { year } = req.params;
-    const result = yield (0, user_service_1.getUserOverviewService)(year);
-    (0, sendResponse_1.default)(res, {
-        statusCode: 200,
-        success: true,
-        message: 'User overview is retrieved successfully',
-        data: result,
-    });
-}));
 const UserController = {
     getUsers,
     getSingleUser,
     getMyProfile,
     getMeForSuperAdmin,
     editMyProfile,
-    updateProfileImg,
-    getUserOverview,
+    updateProfileImg
 };
 exports.default = UserController;
