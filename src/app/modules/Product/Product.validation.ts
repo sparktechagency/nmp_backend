@@ -8,10 +8,10 @@ export const updateProductValidationSchema = z.object({
     required_error: "name is required",
   })
     .min(1, "name is required")
-    .regex(
-      categoryRegex,
-      "name only contain letters and valid symbols (' . - & , ( )) are allowed."
-    )
+    // .regex(
+    //   categoryRegex,
+    //   "name only contain letters and valid symbols (' . - & , ( )) are allowed."
+    // )
     .trim().optional(),
   categoryId: z
     .string({
