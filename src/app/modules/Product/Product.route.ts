@@ -50,6 +50,12 @@ router.get(
   '/get-user-products',
   ProductController.getUserProducts,
 );
+
+router.get(
+  '/get-best-seller-products',
+  ProductController.getBestSellerProducts
+);
+
 router.get(
   '/get-products',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),

@@ -23,4 +23,9 @@ export const ProductValidFields: string[] = [
   "sortOrder",
   "status",
   "stockStatus"
+];  
+
+export const BestSellerValidFields: string[] = [
+  "page",
+  "limit"
 ];    

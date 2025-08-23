@@ -12,18 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = require("mongoose");
-const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const Product_model_1 = __importDefault(require("../Product.model"));
-const ObjectId_1 = __importDefault(require("../../../utils/ObjectId"));
-const getProductService = (productId) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!mongoose_1.Types.ObjectId.isValid(productId)) {
-        throw new ApiError_1.default(400, "productId must be a valid ObjectId");
-    }
-    const product = yield Product_model_1.default.aggregate([
-        {
-            $match: { _id: new ObjectId_1.default(productId) }
-        },
+const GetBestSellerProductsService = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const { page = 1, limit = 10, } = query;
+    // 2. Set up pagination
+    const skip = (Number(page) - 1) * Number(limit);
+    const result = yield Product_model_1.default.aggregate([
+        { $sort: { total_sold: -1 } },
+        { $limit: 20 },
         {
             $lookup: {
                 from: "categories",
@@ -60,42 +57,55 @@ const getProductService = (productId) => __awaiter(void 0, void 0, void 0, funct
         {
             $lookup: {
                 from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
+                let: { productId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$productId", "$$productId"] } } },
+                    { $count: "count" }
+                ],
+                as: "reviewCount"
+            }
         },
         {
             $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
+                totalReview: { $ifNull: [{ $arrayElemAt: ["$reviewCount.count", 0] }, 0] }
+            }
         },
         {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: "$categoryId",
                 category: "$category.name",
-                brandId: "$brandId",
                 brand: "$brand.name",
-                flavorId: "$flavorId",
                 flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                total_sold: "$total_sold",
                 image: "$image",
-                description: "$description",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
         },
+        { $skip: skip },
+        { $limit: Number(limit) },
     ]);
-    if (product.length === 0) {
-        throw new ApiError_1.default(404, 'Product Not Found');
-    }
-    return product[0];
+    // total count
+    const totalCountResult = yield Product_model_1.default.aggregate([
+        { $sort: { total_sold: -1 } },
+        { $limit: 20 },
+        { $count: "totalCount" }
+    ]);
+    const totalCount = ((_a = totalCountResult[0]) === null || _a === void 0 ? void 0 : _a.totalCount) || 0;
+    const totalPages = Math.ceil(totalCount / Number(limit));
+    return {
+        meta: {
+            page: Number(page),
+            limit: Number(limit),
+            totalPages,
+            total: totalCount,
+        },
+        data: result,
+    };
 });
-exports.default = getProductService;
+exports.default = GetBestSellerProductsService;

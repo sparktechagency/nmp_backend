@@ -9,7 +9,7 @@ import mongoose, { Types } from "mongoose";
 import generateTransactionId from '../../utils/generateTransactionId';
 import Stripe from 'stripe';
 import config from '../../config';
-import isValidYearFormat from '../../utils/isValidateYearFormat';
+import ProductModel from '../Product/Product.model';
 
 const stripe = new Stripe(config.stripe_secret_key as string);
 
@@ -73,7 +73,19 @@ const createOrderService = async (
   
     try {
       session.startTransaction();
-  
+
+      // update product sales in bulk
+      //bulkWrite send one request to MongoDB:
+      await ProductModel.bulkWrite(
+        cartProducts.map(item => ({
+          updateOne: {
+            filter: { _id: item.productId },
+            update: { $inc: { total_sold: item.quantity } },
+          }
+        })),
+        { session }
+      );
+
       //delete from cart list
       await CartModel.deleteMany(
         { userId: new ObjectId(loginUserId) },

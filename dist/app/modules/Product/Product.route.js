@@ -18,6 +18,7 @@ router.patch('/update-product/:productId', (0, AuthMiddleware_1.default)(user_co
 router.patch('/update-product-img/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), upload_1.default.single("image"), Product_controller_1.default.updateProductImg);
 router.delete('/delete-product/:productId', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Product_controller_1.default.deleteProduct);
 router.get('/get-user-products', Product_controller_1.default.getUserProducts);
+router.get('/get-best-seller-products', Product_controller_1.default.getBestSellerProducts);
 router.get('/get-products', (0, AuthMiddleware_1.default)(user_constant_1.UserRole.admin, user_constant_1.UserRole.super_admin), Product_controller_1.default.getProducts);
 const ProductRoutes = router;
 exports.default = ProductRoutes;

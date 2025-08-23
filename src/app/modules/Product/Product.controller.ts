@@ -1,7 +1,7 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import pickValidFields from '../../utils/pickValidFields';
-import { ProductValidFields, UserProductValidFields } from './Product.constant';
+import { BestSellerValidFields, ProductValidFields, UserProductValidFields } from './Product.constant';
 import CreateProductService from './service/CreateProductService';
 import GetSingleProductService from './service/GetSingleProductService';
 import GetUserProductsService from './service/GetUserProductsService';
@@ -10,6 +10,7 @@ import getProductService from './service/GetProductService';
 import UpdateProductService from './service/UpdateProductService';
 import UpdateProductImgService from './service/UpdateProductImgService';
 import DeleteProductService from './service/DeleteProductService';
+import GetBestSellerProductsService from './service/GetBestSellerProductsService';
 
 const createProduct = catchAsync(async (req, res) => {
   const result = await CreateProductService(req, req.body);
@@ -50,6 +51,19 @@ const getProduct = catchAsync(async (req, res) => {
 const getUserProducts = catchAsync(async (req, res) => {
   const validatedQuery = pickValidFields(req.query, UserProductValidFields);
   const result = await GetUserProductsService(validatedQuery);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Products are retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const getBestSellerProducts = catchAsync(async (req, res) => {
+  const validatedQuery = pickValidFields(req.query, BestSellerValidFields);
+  const result = await GetBestSellerProductsService(validatedQuery);
 
   sendResponse(res, {
     statusCode: 200,
@@ -113,6 +127,7 @@ const ProductController = {
   getSingleProduct,
   getProduct,
   getUserProducts,
+  getBestSellerProducts,
   getProducts,
   updateProduct,
   updateProductImg,

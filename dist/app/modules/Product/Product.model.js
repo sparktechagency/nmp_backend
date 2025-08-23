@@ -59,6 +59,10 @@ const productSchema = new mongoose_1.Schema({
         required: true,
         trim: true
     },
+    total_sold: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: String,
         enum: ['visible', 'hidden'],

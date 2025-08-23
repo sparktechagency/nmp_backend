@@ -67,6 +67,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const generateTransactionId_1 = __importDefault(require("../../utils/generateTransactionId"));
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = __importDefault(require("../../config"));
+const Product_model_1 = __importDefault(require("../Product/Product.model"));
 const stripe = new stripe_1.default(config_1.default.stripe_secret_key);
 const createOrderService = (loginUserId, userEmail, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const carts = yield Cart_model_1.default.aggregate([
@@ -108,6 +109,14 @@ const createOrderService = (loginUserId, userEmail, payload) => __awaiter(void 0
     const session = yield mongoose_1.default.startSession();
     try {
         session.startTransaction();
+        // update product sales in bulk
+        //bulkWrite send one request to MongoDB:
+        yield Product_model_1.default.bulkWrite(cartProducts.map(item => ({
+            updateOne: {
+                filter: { _id: item.productId },
+                update: { $inc: { total_sold: item.quantity } },
+            }
+        })), { session });
         //delete from cart list
         yield Cart_model_1.default.deleteMany({ userId: new ObjectId_1.default(loginUserId) }, { session });
         const order = yield Order_model_1.default.create([

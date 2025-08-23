@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductValidFields = exports.UserProductValidFields = exports.ProductSearchableFields = void 0;
+exports.BestSellerValidFields = exports.ProductValidFields = exports.UserProductValidFields = exports.ProductSearchableFields = void 0;
 exports.ProductSearchableFields = ['name', 'category', 'brand', 'flavor'];
 exports.UserProductValidFields = [
     "searchTerm",
@@ -24,4 +24,8 @@ exports.ProductValidFields = [
     "sortOrder",
     "status",
     "stockStatus"
+];
+exports.BestSellerValidFields = [
+    "page",
+    "limit"
 ];

@@ -1,18 +1,18 @@
-import { Types } from "mongoose";
-import ApiError from "../../../errors/ApiError";
+import { TProductQuery } from "../Product.interface";
 import ProductModel from "../Product.model";
-import ObjectId from "../../../utils/ObjectId";
 
+const GetBestSellerProductsService = async (query: TProductQuery) => {
+    const {
+        page = 1,
+        limit = 10,
+    } = query;
 
-const getProductService = async (productId: string) => {
-    if (!Types.ObjectId.isValid(productId)) {
-        throw new ApiError(400, "productId must be a valid ObjectId")
-    }
+    // 2. Set up pagination
+    const skip = (Number(page) - 1) * Number(limit);
 
-    const product = await ProductModel.aggregate([
-        {
-            $match: { _id: new ObjectId(productId) }
-        },
+   const result = await ProductModel.aggregate([
+       { $sort: { total_sold: -1 } },
+       { $limit: 20},
         {
             $lookup: {
                 from: "categories",
@@ -49,46 +49,61 @@ const getProductService = async (productId: string) => {
         {
             $lookup: {
                 from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
+                let: { productId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$productId", "$$productId"] } } },
+                    { $count: "count" }
+                ],
+                as: "reviewCount"
+            }
         },
         {
             $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
+                totalReview: { $ifNull: [{ $arrayElemAt: ["$reviewCount.count", 0] }, 0] }
+            }
         },
         {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: "$categoryId",
                 category: "$category.name",
-                brandId: "$brandId",
                 brand: "$brand.name",
-                flavorId: "$flavorId",
                 flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
-                total_sold: "$total_sold",
                 image: "$image",
-                description: "$description",
                 status: "$status",
                 stockStatus: "$stockStatus"
             },
         },
+       { $skip: skip },
+       { $limit: Number(limit)},
     ]);
 
-    if (product.length === 0) {
-        throw new ApiError(404, 'Product Not Found');
-    }
 
-    return product[0];
+     // total count
+    const totalCountResult = await ProductModel.aggregate([
+        { $sort: { total_sold: -1 } },
+        { $limit: 20 },
+        { $count: "totalCount" }
+    ]);
 
-};
+    const totalCount = totalCountResult[0]?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / Number(limit));
 
-export default getProductService;
+    return {
+        meta: {
+            page: Number(page),
+            limit: Number(limit),
+            totalPages,
+            total: totalCount,
+        },
+        data: result,
+    };
+
+}
+
+export default GetBestSellerProductsService
