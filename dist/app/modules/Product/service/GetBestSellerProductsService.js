@@ -20,7 +20,6 @@ const GetBestSellerProductsService = (query) => __awaiter(void 0, void 0, void 0
     const skip = (Number(page) - 1) * Number(limit);
     const result = yield Product_model_1.default.aggregate([
         { $sort: { total_sold: -1 } },
-        { $limit: 20 },
         {
             $lookup: {
                 from: "categories",

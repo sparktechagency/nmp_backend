@@ -101,6 +101,7 @@ const GetProductsService = (query) => __awaiter(void 0, void 0, void 0, function
                 flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
+                isFeatured: "$isFeatured",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",

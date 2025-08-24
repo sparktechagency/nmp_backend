@@ -10,9 +10,8 @@ const GetBestSellerProductsService = async (query: TProductQuery) => {
     // 2. Set up pagination
     const skip = (Number(page) - 1) * Number(limit);
 
-   const result = await ProductModel.aggregate([
-       { $sort: { total_sold: -1 } },
-       { $limit: 20},
+    const result = await ProductModel.aggregate([
+        { $sort: { total_sold: -1 } },
         {
             $lookup: {
                 from: "categories",
@@ -79,8 +78,8 @@ const GetBestSellerProductsService = async (query: TProductQuery) => {
                 stockStatus: "$stockStatus"
             },
         },
-       { $skip: skip },
-       { $limit: Number(limit)},
+        { $skip: skip },
+        { $limit: Number(limit) },
     ]);
 
 

@@ -85,4 +85,7 @@ exports.updateProductValidationSchema = zod_1.z.object({
         .refine((val) => ['in_stock', 'stock_out', 'up_coming'].includes(val), {
         message: "Stock Status must be one of: in_stock', 'stock_out', 'up_coming'",
     }).optional(),
+    isFeatured: zod_1.z.boolean({
+        invalid_type_error: "isFeatured value must be boolean"
+    }).optional()
 });

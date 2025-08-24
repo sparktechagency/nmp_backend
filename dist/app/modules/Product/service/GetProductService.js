@@ -82,6 +82,7 @@ const getProductService = (productId) => __awaiter(void 0, void 0, void 0, funct
                 flavor: "$flavor.name",
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
+                isFeatured: "$isFeatured",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",

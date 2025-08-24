@@ -63,6 +63,10 @@ const productSchema = new mongoose_1.Schema({
         type: Number,
         default: 0
     },
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
     status: {
         type: String,
         enum: ['visible', 'hidden'],

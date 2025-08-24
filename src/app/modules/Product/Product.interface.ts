@@ -13,6 +13,7 @@ export interface IProduct {
   discount: string;
   ratings: number;
   total_sold: number;
+  isFeatured: boolean;
   status: "visible" | "hidden";
   stockStatus: TStockStatus;
   image: string;

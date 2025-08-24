@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { categoryRegex } from '../Category/Category.validation';
 import { Types } from "mongoose";
 
 export const updateProductValidationSchema = z.object({
@@ -95,4 +94,7 @@ export const updateProductValidationSchema = z.object({
     .refine((val) => ['in_stock', 'stock_out', 'up_coming'].includes(val), {
       message: "Stock Status must be one of: in_stock', 'stock_out', 'up_coming'",
     }).optional(),
+  isFeatured: z.boolean({
+    invalid_type_error: "isFeatured value must be boolean"
+  }).optional()
 });
