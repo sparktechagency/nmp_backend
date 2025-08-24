@@ -55,6 +55,10 @@ router.get(
   '/get-best-seller-products',
   ProductController.getBestSellerProducts
 );
+router.get(
+  '/get-feature-products',
+  ProductController.getFeatureProducts
+);
 
 router.get(
   '/get-products',

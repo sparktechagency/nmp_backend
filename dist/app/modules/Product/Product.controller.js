@@ -25,6 +25,7 @@ const UpdateProductService_1 = __importDefault(require("./service/UpdateProductS
 const UpdateProductImgService_1 = __importDefault(require("./service/UpdateProductImgService"));
 const DeleteProductService_1 = __importDefault(require("./service/DeleteProductService"));
 const GetBestSellerProductsService_1 = __importDefault(require("./service/GetBestSellerProductsService"));
+const GetFeatureProductsService_1 = __importDefault(require("./service/GetFeatureProductsService"));
 const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield (0, CreateProductService_1.default)(req, req.body);
     return (0, sendResponse_1.default)(res, {
@@ -68,6 +69,17 @@ const getUserProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
 const getBestSellerProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const validatedQuery = (0, pickValidFields_1.default)(req.query, Product_constant_1.BestSellerValidFields);
     const result = yield (0, GetBestSellerProductsService_1.default)(validatedQuery);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Products are retrieved successfully',
+        meta: result.meta,
+        data: result.data,
+    });
+}));
+const getFeatureProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const validatedQuery = (0, pickValidFields_1.default)(req.query, Product_constant_1.BestSellerValidFields);
+    const result = yield (0, GetFeatureProductsService_1.default)(validatedQuery);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -123,6 +135,7 @@ const ProductController = {
     getProduct,
     getUserProducts,
     getBestSellerProducts,
+    getFeatureProducts,
     getProducts,
     updateProduct,
     updateProductImg,
