@@ -68,6 +68,7 @@ const GetSingleProductService = async (productId: string) => {
         flavor: "$flavor.name",
         currentPrice: "$currentPrice",
         originalPrice: "$originalPrice",
+        isFeatured: "$isFeatured",
         discount: "$discount",
         ratings: "$ratings",
         totalReview: "$totalReview",
