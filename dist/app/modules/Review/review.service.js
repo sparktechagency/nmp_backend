@@ -210,8 +210,6 @@ const getUserProductReviewService = (productId, query) => __awaiter(void 0, void
             $project: {
                 _id: 0,
                 fullName: "$user.fullName",
-                email: "$user.email",
-                phone: "$user.phone",
                 star: "$star",
                 comment: "$comment",
                 createdAt: "$createdAt",

@@ -204,8 +204,6 @@ const getUserProductReviewService = async (productId: string, query: TReviewQuer
       $project: {
         _id:0,
         fullName: "$user.fullName",
-        email: "$user.email",
-        phone: "$user.phone",
         star: "$star",
         comment: "$comment",
         createdAt: "$createdAt",
