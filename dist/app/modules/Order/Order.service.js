@@ -140,7 +140,7 @@ const createOrderService = (loginUserId, userEmail, payload) => __awaiter(void 0
             },
             customer_email: userEmail,
             client_reference_id: (order[0]._id).toString(),
-            success_url: `${config_1.default.frontend_url}/success?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${config_1.default.frontend_url}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${config_1.default.frontend_url}/cancel`,
         });
         //transaction success

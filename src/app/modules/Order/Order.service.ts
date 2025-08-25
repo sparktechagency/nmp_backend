@@ -114,7 +114,7 @@ const createOrderService = async (
           },
           customer_email: userEmail,
           client_reference_id: (order[0]._id).toString(),
-          success_url: `${config.frontend_url}/success?session_id={CHECKOUT_SESSION_ID}`,
+          success_url: `${config.frontend_url}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${config.frontend_url}/cancel`,
         });
   
