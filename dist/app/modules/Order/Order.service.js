@@ -171,8 +171,6 @@ const getUserOrdersService = (loginUserId, query) => __awaiter(void 0, void 0, v
                 userId: new ObjectId_1.default(loginUserId)
             }
         },
-        { $skip: skip },
-        { $limit: Number(limit) },
         { $unwind: "$products" },
         {
             $lookup: {
@@ -250,6 +248,8 @@ const getUserOrdersService = (loginUserId, query) => __awaiter(void 0, void 0, v
             }
         },
         { $sort: { [sortBy]: sortDirection } },
+        { $skip: skip },
+        { $limit: Number(limit) },
     ]);
     // total count
     const totalCountResult = yield Order_model_1.default.aggregate([

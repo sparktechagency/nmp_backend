@@ -155,8 +155,6 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
         userId: new ObjectId(loginUserId)
       }
     },
-    { $skip: skip },
-    { $limit: Number(limit) },
     { $unwind: "$products" },
     {
       $lookup: {
@@ -233,7 +231,9 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
         }
       }
     },
-    { $sort: { [sortBy]: sortDirection } },
+    { $sort: { [sortBy]: sortDirection } }, 
+    { $skip: skip }, 
+    { $limit: Number(limit) }, 
   ]);
 
   // total count
