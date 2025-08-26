@@ -138,6 +138,7 @@ const deleteReviewService = async (loginUserId: string, reviewId: string) => {
 
 
 const getUserProductReviewService = async (productId: string, query: TReviewQuery) => {
+  
   if (!Types.ObjectId.isValid(productId)) {
     throw new ApiError(400, "productId must be a valid ObjectId")
   }
@@ -204,6 +205,7 @@ const getUserProductReviewService = async (productId: string, query: TReviewQuer
       $project: {
         _id:0,
         fullName: "$user.fullName",
+        profile_img: "$user.profile_img",
         star: "$star",
         comment: "$comment",
         createdAt: "$createdAt",

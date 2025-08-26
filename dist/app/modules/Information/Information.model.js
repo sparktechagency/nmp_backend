@@ -22,7 +22,7 @@ const informationSchema = new mongoose_1.Schema({
         required: true,
         trim: true
     },
-    telegram: {
+    facebook: {
         type: String,
         required: true,
         trim: true

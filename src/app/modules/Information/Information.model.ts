@@ -22,7 +22,7 @@ const informationSchema = new Schema<IInformation>({
     required: true,
     trim: true
   },
-  telegram: { 
+  facebook: { 
     type: String,
     required: true,
     trim: true

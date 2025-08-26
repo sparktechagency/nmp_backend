@@ -5,7 +5,7 @@ export interface IInformation {
   phone: string;
   address: string;
   instagram: string;
-  telegram: string;
+  facebook: string;
 };
 
 export type TContactQuery = {

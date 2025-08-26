@@ -33,7 +33,7 @@ const getInformationService = () => __awaiter(void 0, void 0, void 0, function* 
             "phone": "",
             "address": "",
             "instagram": "",
-            "telegram": ""
+            "facebook": ""
         };
     }
     return result;

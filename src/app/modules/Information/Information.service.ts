@@ -29,7 +29,7 @@ const getInformationService = async () => {
       "phone": "",
       "address": "",
       "instagram": "",
-      "telegram": ""
+      "facebook": ""
     }
   }
   return result;
