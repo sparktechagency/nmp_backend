@@ -103,7 +103,7 @@ const getProducts = catchAsync(async (req, res) => {
 
 const updateProduct = catchAsync(async (req, res) => {
   const { productId } = req.params;
-  const result = await UpdateProductService(req, productId, req.body);
+  const result = await UpdateProductService(productId, req.body);
 
   sendResponse(res, {
     statusCode: 200,

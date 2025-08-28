@@ -3,13 +3,12 @@ import { IProduct } from "../Product.interface";
 import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
 import slugify from "slugify";
-import { Request } from "express";
 import CategoryModel from "../../Category/Category.model";
 import BrandModel from "../../Brand/Brand.model";
 import FlavorModel from "../../Flavor/Flavor.model";
 
 
-const UpdateProductService = async (req:Request, productId: string, payload: Partial<IProduct>) => {
+const UpdateProductService = async (productId: string, payload: Partial<IProduct>) => {
   if (!Types.ObjectId.isValid(productId)) {
     throw new ApiError(400, "productId must be a valid ObjectId")
   }
