@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc --w",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
+    "dev-start": "ts-node src/server.ts",
     "start": "nodemon ./dist/server.js",
     "create:module": "node create-module.mjs"
   },
