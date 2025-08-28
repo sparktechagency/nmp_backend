@@ -54,7 +54,7 @@ const getUsersService = async (query: TUserQuery) => {
         fullName: 1,
         email: 1,
         phone: 1,
-        gender:1,
+        profile_img:1,
         status: 1
       },
     },
