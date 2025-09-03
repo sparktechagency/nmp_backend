@@ -102,6 +102,7 @@ const getCategoriesService = async (query: TCategoryQuery) => {
       $project: {
         _id: 1,
         name: 1,
+        typeId: 1,
         type: "$type.name",
         status: "$status",
       },
@@ -156,9 +157,11 @@ const updateCategoryService = async (categoryId: string, payload: Partial<ICateg
   }
 
   //check type
-  const existingType = await TypeModel.findById(typeId);
-  if (!existingType) {
-    throw new ApiError(404, 'This typeId not found');
+  if (typeId) {
+    const existingType = await TypeModel.findById(typeId);
+    if (!existingType) {
+      throw new ApiError(404, 'This typeId not found');
+    }
   }
 
   if(name){

@@ -46,8 +46,7 @@ const getCategoryDropDown = catchAsync(async (req, res) => {
 
 const updateCategory = catchAsync(async (req, res) => {
   const { categoryId } = req.params;
-  const { name } = req.body;
-  const result = await updateCategoryService(categoryId, name);
+  const result = await updateCategoryService(categoryId, req.body);
 
   sendResponse(res, {
     statusCode: 200,
