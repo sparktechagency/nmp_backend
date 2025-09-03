@@ -1,11 +1,12 @@
 import catchAsync from "../../utils/catchAsync";
+import pickValidFields from "../../utils/pickValidFields";
 import sendResponse from "../../utils/sendResponse";
+import { CategoryValidFields } from "./Category.constant";
 import { createCategoryService, deleteCategoryService, getCategoriesService, getCategoryDropDownService, updateCategoryService } from "./Category.service";
 
 
 const createCategory = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const result = await createCategoryService(name);
+  const result = await createCategoryService(req.body);
 
   sendResponse(res, {
     statusCode: 201,
@@ -17,7 +18,8 @@ const createCategory = catchAsync(async (req, res) => {
 
 
 const getCategories = catchAsync(async (req, res) => {
-  const result = await getCategoriesService(req.query);
+  const validatedQuery = pickValidFields(req.query, CategoryValidFields);
+  const result = await getCategoriesService(validatedQuery);
 
   sendResponse(res, {
     statusCode: 200,
@@ -30,7 +32,8 @@ const getCategories = catchAsync(async (req, res) => {
 
 
 const getCategoryDropDown = catchAsync(async (req, res) => {
-  const result = await getCategoryDropDownService();
+  const { typeId } = req.params; 
+  const result = await getCategoryDropDownService(typeId);
 
   sendResponse(res, {
     statusCode: 200,

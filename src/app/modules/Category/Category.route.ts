@@ -3,14 +3,14 @@ import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 import validationMiddleware from '../../middlewares/validationMiddleware';
 import CategoryController from './Category.controller';
-import { categoryValidationSchema } from './Category.validation';
+import { createCategoryValidationSchema, updateCategoryValidationSchema } from './Category.validation';
 
 const router = express.Router();
 
 router.post(
   "/create-category",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(categoryValidationSchema),
+  validationMiddleware(createCategoryValidationSchema),
   CategoryController.createCategory
 );
 router.get(
@@ -19,13 +19,13 @@ router.get(
   CategoryController.getCategories,
 );
 router.get(
-  "/get-category-drop-down",
+  "/get-category-drop-down/:typeId",
   CategoryController.getCategoryDropDown
 );
 router.patch(
   "/update-category/:categoryId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(categoryValidationSchema),
+  validationMiddleware(updateCategoryValidationSchema),
   CategoryController.updateCategory
 );
 router.delete(

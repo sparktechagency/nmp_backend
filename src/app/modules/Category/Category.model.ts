@@ -9,12 +9,22 @@ const categorySchema = new Schema<ICategory>({
         trim: true,
         unique: true
     },
+    typeId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "Type"
+    },
     slug: {
         type: String,
         required: true,
         trim: true,
         unique: true
-    }
+    },
+    status: {
+        type: String,
+        enum: ['visible', 'hidden'],
+        default: "visible"
+    },
 }, {
     timestamps: true,
     versionKey: false

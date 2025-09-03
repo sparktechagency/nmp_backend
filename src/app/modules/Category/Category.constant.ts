@@ -5,6 +5,7 @@ export const CategoryValidFields: string[] = [
   "page",
   "limit",
   "sortBy",
-  "sortOrder"
+  "sortOrder",
+  "typeId"
 ];
     
