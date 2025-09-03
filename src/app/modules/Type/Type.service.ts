@@ -1,34 +1,34 @@
 import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
-import CategoryModel from "./Type.model";
+import TypeModel from "./Type.model";
 import { Types } from "mongoose";
-import { TCategoryQuery } from "./Type.interface";
-import { CategorySearchableFields } from "./Type.constant";
+import { TTypeQuery } from "./Type.interface";
+import { TypeSearchableFields } from "./Type.constant";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
 import ProductModel from "../Product/Product.model";
 
 
 
-const createCategoryService = async (name: string) => {
+const createTypeService = async (name: string) => {
     const slug = slugify(name).toLowerCase();
     
-    //check category is already existed
-    const category = await CategoryModel.findOne({
+    //check type is already existed
+    const type = await TypeModel.findOne({
         slug
     });
 
-    if(category){
-        throw new ApiError(409, 'This category is already existed');
+    if(type){
+        throw new ApiError(409, 'This type is already existed');
     }
 
-    const result = await CategoryModel.create({
+    const result = await TypeModel.create({
          name,
          slug
     })
     return result;
 }
 
-const getCategoriesService = async (query: TCategoryQuery) => {
+const getTypesService = async (query: TTypeQuery) => {
   const {
     searchTerm, 
     page = 1, 
@@ -47,11 +47,11 @@ const getCategoriesService = async (query: TCategoryQuery) => {
   //4. setup searching
   let searchQuery = {};
   if (searchTerm) {
-    searchQuery = makeSearchQuery(searchTerm, CategorySearchableFields);
+    searchQuery = makeSearchQuery(searchTerm, TypeSearchableFields);
   }
 
  
-  const result = await CategoryModel.aggregate([
+  const result = await TypeModel.aggregate([
     {
       $match: {
         ...searchQuery, // Apply search query
@@ -69,7 +69,7 @@ const getCategoriesService = async (query: TCategoryQuery) => {
   ]);
 
   // total count
-  const totalCountResult = await CategoryModel.aggregate([
+  const totalCountResult = await TypeModel.aggregate([
     {
       $match: {
         ...searchQuery
@@ -92,33 +92,33 @@ return {
 };
 };
 
-const getCategoryDropDownService = async () => {
-    const result = await CategoryModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
+const getTypeDropDownService = async () => {
+    const result = await TypeModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
     return result;
 }
 
 
-const updateCategoryService = async (categoryId: string, name: string) => {
-    if (!Types.ObjectId.isValid(categoryId)) {
-        throw new ApiError(400, "categoryId must be a valid ObjectId")
+const updateTypeService = async (typeId: string, name: string) => {
+    if (!Types.ObjectId.isValid(typeId)) {
+        throw new ApiError(400, "typeId must be a valid ObjectId")
     }
 
-    const existingCategory = await CategoryModel.findById(categoryId);
-    if (!existingCategory) {
-        throw new ApiError(404, 'This categoryId not found');
+    const existingType = await TypeModel.findById(typeId);
+    if (!existingType) {
+        throw new ApiError(404, 'This typeId not found');
     }
 
     const slug = slugify(name).toLowerCase();
-    const categoryExist = await CategoryModel.findOne({
-        _id: { $ne: categoryId },
+    const typeExist = await TypeModel.findOne({
+        _id: { $ne: typeId },
         slug
     })
-    if (categoryExist) {
-        throw new ApiError(409, 'Sorry! This category is already existed');
+    if (typeExist) {
+        throw new ApiError(409, 'Sorry! This type is already existed');
     }
 
-    const result = await CategoryModel.updateOne(
-        { _id: categoryId },
+    const result = await TypeModel.updateOne(
+        { _id: typeId },
         {
             name,
             slug
@@ -128,30 +128,30 @@ const updateCategoryService = async (categoryId: string, name: string) => {
     return result;
 }
 
-const deleteCategoryService = async (categoryId: string) => {
-    const category = await CategoryModel.findById(categoryId)
-    if(!category){
-        throw new ApiError(404, 'This categoryId not found');
+const deleteTypeService = async (typeId: string) => {
+    const type = await TypeModel.findById(typeId)
+    if(!type){
+        throw new ApiError(404, 'This typeId not found');
     }
 
-    //check if categoryId is associated with Product
+    //check if typeId is associated with Product
     const associateWithProduct = await ProductModel.findOne({
-         categoryId
+         typeId
     });
     if(associateWithProduct){
-        throw new ApiError(409, 'Failed to delete, This category is associated with Product');
+        throw new ApiError(409, 'Failed to delete, This type is associated with Product');
     }
 
-    const result = await CategoryModel.deleteOne({ _id: categoryId})
+    const result = await TypeModel.deleteOne({ _id: typeId})
     return result;
 }
 
 
 
 export {
-    createCategoryService,
-    getCategoriesService,
-    getCategoryDropDownService,
-    updateCategoryService,
-    deleteCategoryService
+    createTypeService,
+    getTypesService,
+    getTypeDropDownService,
+    updateTypeService,
+    deleteTypeService
 }

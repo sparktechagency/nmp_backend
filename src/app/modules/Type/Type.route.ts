@@ -2,38 +2,38 @@ import express from 'express';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 import validationMiddleware from '../../middlewares/validationMiddleware';
-import CategoryController from './Type.controller';
-import { categoryValidationSchema } from './Type.validation';
+import TypeController from './Type.controller';
+import { typeValidationSchema } from './Type.validation';
 
 const router = express.Router();
 
 router.post(
-  "/create-category",
+  "/create-type",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(categoryValidationSchema),
-  CategoryController.createCategory
+  validationMiddleware(typeValidationSchema),
+  TypeController.createType
 );
 router.get(
-  '/get-categories',
+  '/get-types',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  CategoryController.getCategories,
+  TypeController.getTypes,
 );
 router.get(
-  "/get-category-drop-down",
-  CategoryController.getCategoryDropDown
+  "/get-type-drop-down",
+  TypeController.getTypeDropDown
 );
 router.patch(
-  "/update-category/:categoryId",
+  "/update-type/:typeId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(categoryValidationSchema),
-  CategoryController.updateCategory
+  validationMiddleware(typeValidationSchema),
+  TypeController.updateType
 );
 router.delete(
-  "/delete-category/:categoryId",
+  "/delete-type/:typeId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  CategoryController.deleteCategory
+  TypeController.deleteType
 );
 
 
-const CategoryRoutes = router;
-export default CategoryRoutes;
+const TypeRoutes = router;
+export default TypeRoutes;

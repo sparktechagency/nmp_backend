@@ -1,12 +1,12 @@
 
 
-export interface ICategory {
+export interface IType {
   name: string;
   slug: string;
 }
 
 
-export type TCategoryQuery = {
+export type TTypeQuery = {
   searchTerm?: string;
   page?: string;
   limit?: string;

@@ -1,79 +1,79 @@
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createCategoryService, deleteCategoryService, getCategoriesService, getCategoryDropDownService, updateCategoryService } from "./Type.service";
+import { createTypeService, deleteTypeService, getTypesService, getTypeDropDownService, updateTypeService } from "./Type.service";
 
 
-const createCategory = catchAsync(async (req, res) => {
+const createType = catchAsync(async (req, res) => {
   const { name } = req.body;
-  const result = await createCategoryService(name);
+  const result = await createTypeService(name);
 
   sendResponse(res, {
     statusCode: 201,
     success: true,
-    message: "Category is created successfully",
+    message: "Type is created successfully",
     data: result
   });
 });
 
 
-const getCategories = catchAsync(async (req, res) => {
-  const result = await getCategoriesService(req.query);
+const getTypes = catchAsync(async (req, res) => {
+  const result = await getTypesService(req.query);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Categories are retrieved successfully',
+    message: 'Types are retrieved successfully',
     meta: result.meta,
     data: result.data,
   });
 });
 
 
-const getCategoryDropDown = catchAsync(async (req, res) => {
-  const result = await getCategoryDropDownService();
+const getTypeDropDown = catchAsync(async (req, res) => {
+  const result = await getTypeDropDownService();
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Categories are retrieved successfully",
+    message: "Types are retrieved successfully",
     data: result
   });
 });
 
 
-const updateCategory = catchAsync(async (req, res) => {
-  const { categoryId } = req.params;
+const updateType = catchAsync(async (req, res) => {
+  const { typeId } = req.params;
   const { name } = req.body;
-  const result = await updateCategoryService(categoryId, name);
+  const result = await updateTypeService(typeId, name);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Category is updated successfully",
+    message: "Type is updated successfully",
     data: result
   });
 });
 
 
-const deleteCategory = catchAsync(async (req, res) => {
-   const { categoryId } = req.params;
-  const result = await deleteCategoryService(categoryId);
+const deleteType = catchAsync(async (req, res) => {
+   const { typeId } = req.params;
+  const result = await deleteTypeService(typeId);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Category is deleted successfully",
+    message: "Type is deleted successfully",
     data: result
   });
 });
 
 
-const CategoryController = {
-  createCategory,
-  getCategories,
-  getCategoryDropDown,
-  updateCategory,
-  deleteCategory
+const TypeController = {
+  createType,
+  getTypes,
+  getTypeDropDown,
+  updateType,
+  deleteType
 }
 
-export default CategoryController;
+export default TypeController;

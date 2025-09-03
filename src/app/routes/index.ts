@@ -14,6 +14,7 @@ import InformationRoutes from '../modules/Information/Information.route';
 import PolicyRoutes from '../modules/Policy/Policy.route';
 import AdminRoutes from '../modules/Admin/admin.route';
 import DashboardRoutes from '../modules/Dashboard/Dashboard.route';
+import TypeRoutes from '../modules/Type/Type.route';
 
 
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
     {
         path: '/admin',
         route: AdminRoutes
+    },
+    {
+        path: '/type',
+        route: TypeRoutes
     },
     {
         path: '/category',
