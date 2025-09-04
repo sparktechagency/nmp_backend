@@ -19,7 +19,7 @@ router.get(
   BrandController.getBrands,
 );
 router.get(
-  "/get-brand-drop-down",
+  "/get-brand-drop-down/:typeId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   BrandController.getBrandDropDown
 );

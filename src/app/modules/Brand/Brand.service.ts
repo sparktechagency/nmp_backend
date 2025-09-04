@@ -133,40 +133,60 @@ return {
 };
 };
 
-const getBrandDropDownService = async () => {
-    const result = await BrandModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
-    return result;
+
+const getBrandDropDownService = async (typeId: string) => {
+  if (!Types.ObjectId.isValid(typeId)) {
+    throw new ApiError(400, "typeId must be a valid ObjectId")
+  }
+
+  const result = await BrandModel.find({ typeId }).select('name').sort('-createdAt');
+  return result;
 }
 
 
-const updateBrandService = async (brandId: string, name: string) => {
-    if (!Types.ObjectId.isValid(brandId)) {
-        throw new ApiError(400, "brandId must be a valid ObjectId")
-    }
+const updateBrandService = async (brandId: string, payload: Partial<IBrand>) => {
+  const { typeId, name } = payload;
 
-    const existingBrand = await BrandModel.findById(brandId);
-    if (!existingBrand) {
-        throw new ApiError(404, 'This brandId not found');
-    }
+  if (!Types.ObjectId.isValid(brandId)) {
+    throw new ApiError(400, "brandId must be a valid ObjectId")
+  }
 
+  const brand = await BrandModel.findById(brandId);
+  if (!brand) {
+    throw new ApiError(404, 'This brandId not found');
+  }
+
+  //check type
+  if (typeId) {
+    const existingType = await TypeModel.findById(typeId);
+    if (!existingType) {
+      throw new ApiError(404, 'This typeId not found');
+    }
+  }
+
+  //check name
+  if (name) {
     const slug = slugify(name).toLowerCase();
+    //set slug
+    payload.slug = slug;
     const brandExist = await BrandModel.findOne({
-        _id: { $ne: brandId },
-        slug
+      _id: { $ne: brandId},
+      typeId: brand.typeId,
+      slug
     })
     if (brandExist) {
-        throw new ApiError(409, 'Sorry! This brand is already existed');
+      throw new ApiError(409, 'Sorry! This brand is already existed');
     }
 
-    const result = await BrandModel.updateOne(
-        { _id: brandId },
-        {
-            name,
-            slug
-        }
-    )
+    console.log(brandExist)
+  }
 
-    return result;
+  const result = await BrandModel.updateOne(
+    { _id: brandId },
+    payload
+  )
+
+  return result;
 }
 
 const deleteBrandService = async (brandId: string) => {

@@ -29,7 +29,8 @@ const getBrands = catchAsync(async (req, res) => {
 
 
 const getBrandDropDown = catchAsync(async (req, res) => {
-  const result = await getBrandDropDownService();
+  const { typeId } = req.params;
+  const result = await getBrandDropDownService(typeId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -42,8 +43,7 @@ const getBrandDropDown = catchAsync(async (req, res) => {
 
 const updateBrand = catchAsync(async (req, res) => {
   const { brandId } = req.params;
-  const { name } = req.body;
-  const result = await updateBrandService(brandId, name);
+  const result = await updateBrandService(brandId, req.body);
 
   sendResponse(res, {
     statusCode: 200,

@@ -7,13 +7,11 @@ const brandSchema = new Schema<IBrand>({
         type: String,
         required: true,
         trim: true,
-        unique: true
     },
     slug: {
         type: String,
         required: true,
         trim: true,
-        unique: true
     },
     typeId: {
         type: Schema.Types.ObjectId,

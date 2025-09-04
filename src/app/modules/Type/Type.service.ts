@@ -6,6 +6,9 @@ import { TTypeQuery } from "./Type.interface";
 import { TypeSearchableFields } from "./Type.constant";
 import { makeSearchQuery } from "../../helper/QueryBuilder";
 import ProductModel from "../Product/Product.model";
+import CategoryModel from "../Category/Category.model";
+import BrandModel from "../Brand/Brand.model";
+import FlavorModel from "../Flavor/Flavor.model";
 
 
 
@@ -132,6 +135,30 @@ const deleteTypeService = async (typeId: string) => {
     const type = await TypeModel.findById(typeId)
     if(!type){
         throw new ApiError(404, 'This typeId not found');
+    }
+
+    //check if typeId is associated with Category
+    const associateWithCategory = await CategoryModel.findOne({
+         typeId
+    });
+    if(associateWithCategory){
+        throw new ApiError(409, 'Failed to delete, This type is associated with Category');
+    }
+
+    //check if typeId is associated with Brand
+    const associateWithBrand = await BrandModel.findOne({
+         typeId
+    });
+    if(associateWithBrand){
+        throw new ApiError(409, 'Failed to delete, This type is associated with Brand');
+    }
+
+    //check if typeId is associated with Flavor
+    const associateWithFlavor = await FlavorModel.findOne({
+         typeId
+    });
+    if(associateWithFlavor){
+        throw new ApiError(409, 'Failed to delete, This type is associated with Flavor');
     }
 
     //check if typeId is associated with Product
