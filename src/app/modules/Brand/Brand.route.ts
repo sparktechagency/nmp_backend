@@ -3,14 +3,14 @@ import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 import validationMiddleware from '../../middlewares/validationMiddleware';
 import BrandController from './Brand.controller';
-import { brandValidationSchema } from './Brand.validation';
+import { createBrandValidationSchema, updateBrandValidationSchema } from './Brand.validation';
 
 const router = express.Router();
 
 router.post(
   "/create-brand",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(brandValidationSchema),
+  validationMiddleware(createBrandValidationSchema),
   BrandController.createBrand
 );
 router.get(
@@ -20,12 +20,13 @@ router.get(
 );
 router.get(
   "/get-brand-drop-down",
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   BrandController.getBrandDropDown
 );
 router.patch(
   "/update-brand/:brandId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(brandValidationSchema),
+  validationMiddleware(updateBrandValidationSchema),
   BrandController.updateBrand
 );
 router.delete(

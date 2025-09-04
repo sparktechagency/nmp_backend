@@ -14,7 +14,17 @@ const brandSchema = new Schema<IBrand>({
         required: true,
         trim: true,
         unique: true
-    }
+    },
+    typeId: {
+        type: Schema.Types.ObjectId,
+        required: [true, "typeId is required"],
+        ref: "Type"
+    },
+    status: {
+        type: String,
+        enum: ['visible', 'hidden'],
+        default: "visible"
+    },
 }, {
     timestamps: true,
     versionKey: false

@@ -115,7 +115,8 @@ const getCategoriesService = async (query: TCategoryQuery) => {
   const totalCountResult = await CategoryModel.aggregate([
     {
       $match: {
-        ...searchQuery
+        ...searchQuery,
+        ...filterQuery
       }
     },
     { $count: "totalCount" }

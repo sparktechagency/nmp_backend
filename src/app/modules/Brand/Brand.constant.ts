@@ -5,6 +5,8 @@ export const BrandValidFields: string[] = [
   "page",
   "limit",
   "sortBy",
-  "sortOrder"
+  "sortOrder",
+  "typeId",
+  "status"
 ];
     

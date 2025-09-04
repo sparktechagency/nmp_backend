@@ -2,30 +2,37 @@ import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
 import BrandModel from "./Brand.model";
 import { Types } from "mongoose";
-import { makeSearchQuery } from "../../helper/QueryBuilder";
-import { TBrandQuery } from "./Brand.interface";
+import { makeFilterQuery, makeSearchQuery } from "../../helper/QueryBuilder";
+import { IBrand, TBrandQuery } from "./Brand.interface";
 import { BrandSearchableFields } from "./Brand.constant";
 import ProductModel from "../Product/Product.model";
+import TypeModel from "../Type/Type.model";
 
 
-const createBrandService = async (name: string) => {
-    const slug = slugify(name).toLowerCase();
-    
-    //check brand is already existed
-    const brand = await BrandModel.findOne({
-        slug
-    });
+const createBrandService = async (payload: IBrand) => {
+  const { name, typeId } = payload;
+  const slug = slugify(name).toLowerCase();
+  //set slug
+  payload.slug=slug
 
-    if(brand){
-        throw new ApiError(409, 'This brand is already existed');
-    }
+  //check typeId
+  const type = await TypeModel.findById(typeId)
+  if (!type) {
+    throw new ApiError(404, 'This typeId not found');
+  }
 
+  //check brand is already existed
+  const brand = await BrandModel.findOne({
+    slug,
+    typeId
+  });
 
-    const result = await BrandModel.create({
-         name,
-         slug
-    })
-    return result;
+  if (brand) {
+    throw new ApiError(409, 'This brand is already existed');
+  }
+
+  const result = await BrandModel.create(payload)
+  return result;
 }
 
 const getBrandsService = async (query: TBrandQuery) => {
@@ -35,6 +42,7 @@ const getBrandsService = async (query: TBrandQuery) => {
     limit = 10, 
     sortOrder = "desc",
     sortBy = "createdAt", 
+    typeId,
     ...filters  // Any additional filters
   } = query;
 
@@ -50,29 +58,62 @@ const getBrandsService = async (query: TBrandQuery) => {
     searchQuery = makeSearchQuery(searchTerm, BrandSearchableFields);
   }
 
+  //5 setup filters
+  let filterQuery = {};
+  if (filters) {
+    filterQuery = makeFilterQuery(filters);
+  }
+
+  //check typeId
+  if (typeId) {
+    if (!Types.ObjectId.isValid(typeId)) {
+      throw new ApiError(400, "typeId must be valid ObjectId")
+    }
+    filterQuery = {
+      ...filterQuery,
+      typeId: new Types.ObjectId(typeId)
+    }
+  }
+
  
   const result = await BrandModel.aggregate([
     {
       $match: {
-        ...searchQuery, // Apply search query
+        ...searchQuery,
+        ...filterQuery
       },
     },
-    { $sort: { [sortBy]: sortDirection } }, 
+    { $sort: { [sortBy]: sortDirection } },
+    {
+      $lookup: {
+        from: "types",
+        localField: "typeId",
+        foreignField: "_id",
+        as: "type"
+      }
+    },
+    {
+      $unwind: "$type"
+    },
     {
       $project: {
         _id: 1,
         name: 1,
+        typeId: 1,
+        type: "$type.name",
+        status: "$status",
       },
     },
-    { $skip: skip }, 
-    { $limit: Number(limit) }, 
+    { $skip: skip },
+    { $limit: Number(limit) },
   ]);
 
   // total count
   const totalCountResult = await BrandModel.aggregate([
     {
       $match: {
-        ...searchQuery
+        ...searchQuery,
+        ...filterQuery
       }
     },
     { $count: "totalCount" }

@@ -4,8 +4,7 @@ import { createBrandService, deleteBrandService, getBrandDropDownService, getBra
 
 
 const createBrand = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const result = await createBrandService(name);
+  const result = await createBrandService(req.body);
 
   sendResponse(res, {
     statusCode: 201,

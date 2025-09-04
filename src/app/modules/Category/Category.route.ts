@@ -20,6 +20,7 @@ router.get(
 );
 router.get(
   "/get-category-drop-down/:typeId",
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   CategoryController.getCategoryDropDown
 );
 router.patch(
