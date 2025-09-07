@@ -5,6 +5,7 @@ import { TProductQuery } from "../Product.interface";
 import ApiError from "../../../errors/ApiError";
 import hasDuplicates from "../../../utils/hasDuplicates";
 import ProductModel from "../Product.model";
+import TypeModel from "../../Type/Type.model";
 
 
 
@@ -16,6 +17,7 @@ const GetUserProductsService = async (query: TProductQuery) => {
         sortOrder = "desc",
         sortBy = "createdAt",
         ratings,
+        typeId,
         categoryId,
         brandId,
         flavorId,
@@ -23,6 +25,8 @@ const GetUserProductsService = async (query: TProductQuery) => {
         toPrice,
         ...filters  // Any additional filters
     } = query;
+
+
 
     // 2. Set up pagination
     const skip = (Number(page) - 1) * Number(limit);
@@ -42,6 +46,18 @@ const GetUserProductsService = async (query: TProductQuery) => {
         filterQuery = makeFilterQuery(filters);
     }
 
+    //check typeId
+    if (!typeId) {
+      throw new ApiError(400, "typeId is required");
+    }
+    if (!Types.ObjectId.isValid(typeId)) {
+      throw new ApiError(400, "typeId must be a valid ObjectId");
+    }
+
+    const type = await TypeModel.findById(typeId);
+    if (!type) {
+      throw new ApiError(404, "This typeId not found");
+    }
 
 
     //filter by category

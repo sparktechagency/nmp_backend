@@ -14,6 +14,11 @@ const productSchema = new Schema<IProduct>({
     trim: true,
     unique: true
   },
+  typeId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "Type"
+  },
   categoryId: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -21,12 +26,10 @@ const productSchema = new Schema<IProduct>({
   },
   brandId: {
     type: Schema.Types.ObjectId,
-    required: true,
     ref: "Brand"
   },
   flavorId: {
     type: Schema.Types.ObjectId,
-    required: true,
     ref: "Flavor"
   },
   currentPrice: {
@@ -37,6 +40,11 @@ const productSchema = new Schema<IProduct>({
   originalPrice: {
     type: Number,
     default: 0,
+    trim: true
+  },
+  quantity: {
+    type: Number,
+    required: true,
     trim: true
   },
   discount: {

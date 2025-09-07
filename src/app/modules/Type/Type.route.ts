@@ -20,7 +20,12 @@ router.get(
 );
 router.get(
   "/get-type-drop-down",
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   TypeController.getTypeDropDown
+);
+router.get(
+  "/get-filter-options/:typeId",
+  TypeController.getFilterOptions
 );
 router.patch(
   "/update-type/:typeId",

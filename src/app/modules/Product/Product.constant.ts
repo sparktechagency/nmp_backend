@@ -6,6 +6,7 @@ export const UserProductValidFields: string[] = [
   "limit",
   "sortBy",
   "sortOrder",
+  "typeId",
   "categoryId",
   "brandId",
   "flavorId",

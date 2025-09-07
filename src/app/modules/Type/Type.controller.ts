@@ -1,6 +1,6 @@
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createTypeService, deleteTypeService, getTypesService, getTypeDropDownService, updateTypeService } from "./Type.service";
+import { createTypeService, deleteTypeService, getTypesService, getTypeDropDownService, updateTypeService, getFilterOptionsService } from "./Type.service";
 
 
 const createType = catchAsync(async (req, res) => {
@@ -31,6 +31,18 @@ const getTypes = catchAsync(async (req, res) => {
 
 const getTypeDropDown = catchAsync(async (req, res) => {
   const result = await getTypeDropDownService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Types are retrieved successfully",
+    data: result
+  });
+});
+
+const getFilterOptions = catchAsync(async (req, res) => {
+  const { typeId } = req.params;
+  const result = await getFilterOptionsService(typeId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -73,7 +85,8 @@ const TypeController = {
   getTypes,
   getTypeDropDown,
   updateType,
-  deleteType
+  deleteType,
+  getFilterOptions
 }
 
 export default TypeController;

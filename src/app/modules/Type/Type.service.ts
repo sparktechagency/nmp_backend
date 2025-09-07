@@ -100,6 +100,24 @@ const getTypeDropDownService = async () => {
     return result;
 }
 
+const getFilterOptionsService = async (typeId: string) => {
+  if (!Types.ObjectId.isValid(typeId)) {
+    throw new ApiError(400, "typeId must be a valid ObjectId");
+  }
+
+  const filterQuery = {typeId, status:"visible"};
+
+  const categoryDropDown = await CategoryModel.find(filterQuery).select('name').sort('-createdAt');
+  const brandDropDown = await BrandModel.find(filterQuery).select('name').sort('-createdAt');
+  const flavorDropDown = await FlavorModel.find(filterQuery).select('-createdAt -updatedAt -slug').sort('-createdAt');
+  
+  return {
+    categoryDropDown,
+    brandDropDown,
+    flavorDropDown
+  };
+};
+
 
 const updateTypeService = async (typeId: string, name: string) => {
     if (!Types.ObjectId.isValid(typeId)) {
@@ -180,5 +198,6 @@ export {
     getTypesService,
     getTypeDropDownService,
     updateTypeService,
-    deleteTypeService
+    deleteTypeService,
+    getFilterOptionsService
 }

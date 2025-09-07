@@ -19,7 +19,8 @@ router.get(
   FlavorController.getFlavors,
 );
 router.get(
-  "/get-flavor-drop-down",
+  "/get-flavor-drop-down/:typeId",
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   FlavorController.getFlavorDropDown
 );
 router.patch(

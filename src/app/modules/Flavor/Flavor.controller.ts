@@ -30,7 +30,8 @@ const getFlavors = catchAsync(async (req, res) => {
 
 
 const getFlavorDropDown = catchAsync(async (req, res) => {
-  const result = await getFlavorDropDownService();
+  const { typeId } = req.params;
+  const result = await getFlavorDropDownService(typeId);
 
   sendResponse(res, {
     statusCode: 200,

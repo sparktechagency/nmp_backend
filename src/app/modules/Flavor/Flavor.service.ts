@@ -92,10 +92,13 @@ return {
 };
 };
 
-const getFlavorDropDownService = async () => {
-    const result = await FlavorModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
-    return result;
-}
+const getFlavorDropDownService = async (typeId: string) => {
+  if (!Types.ObjectId.isValid(typeId)) {
+    throw new ApiError(400, "typeId must be a valid ObjectId");
+  }
+  const result = await FlavorModel.find({ typeId }).select("-createdAt -updatedAt -slug").sort("-createdAt");
+  return result;
+};
 
 
 const updateFlavorService = async (flavorId: string, name: string) => {
