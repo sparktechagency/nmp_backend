@@ -12,7 +12,7 @@ import bodyParser from "body-parser";
 const app: Application = express();
 
 
-app.use(cors());
+app.use(cors() );
 // app.use(
 //   cors({
 //     //origin: process.env.ALLOWED_ORIGINS?.split(",") || ["http://localhost:3000"],
