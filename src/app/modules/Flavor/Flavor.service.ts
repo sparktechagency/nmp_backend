@@ -153,34 +153,47 @@ const getFlavorDropDownService = async (typeId: string) => {
 };
 
 
-const updateFlavorService = async (flavorId: string, name: string) => {
-    if (!Types.ObjectId.isValid(flavorId)) {
-        throw new ApiError(400, "flavorId must be a valid ObjectId")
-    }
+const updateFlavorService = async (flavorId: string, payload: Partial<IFlavor>) => {
+  const { name, typeId } = payload;
+  if (!Types.ObjectId.isValid(flavorId)) {
+    throw new ApiError(400, "flavorId must be a valid ObjectId")
+  }
 
-    const existingFlavor = await FlavorModel.findById(flavorId);
-    if (!existingFlavor) {
-        throw new ApiError(404, 'This flavorId not found');
-    }
+  const existingFlavor = await FlavorModel.findById(flavorId);
+  if (!existingFlavor) {
+    throw new ApiError(404, 'This flavorId not found');
+  }
 
+  //check type
+  if (typeId) {
+    const existingType = await TypeModel.findById(typeId);
+    if (!existingType) {
+      throw new ApiError(404, 'This typeId not found');
+    }
+  }
+
+  //check name
+  if (name) {
     const slug = slugify(name).toLowerCase();
     const flavorExist = await FlavorModel.findOne({
-        _id: { $ne: flavorId },
-        slug
+      _id: { $ne: flavorId },
+      typeId: existingFlavor.typeId,
+      slug
     })
     if (flavorExist) {
-        throw new ApiError(409, 'Sorry! This flavor is already existed');
+      throw new ApiError(409, 'Sorry! This flavor is already existed');
     }
 
-    const result = await FlavorModel.updateOne(
-        { _id: flavorId },
-        {
-            name,
-            slug
-        }
-    )
+    //set slug
+    payload.slug = slug;
+  }
 
-    return result;
+  const result = await FlavorModel.updateOne(
+    { _id: flavorId },
+    payload
+  )
+
+  return result;
 }
 
 const deleteFlavorService = async (flavorId: string) => {

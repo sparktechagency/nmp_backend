@@ -43,8 +43,7 @@ const getFlavorDropDown = catchAsync(async (req, res) => {
 
 const updateFlavor = catchAsync(async (req, res) => {
   const { flavorId } = req.params;
-  const { name } = req.body;
-  const result = await updateFlavorService(flavorId, name);
+  const result = await updateFlavorService(flavorId, req.body);
 
   sendResponse(res, {
     statusCode: 200,

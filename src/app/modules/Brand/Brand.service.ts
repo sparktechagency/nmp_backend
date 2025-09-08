@@ -177,8 +177,6 @@ const updateBrandService = async (brandId: string, payload: Partial<IBrand>) => 
     if (brandExist) {
       throw new ApiError(409, 'Sorry! This brand is already existed');
     }
-
-    console.log(brandExist)
   }
 
   const result = await BrandModel.updateOne(

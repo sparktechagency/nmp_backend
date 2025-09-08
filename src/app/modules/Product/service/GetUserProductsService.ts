@@ -6,6 +6,8 @@ import ApiError from "../../../errors/ApiError";
 import hasDuplicates from "../../../utils/hasDuplicates";
 import ProductModel from "../Product.model";
 import TypeModel from "../../Type/Type.model";
+import ObjectId from "../../../utils/ObjectId";
+import getStockStatus from "../../../utils/getStockStatus";
 
 
 
@@ -32,7 +34,7 @@ const GetUserProductsService = async (query: TProductQuery) => {
     const skip = (Number(page) - 1) * Number(limit);
 
     //3. setup sorting
-    // const sortDirection = sortOrder === "asc" ? 1 : -1;
+    const sortDirection = sortOrder === "asc" ? 1 : -1;
 
     //4. setup searching
     let searchQuery = {};
@@ -195,6 +197,13 @@ const GetUserProductsService = async (query: TProductQuery) => {
 
     const result = await ProductModel.aggregate([
         {
+            $match: {
+                typeId: new ObjectId(typeId),
+                status: "visible"
+            }
+        },
+        { $sort: { [sortBy]: sortDirection } }, 
+        {
             $lookup: {
                 from: "categories",
                 localField: "categoryId",
@@ -214,7 +223,10 @@ const GetUserProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$brand"
+            $unwind: {
+                "path": "$brand",
+                'preserveNullAndEmptyArrays': true, //when brandId is empty or null
+            }
         },
         {
             $lookup: {
@@ -225,7 +237,10 @@ const GetUserProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$flavor"
+            $unwind: {
+                "path": "$flavor",
+                'preserveNullAndEmptyArrays': true, //when flavorId is empty or null
+            }
         },
         {
             $lookup: {
@@ -244,44 +259,48 @@ const GetUserProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                brandId: 1,
-                flavorId: 1,
                 category: "$category.name",
-                brand: "$brand.name",
-                flavor: "$flavor.name",
+                brand: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }]}, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brand.name"
+                    }
+                },
+                flavor: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavor.name"
+                    }
+                },
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
+                quantity: "$quantity",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
                 image: "$image",
-                status: "$status",
-                stockStatus: "$stockStatus"
             },
         },
         {
             $match: {
                 ...searchQuery,
                 ...filterQuery,
-                status: "visible"
             }
         },
-        {
-            $project: {
-                categoryId: 0,
-                brandId: 0,
-                flavorId: 0,
-                status: 0,
-            }
-        },
-        { $sort: { ratings: -1 } },
         { $skip: skip },
         { $limit: Number(limit) },
     ]);
 
     // total count
     const totalCountResult = await ProductModel.aggregate([
+       {
+            $match: {
+                typeId: new ObjectId(typeId),
+                status: "visible"
+            }
+        },
         {
             $lookup: {
                 from: "categories",
@@ -302,7 +321,10 @@ const GetUserProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$brand"
+            $unwind: {
+                "path": "$brand",
+                'preserveNullAndEmptyArrays': true, //when brandId is empty or null
+            }
         },
         {
             $lookup: {
@@ -313,50 +335,46 @@ const GetUserProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$flavor"
-        },
-        {
-            $lookup: {
-                from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
-        },
-        {
-            $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
+            $unwind: {
+                "path": "$flavor",
+                'preserveNullAndEmptyArrays': true, //when flavorId is empty or null
+            }
         },
         {
             $project: {
                 _id: 1,
                 name: 1,
-                categoryId: 1,
-                brandId: 1,
-                flavorId: 1,
                 category: "$category.name",
-                brand: "$brand.name",
-                flavor: "$flavor.name",
-                currentPrice: "$currentPrice",
-                originalPrice: "$originalPrice",
-                discount: "$discount",
-                ratings: "$ratings",
-                totalReview: "$totalReview",
-                image: "$image",
-                status: "$status",
-                stockStatus: "$stockStatus"
+                brand: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }]}, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brand.name"
+                    }
+                },
+                flavor: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavor.name"
+                    }
+                },
             },
         },
         {
             $match: {
                 ...searchQuery,
                 ...filterQuery,
-                status: "visible"
             }
         },
         { $count: "totalCount" }
     ])
+
+
+    const modifiedResult = result?.length > 0 ? result?.map((cv)=>({
+        ...cv,
+        stockStatus: getStockStatus(cv.quantity)
+    })): []
 
     const totalCount = totalCountResult[0]?.totalCount || 0;
     const totalPages = Math.ceil(totalCount / Number(limit));
@@ -368,7 +386,7 @@ const GetUserProductsService = async (query: TProductQuery) => {
             totalPages,
             total: totalCount,
         },
-        data: result,
+        data: modifiedResult,
     };
 };
 

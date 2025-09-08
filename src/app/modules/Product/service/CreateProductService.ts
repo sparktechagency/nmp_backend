@@ -46,18 +46,7 @@ const CreateProductService = async (
   if (!Types.ObjectId.isValid(categoryId)) {
     throw new ApiError(400, "categoryId must be a valid ObjectId")
   }
-  if(!brandId){
-    throw new ApiError(400, "brandId is required!");
-  }
-  if (!Types.ObjectId.isValid(brandId)) {
-    throw new ApiError(400, "brandId must be a valid ObjectId")
-  }
-  if(!flavorId){
-    throw new ApiError(400, "flavorId is required!");
-  }
-  if (!Types.ObjectId.isValid(flavorId)) {
-    throw new ApiError(400, "flavorId must be a valid ObjectId")
-  }
+ 
   if(!description){
     throw new ApiError(400, "description is required!");
   }
@@ -156,6 +145,9 @@ const CreateProductService = async (
 
   //check brandId
   if (brandId) {
+    if (!Types.ObjectId.isValid(brandId)) {
+      throw new ApiError(400, "brandId must be a valid ObjectId")
+    }
     const existingBrand = await BrandModel.findById(brandId);
     if (!existingBrand) {
       throw new ApiError(404, 'This brandId not found');
@@ -170,6 +162,9 @@ const CreateProductService = async (
 
   //check flavorId
   if (flavorId) {
+    if (!Types.ObjectId.isValid(flavorId)) {
+      throw new ApiError(400, "flavorId must be a valid ObjectId")
+    }
     const existingFlavor = await FlavorModel.findById(flavorId);
     if (!existingFlavor) {
       throw new ApiError(404, 'This flavorId not found');
@@ -177,7 +172,7 @@ const CreateProductService = async (
 
     //check brandId is associated with specific type
     if (existingFlavor.typeId.toString() !== typeId.toString()) {
-      throw new ApiError(400, "This brandId is not associated with this type")
+      throw new ApiError(400, "This flavorId is not associated with this type")
     }
     payload.flavorId = flavorId
   }

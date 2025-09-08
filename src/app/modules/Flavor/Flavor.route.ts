@@ -3,14 +3,14 @@ import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 import validationMiddleware from '../../middlewares/validationMiddleware';
 import FlavorController from './Flavor.controller';
-import { flavorValidationSchema } from './Flavor.validation';
+import { createFlavorValidationSchema, updateFlavorValidationSchema } from './Flavor.validation';
 
 const router = express.Router();
 
 router.post(
   "/create-flavor",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(flavorValidationSchema),
+  validationMiddleware(createFlavorValidationSchema),
   FlavorController.createFlavor
 );
 router.get(
@@ -26,7 +26,7 @@ router.get(
 router.patch(
   "/update-flavor/:flavorId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
-  validationMiddleware(flavorValidationSchema),
+  validationMiddleware(updateFlavorValidationSchema),
   FlavorController.updateFlavor
 );
 router.delete(
