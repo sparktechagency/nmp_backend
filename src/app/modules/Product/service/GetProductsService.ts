@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+import ApiError from "../../../errors/ApiError";
 import { makeFilterQuery, makeSearchQuery } from "../../../helper/QueryBuilder";
 import { ProductSearchableFields } from "../Product.constant";
 import { TProductQuery } from "../Product.interface";
@@ -11,6 +13,7 @@ const GetProductsService = async (query: TProductQuery) => {
         limit = 10,
         sortOrder = "desc",
         sortBy = "createdAt",
+        typeId,
         ...filters  // Any additional filters
     } = query;
 
@@ -31,6 +34,19 @@ const GetProductsService = async (query: TProductQuery) => {
     if (filters) {
         filterQuery = makeFilterQuery(filters);
     }
+
+      //check typeId
+  if (typeId) {
+    if (!Types.ObjectId.isValid(typeId)) {
+      throw new ApiError(400, "typeId must be valid ObjectId")
+    }
+    filterQuery = {
+      ...filterQuery,
+      typeId: new Types.ObjectId(typeId)
+    }
+  }
+
+
     const result = await ProductModel.aggregate([
         {
             $lookup: {
@@ -52,7 +68,10 @@ const GetProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$brand"
+            $unwind: {
+                path: "$brand",
+                preserveNullAndEmptyArrays: true
+            }
         },
         {
             $lookup: {
@@ -62,21 +81,27 @@ const GetProductsService = async (query: TProductQuery) => {
                 as: "flavor"
             }
         },
-        {
-            $unwind: "$flavor"
+         {
+            $unwind: {
+                "path": "$flavor",
+                'preserveNullAndEmptyArrays': true, //when flavorId is empty or null
+            }
         },
         {
             $lookup: {
                 from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "reviews",
-            },
+                let: { productId: "$_id" },
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$productId", "$$productId"] } } },
+                    { $count: "count" }
+                ],
+                as: "reviewCount"
+            }
         },
         {
             $addFields: {
-                totalReview: { $size: "$reviews" },
-            },
+                totalReview: { $ifNull: [{ $arrayElemAt: ["$reviewCount.count", 0] }, 0] }
+            }
         },
         { $sort: { [sortBy]: sortDirection } },
         {
@@ -84,17 +109,28 @@ const GetProductsService = async (query: TProductQuery) => {
                 _id: 1,
                 name: 1,
                 category: "$category.name",
-                brand: "$brand.name",
-                flavor: "$flavor.name",
+                brand: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }]}, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brand.name"
+                    }
+                },
+                flavor: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavor.name"
+                    }
+                },
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
-                isFeatured: "$isFeatured",
+                quantity: "$quantity",
                 discount: "$discount",
                 ratings: "$ratings",
                 totalReview: "$totalReview",
                 image: "$image",
-                status: "$status",
-                stockStatus: "$stockStatus"
+                status: "$status"
             },
         },
         {
@@ -109,7 +145,7 @@ const GetProductsService = async (query: TProductQuery) => {
 
     // total count
     const totalCountResult = await ProductModel.aggregate([
-        {
+       {
             $lookup: {
                 from: "categories",
                 localField: "categoryId",
@@ -129,7 +165,10 @@ const GetProductsService = async (query: TProductQuery) => {
             }
         },
         {
-            $unwind: "$brand"
+            $unwind: {
+                path: "$brand",
+                preserveNullAndEmptyArrays: true
+            }
         },
         {
             $lookup: {
@@ -139,22 +178,39 @@ const GetProductsService = async (query: TProductQuery) => {
                 as: "flavor"
             }
         },
-        {
-            $unwind: "$flavor"
+         {
+            $unwind: {
+                "path": "$flavor",
+                'preserveNullAndEmptyArrays': true, //when flavorId is empty or null
+            }
         },
         {
             $project: {
                 _id: 1,
                 name: 1,
                 category: "$category.name",
-                brand: "$brand.name",
-                flavor: "$flavor.name",
+                brand: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }]}, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brand.name"
+                    }
+                },
+                flavor: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavor.name"
+                    }
+                },
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
+                quantity: "$quantity",
                 discount: "$discount",
                 ratings: "$ratings",
-                status: "$status",
-                stockStatus: "$stockStatus"
+                totalReview: "$totalReview",
+                image: "$image",
+                status: "$status"
             },
         },
         {

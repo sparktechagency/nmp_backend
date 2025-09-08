@@ -30,7 +30,8 @@ const getCarts = catchAsync(async (req, res) => {
 const updateCart = catchAsync(async (req, res) => {
   const loginUserId = req.headers.id;
   const { cartId } = req.params;
-  const result = await updateCartService(loginUserId as string, cartId, req.body);
+  const { quantity } = req.body;
+  const result = await updateCartService(loginUserId as string, cartId, quantity);
 
   sendResponse(res, {
     statusCode: 200,

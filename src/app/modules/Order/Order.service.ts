@@ -48,6 +48,22 @@ const createOrderService = async (
     total: Number(cv.price) * Number(cv.quantity)
   }))
 
+
+  // check product availability during order
+  for (let i = 0; i < cartProducts?.length; i++) {
+    const product = await ProductModel.findById(cartProducts[i].productId);
+    const availableQty = Number(product?.quantity);
+
+    if (cartProducts[i].quantity > availableQty) {
+      throw new ApiError(
+        400,
+        availableQty > 0
+          ? `Sorry, only ${availableQty} unit(s) of '${product?.name}' are left in stock. Please update your order.`
+          : `Sorry, "${product?.name}" is currently out of stock.`
+      );
+    }
+  }
+
   
 
   const lineItems = cartProducts?.map((product) => ({
@@ -80,7 +96,7 @@ const createOrderService = async (
         cartProducts.map(item => ({
           updateOne: {
             filter: { _id: item.productId },
-            update: { $inc: { total_sold: item.quantity } },
+            update: { $inc: { total_sold: item.quantity, quantity: -item.quantity } },
           }
         })),
         { session }

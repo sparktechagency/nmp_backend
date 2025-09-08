@@ -22,6 +22,17 @@ const createCartService = async (
     throw new ApiError(404, "This product is hidden")
   }
 
+  //check product quantity
+  if(product.quantity===0){
+    throw new ApiError(400, "This product is Out of Stock")
+  }
+
+  if (payload.quantity > product.quantity) {
+    throw new ApiError(
+      400,
+      `Only ${product.quantity} item(s) available in stock. Please adjust your quantity.`
+    );
+  }
 
 
   //check product has already been added to your cart
@@ -70,7 +81,7 @@ const getCartsService = async (loginUserId: string) => {
   })) : [];
 };
 
-const updateCartService = async (loginUserId: string, cartId: string, payload: any) => {
+const updateCartService = async (loginUserId: string, cartId: string, quantity:number) => {
   if (!Types.ObjectId.isValid(cartId)) {
     throw new ApiError(400, "cartId must be a valid ObjectId")
   }
@@ -82,9 +93,23 @@ const updateCartService = async (loginUserId: string, cartId: string, payload: a
   if (!cart) {
     throw new ApiError(404, "cartId not found");
   }
+
+   //check product quantity
+  const product = await ProductModel.findById(cart.productId);
+  if (!product) {
+    throw new ApiError(404, "productId not found");
+  }
+ 
+  if (quantity > product.quantity) {
+    throw new ApiError(
+      400,
+      `Only ${product.quantity} item(s) available in stock.`
+    );
+  }
+
   const result = await CartModel.updateOne(
     { userId: loginUserId, _id: cartId },
-    payload,
+    { quantity },
   );
 
   return result;
