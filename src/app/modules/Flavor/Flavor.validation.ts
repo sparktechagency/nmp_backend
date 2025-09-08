@@ -1,5 +1,5 @@
+import { Types } from "mongoose";
 import { z } from "zod";
-export const flavorRegex = /^[A-Za-z\s'.\-&,()]+$/;
 
 
 export const flavorValidationSchema = z.object({
@@ -16,4 +16,12 @@ export const flavorValidationSchema = z.object({
         .regex(/^[^~!@#$%\^*\+\?><=;:"]*$/, {
             message: 'name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
         }),
+    typeId: z
+        .string({
+            invalid_type_error: "typeId must be a string",
+            required_error: "typeId is required!",
+        })
+        .refine((id) => Types.ObjectId.isValid(id), {
+            message: "typeId must be a valid ObjectId",
+        })
 });

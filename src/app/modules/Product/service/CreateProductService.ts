@@ -8,6 +8,7 @@ import CategoryModel from "../../Category/Category.model";
 import BrandModel from "../../Brand/Brand.model";
 import FlavorModel from "../../Flavor/Flavor.model";
 import cloudinary from "../../../helper/cloudinary";
+import TypeModel from "../../Type/Type.model";
 
 
 
@@ -26,12 +27,18 @@ const CreateProductService = async (
     throw new ApiError(400, "Upload image");
   }
 
-  const { name, categoryId, brandId, flavorId, description, currentPrice, originalPrice, discount, status, stockStatus } = reqBody;
+  const { name, typeId, categoryId, brandId, flavorId, description, currentPrice, originalPrice, discount, quantity, status } = reqBody;
 
   let payload: Record<string, unknown> ={}
 
   if(!name){
     throw new ApiError(400, "name is required!");
+  }
+  if(!typeId){
+    throw new ApiError(400, "typeId is required!");
+  }
+  if (!Types.ObjectId.isValid(typeId)) {
+    throw new ApiError(400, "typeId must be a valid ObjectId")
   }
   if(!categoryId){
     throw new ApiError(400, "categoryId is required!");
@@ -62,19 +69,31 @@ const CreateProductService = async (
   if (typeof Number(currentPrice) !== "number" || isNaN(Number(currentPrice))) {
     throw new ApiError(400, "current price must be a valid number");
   }
-  // Step 4: Must be greater than 0
   if (Number(currentPrice) <= 0) {
     throw new ApiError(400, "Current price must be greater than 0");
+  }
+
+
+  //check quantity
+  if (!quantity) {
+    throw new ApiError(400, "quantity is required!");
+  }
+  if (typeof Number(quantity) !== "number" || isNaN(Number(quantity))) {
+    throw new ApiError(400, "quantity must be a valid number");
+  }
+  // Step 4: Must be greater than 0
+  if (Number(quantity) <= 0) {
+    throw new ApiError(400, "quantity must be greater than 0");
   }
 
   //set required fields
   payload = {
     name,
+    typeId,
     categoryId,
-    brandId,
-    flavorId,
     description,
     currentPrice: Number(currentPrice),
+    quantity: Number(quantity)
   }
 
 
@@ -104,13 +123,6 @@ const CreateProductService = async (
     payload.status= status;
   }
 
-  //check stock status
-  if(stockStatus){
-    if(!['in_stock', 'stock_out', 'up_coming'].includes(stockStatus)){
-      throw new ApiError(400, "Stock Status must be one of: in_stock', 'stock_out', 'up_coming'");
-    }
-    payload.stockStatus=stockStatus
-  }
   
   //make slug
   const slug = slugify(name).toLowerCase();
@@ -125,22 +137,49 @@ const CreateProductService = async (
     throw new ApiError(409, "This name is already taken.")
   }
 
+  //check typeId
+  const existingType = await TypeModel.findById(typeId);
+  if (!existingType) {
+    throw new ApiError(404, 'This typeId not found');
+  }
+
   //check categoryId
   const existingCategory = await CategoryModel.findById(categoryId);
   if (!existingCategory) {
     throw new ApiError(404, 'This categoryId not found');
   }
 
+  //check categoryId is associated with specific type
+  if(existingCategory.typeId.toString() !== typeId.toString()){
+    throw new ApiError(400, "This categoryId is not associated with this type")
+  }
+
   //check brandId
-  const existingBrand = await BrandModel.findById(brandId);
-  if (!existingBrand) {
-    throw new ApiError(404, 'This brandId not found');
+  if (brandId) {
+    const existingBrand = await BrandModel.findById(brandId);
+    if (!existingBrand) {
+      throw new ApiError(404, 'This brandId not found');
+    }
+
+    //check brandId is associated with specific type
+    if (existingBrand.typeId.toString() !== typeId.toString()) {
+      throw new ApiError(400, "This brandId is not associated with this type")
+    }
+    payload.brandId = brandId
   }
 
   //check flavorId
-  const existingFlavor = await FlavorModel.findById(flavorId);
-  if (!existingFlavor) {
-    throw new ApiError(404, 'This flavorId not found');
+  if (flavorId) {
+    const existingFlavor = await FlavorModel.findById(flavorId);
+    if (!existingFlavor) {
+      throw new ApiError(404, 'This flavorId not found');
+    }
+
+    //check brandId is associated with specific type
+    if (existingFlavor.typeId.toString() !== typeId.toString()) {
+      throw new ApiError(400, "This brandId is not associated with this type")
+    }
+    payload.flavorId = flavorId
   }
 
   //upload a image

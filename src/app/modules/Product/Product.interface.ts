@@ -1,7 +1,5 @@
 import { Types } from "mongoose";
 
-export type TStockStatus = 'in_stock' | 'stock_out' | 'up_coming';
-
 export interface IProduct {
   name: string;
   slug: string;
@@ -17,7 +15,6 @@ export interface IProduct {
   total_sold: number;
   isFeatured: boolean;
   status: "visible" | "hidden";
-  stockStatus: TStockStatus;
   image: string;
   description: string;
 };
@@ -29,7 +26,6 @@ export type TProductQuery = {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
   status?: "visible" | "hidden";
-  stockStatus?: TStockStatus;
   typeId?:string;
   categoryId?: string;
   brandId?: string;

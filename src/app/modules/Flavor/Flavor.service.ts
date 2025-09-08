@@ -2,30 +2,42 @@ import slugify from "slugify";
 import ApiError from "../../errors/ApiError";
 import FlavorModel from "./Flavor.model";
 import { Types } from "mongoose";
-import { makeSearchQuery } from "../../helper/QueryBuilder";
+import { makeFilterQuery, makeSearchQuery } from "../../helper/QueryBuilder";
 import { FlavorSearchableFields } from "./Flavor.constant";
-import { TFlavorQuery } from "./Flavor.interface";
+import { IFlavor, TFlavorQuery } from "./Flavor.interface";
 import ProductModel from "../Product/Product.model";
+import TypeModel from "../Type/Type.model";
 
 
 
-const createFlavorService = async (name: string) => {
-    const slug = slugify(name).toLowerCase();
-    
-    //check flavor is already existed
-    const flavor = await FlavorModel.findOne({
-        slug
-    });
+const createFlavorService = async (payload: IFlavor) => {
+  const { name, typeId } = payload;
+  const slug = slugify(name).toLowerCase();
+  //set slug
+  payload.slug = slug
 
-    if(flavor){
-        throw new ApiError(409, 'This flavor is already existed');
-    }
+  //check typeId
+  const type = await TypeModel.findById(typeId)
+  if (!type) {
+    throw new ApiError(404, 'This typeId not found');
+  }
 
-    const result = await FlavorModel.create({
-         name,
-         slug
-    })
-    return result;
+  //check flavor is already existed
+  const flavor = await FlavorModel.findOne({
+    typeId,
+    slug
+  });
+
+  if (flavor) {
+    throw new ApiError(409, 'This flavor is already existed');
+  }
+
+  const result = await FlavorModel.create({
+    name,
+    slug,
+    typeId
+  })
+  return result;
 }
 
 const getFlavorsService = async (query: TFlavorQuery) => {
@@ -35,6 +47,7 @@ const getFlavorsService = async (query: TFlavorQuery) => {
     limit = 10, 
     sortOrder = "desc",
     sortBy = "createdAt", 
+    typeId,
     ...filters  // Any additional filters
   } = query;
 
@@ -50,29 +63,63 @@ const getFlavorsService = async (query: TFlavorQuery) => {
     searchQuery = makeSearchQuery(searchTerm, FlavorSearchableFields);
   }
 
+  //5 setup filters
+  let filterQuery = {};
+  if (filters) {
+    filterQuery = makeFilterQuery(filters);
+  }
+
+
+  //check typeId
+  if (typeId) {
+    if (!Types.ObjectId.isValid(typeId)) {
+      throw new ApiError(400, "typeId must be valid ObjectId")
+    }
+    filterQuery = {
+      ...filterQuery,
+      typeId: new Types.ObjectId(typeId)
+    }
+  }
+
  
   const result = await FlavorModel.aggregate([
     {
       $match: {
-        ...searchQuery, // Apply search query
+        ...searchQuery,
+        ...filterQuery
       },
     },
-    { $sort: { [sortBy]: sortDirection } }, 
+    { $sort: { [sortBy]: sortDirection } },
+    {
+      $lookup: {
+        from: "types",
+        localField: "typeId",
+        foreignField: "_id",
+        as: "type"
+      }
+    },
+    {
+      $unwind: "$type"
+    },
     {
       $project: {
         _id: 1,
         name: 1,
+        typeId: 1,
+        type: "$type.name",
+        status: "$status",
       },
     },
-    { $skip: skip }, 
-    { $limit: Number(limit) }, 
+    { $skip: skip },
+    { $limit: Number(limit) },
   ]);
 
   // total count
   const totalCountResult = await FlavorModel.aggregate([
     {
       $match: {
-        ...searchQuery
+        ...searchQuery,
+        ...filterQuery
       }
     },
     { $count: "totalCount" }
@@ -96,7 +143,12 @@ const getFlavorDropDownService = async (typeId: string) => {
   if (!Types.ObjectId.isValid(typeId)) {
     throw new ApiError(400, "typeId must be a valid ObjectId");
   }
-  const result = await FlavorModel.find({ typeId }).select("-createdAt -updatedAt -slug").sort("-createdAt");
+  const type = await TypeModel.findById(typeId)
+  if (!type) {
+    throw new ApiError(404, 'This typeId not found');
+  }
+
+  const result = await FlavorModel.find({ typeId }).select("name").sort("-createdAt");
   return result;
 };
 

@@ -4,8 +4,7 @@ import { createFlavorService, deleteFlavorService, getFlavorsService, getFlavorD
 
 
 const createFlavor = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const result = await createFlavorService(name);
+  const result = await createFlavorService(req.body);
 
   sendResponse(res, {
     statusCode: 201,

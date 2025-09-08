@@ -7,10 +7,9 @@ export const updateProductValidationSchema = z.object({
     required_error: "name is required",
   })
     .min(1, "name is required")
-    // .regex(
-    //   categoryRegex,
-    //   "name only contain letters and valid symbols (' . - & , ( )) are allowed."
-    // )
+    .regex(/^[^~!@#$%\^*\+\?><=;:"]*$/, {
+      message: 'name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
+    })
     .trim().optional(),
   categoryId: z
     .string({
@@ -87,12 +86,6 @@ export const updateProductValidationSchema = z.object({
   })
     .refine((val) => ['visible', 'hidden'].includes(val), {
       message: "status must be one of: 'visible', 'hidden'",
-    }).optional(),
-  stockStatus: z.string({
-    invalid_type_error: "Stock Status must be a valid string value.",
-  })
-    .refine((val) => ['in_stock', 'stock_out', 'up_coming'].includes(val), {
-      message: "Stock Status must be one of: in_stock', 'stock_out', 'up_coming'",
     }).optional(),
   isFeatured: z.boolean({
     invalid_type_error: "isFeatured value must be boolean"

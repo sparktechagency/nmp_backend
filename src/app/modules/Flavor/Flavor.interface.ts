@@ -1,8 +1,13 @@
+import { Types } from "mongoose";
+
+type TFlavorStatus = "visible" | "hidden";
 
 
 export interface IFlavor {
-  name: string;
-  slug: string;
+   name: string;
+   typeId: Types.ObjectId;
+   slug: string;
+   status: TFlavorStatus
 }
 
 
@@ -12,4 +17,6 @@ export type TFlavorQuery = {
   limit?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  typeId?: string;
+  status?: TFlavorStatus
 };

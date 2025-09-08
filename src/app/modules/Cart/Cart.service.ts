@@ -21,10 +21,7 @@ const createCartService = async (
   if(product.status==="hidden"){
     throw new ApiError(404, "This product is hidden")
   }
-  //check stock status
-  if(product.stockStatus !=="in_stock"){
-    throw new ApiError(404, `This product is ${product.stockStatus==="stock_out" ? "out of stock." : "upcoming"} `)
-  }
+
 
 
   //check product has already been added to your cart

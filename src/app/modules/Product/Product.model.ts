@@ -80,11 +80,6 @@ const productSchema = new Schema<IProduct>({
     enum: ['visible', 'hidden'],
     default: "visible"
   },
-  stockStatus: {
-    type: String,
-    enum: ['in_stock', 'stock_out', 'up_coming'],
-    default: "in_stock"
-  },
 }, {
   timestamps: true,
   versionKey: false

@@ -20,7 +20,6 @@ router.get(
 );
 router.get(
   "/get-type-drop-down",
-  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   TypeController.getTypeDropDown
 );
 router.get(
