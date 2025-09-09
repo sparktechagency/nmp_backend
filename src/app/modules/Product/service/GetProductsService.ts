@@ -120,6 +120,7 @@ const GetProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
+                typeId:1,
                 type: "$type.name",
                 category: "$category.name",
                 brand: {
@@ -201,6 +202,7 @@ const GetProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
+                typeId:1,
                 category: "$category.name",
                 brand: {
                     $cond: {
@@ -238,6 +240,7 @@ const GetProductsService = async (query: TProductQuery) => {
 
     const modifiedResult = result?.length > 0 ? result?.map((cv)=>({
         ...cv,
+        typeId:undefined,
         stockStatus: getStockStatus(cv.quantity)
     })): []
 

@@ -1,4 +1,4 @@
-export const ProductSearchableFields = ['name', 'category', 'brand', 'flavor'];
+export const ProductSearchableFields = ['name', 'type','category', 'brand', 'flavor'];
 
 export const UserProductValidFields: string[] = [
   "searchTerm",
@@ -23,7 +23,7 @@ export const ProductValidFields: string[] = [
   "sortBy",
   "sortOrder",
   "status",
-  "stockStatus"
+  "typeId"
 ];  
 
 export const BestSellerValidFields: string[] = [
