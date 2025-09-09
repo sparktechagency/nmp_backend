@@ -39,8 +39,8 @@ const informationSchema = new Schema<IInformation>({
   },
   heroImg: {
     type: String,
-    required: true,
-    trim: true
+    trim: true,
+    default: ""
   },
 }, {
   timestamps: false,

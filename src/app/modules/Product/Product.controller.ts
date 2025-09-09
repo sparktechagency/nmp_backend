@@ -102,6 +102,7 @@ const getProducts = catchAsync(async (req, res) => {
 });
 
 const updateProduct = catchAsync(async (req, res) => {
+  console.log(req.body)
   const { productId } = req.params;
   const result = await UpdateProductService(productId, req.body);
 

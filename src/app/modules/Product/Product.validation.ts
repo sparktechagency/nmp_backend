@@ -11,6 +11,15 @@ export const updateProductValidationSchema = z.object({
       message: 'name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
     })
     .trim().optional(),
+  typeId: z
+    .string({
+      invalid_type_error: "typeId must be a string",
+      required_error: "Select a type",
+    })
+    .refine((id) => Types.ObjectId.isValid(id), {
+      message: "flavorId must be a valid ObjectId",
+    })
+    .optional(),
   categoryId: z
     .string({
       invalid_type_error: "categoryId must be a string",
@@ -20,23 +29,19 @@ export const updateProductValidationSchema = z.object({
       message: "categoryId must be a valid ObjectId",
     }).optional(),
   brandId: z
-    .string({
-      invalid_type_error: "brandId must be a string",
-      required_error: "brandId is required!",
+    .string()
+    .refine((id) => id === null || Types.ObjectId.isValid(id), {
+      message: "brandId must be empty or a valid ObjectId",
     })
-    .refine((id) => Types.ObjectId.isValid(id), {
-      message: "brandId must be a valid ObjectId",
-    })
-    .optional(),
+    .optional()
+    .nullable(),
   flavorId: z
-    .string({
-      invalid_type_error: "flavorId must be a string",
-      required_error: "flavorId is required!",
+    .string()
+    .refine((id) => id === null || Types.ObjectId.isValid(id), {
+      message: "flavorId must be empty or a valid ObjectId",
     })
-    .refine((id) => Types.ObjectId.isValid(id), {
-      message: "flavorId must be a valid ObjectId",
-    })
-    .optional(),
+    .optional()
+    .nullable(),
   currentPrice: z
     .preprocess(
       (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
@@ -64,6 +69,18 @@ export const updateProductValidationSchema = z.object({
         })
     )
     .optional(),
+  quantity: z
+    .preprocess(
+      (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
+      z
+        .number({
+          required_error: "Quantity is required",
+          invalid_type_error: "Quantity must be a number",
+        })
+        .refine((val) => !isNaN(val), { message: "Quantity must be a valid number" })
+        .refine((val) => val > 0, { message: "Quantity must be greater than 0" })
+    ).optional()
+  ,
   discount: z.string({
     invalid_type_error: "discount must be string"
   }).optional(),

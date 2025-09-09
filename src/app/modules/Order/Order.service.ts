@@ -10,6 +10,10 @@ import generateTransactionId from '../../utils/generateTransactionId';
 import Stripe from 'stripe';
 import config from '../../config';
 import ProductModel from '../Product/Product.model';
+import sendProcessingEmail from '../../utils/sendProcessingEmail';
+import sendShippedEmail from '../../utils/sendShippedEmail';
+import sendDeliveredEmail from '../../utils/sendDeliveredEmail';
+import sendCancelledEmail from '../../utils/sendCancelledEmail';
 
 const stripe = new Stripe(config.stripe_secret_key as string);
 
@@ -443,23 +447,80 @@ const updateOrderService = async (orderId: string, payload: Partial<IOrder>) => 
     throw new ApiError(400, "orderId must be a valid ObjectId")
   }
   
-  const order = await OrderModel.findById(orderId);
-  if (!order) {
+  const order = await OrderModel.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(orderId)
+      }
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    {
+      $unwind: "$user"
+    },
+     {
+      $project: {
+        _id: 1,
+        token:1,
+        customerName: "$user.fullName",
+        customerEmail: "$user.email",
+        customerPhone: "$user.phone",
+        shipping:1,
+        totalPrice: 1,
+        paymentStatus: 1,
+        status: 1,
+        deliveryAt: 1,
+        products:1,
+        createdAt: "$createdAt",
+      }
+    },
+  ]);
+
+
+  if (order.length===0) {
     throw new ApiError(404, "orderId not found");
   }
 
+
   //if status==="delivered"
   if(payload.status==="delivered"){
-    if(order.paymentStatus !=="paid"){
+    if(order[0].paymentStatus !=="paid"){
       throw new ApiError(403, "This order has not been paid for yet.")
     }
     payload.deliveryAt=new Date()
   }
 
+
   const result = await OrderModel.updateOne(
     { _id: orderId },
     payload,
   );
+
+
+  if(payload.status==="delivered"){
+      await sendDeliveredEmail(order[0].customerEmail, order[0])
+    return;
+  }
+  if(payload.status==="processing"){
+    await sendProcessingEmail(order[0].customerEmail, order[0])
+    return;
+  }
+
+  if (payload.status === "shipped") {
+    await sendShippedEmail(order[0].customerEmail, order[0])
+    return;
+  }
+
+  if (payload.status === "cancelled") {
+    await sendCancelledEmail(order[0].customerEmail, order[0])
+    return;
+  }
 
   return result;
 };

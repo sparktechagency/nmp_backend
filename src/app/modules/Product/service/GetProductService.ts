@@ -15,6 +15,17 @@ const getProductService = async (productId: string) => {
         },
         {
             $lookup: {
+                from: "types",
+                localField: "typeId",
+                foreignField: "_id",
+                as: "type"
+            }
+        },
+        {
+            $unwind: "$type"
+        },
+        {
+            $lookup: {
                 from: "categories",
                 localField: "categoryId",
                 foreignField: "_id",
@@ -33,7 +44,10 @@ const getProductService = async (productId: string) => {
             }
         },
         {
-            $unwind: "$brand"
+            $unwind: {
+                "path": "$brand",
+                'preserveNullAndEmptyArrays': true, //when brandId is empty or null
+            }
         },
         {
             $lookup: {
@@ -44,7 +58,10 @@ const getProductService = async (productId: string) => {
             }
         },
         {
-            $unwind: "$flavor"
+            $unwind: {
+                "path": "$flavor",
+                'preserveNullAndEmptyArrays': true, //when flavorId is empty or null
+            }
         },
         {
             $lookup: {
@@ -63,14 +80,41 @@ const getProductService = async (productId: string) => {
             $project: {
                 _id: 1,
                 name: 1,
+                typeId: 1,
+                type: "$type.name",
                 categoryId: "$categoryId",
                 category: "$category.name",
-                brandId: "$brandId",
-                brand: "$brand.name",
-                flavorId: "$flavorId",
-                flavor: "$flavor.name",
+                brandId: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }] }, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brandId"
+                    }
+                },
+                brand: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$brandId", null] }, { $not: ["$brandId"] }] }, //if brandId=== null or empty(not exist)
+                        then: "",
+                        else: "$brand.name"
+                    }
+                },
+                flavorId: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavorId"
+                    }
+                },
+                flavor: {
+                    $cond: {
+                        if: { $or: [{ $eq: ["$flavorId", null] }, { $not: ["$flavorId"] }] }, //if flavorId=== null or empty(not exist)
+                        then: "",
+                        else: "$flavor.name"
+                    }
+                },
                 currentPrice: "$currentPrice",
                 originalPrice: "$originalPrice",
+                quantity: "$quantity",
                 isFeatured: "$isFeatured",
                 discount: "$discount",
                 ratings: "$ratings",

@@ -1,6 +1,9 @@
 
 import { IInformation } from './Information.interface';
 import InformationModel from './Information.model';
+import ApiError from '../../errors/ApiError';
+import cloudinary from '../../helper/cloudinary';
+import { Request } from 'express';
 
 const createInformationService = async (
   payload: IInformation,
@@ -38,7 +41,42 @@ const getInformationService = async () => {
   return result;
 };
 
+
+const updateHeroImgService = async (req: Request) => {
+  const file = req?.file as Express.Multer.File;
+  if (!file) {
+    throw new ApiError(400, "Upload image");
+  }
+
+  //upload a image
+  let image: string = "";
+  if (req.file && (req.file as Express.Multer.File)) {
+    const file = req.file as Express.Multer.File;
+    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
+      folder: 'NMP-Ecommerce',
+      // width: 300,
+      // crop: 'scale',
+    });
+    image = cloudinaryRes?.secure_url;
+    // fs.unlink(file.path);
+  }
+
+  if (!image) {
+    throw new ApiError(400, "upload a image")
+  }
+
+  const result = await InformationModel.updateOne(
+    { },
+    { heroImg: image },
+    { runValidators: true }
+  );
+
+  return result;
+}
+
+
 export {
   createInformationService,
-  getInformationService
+  getInformationService,
+  updateHeroImgService
 };

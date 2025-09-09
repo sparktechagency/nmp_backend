@@ -4,6 +4,7 @@ import { createInformationValidationSchema } from './Information.validation';
 import { UserRole } from '../User/user.constant';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import InformationController from './Information.controller';
+import upload from '../../helper/upload';
 
 const router = express.Router();
 
@@ -17,6 +18,13 @@ router.patch(
 router.get(
   '/get-information',
   InformationController.getInformation
+);
+
+router.patch(
+  '/update-hero-img',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  upload.single("image"),
+  InformationController.updateHeroImg,
 );
 
 

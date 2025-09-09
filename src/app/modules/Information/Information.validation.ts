@@ -1,6 +1,20 @@
 import { z } from 'zod';
 
 export const createInformationValidationSchema = z.object({
+  title: z
+    .string({
+      invalid_type_error: "title must be string",
+      required_error: "title is required",
+    })
+    .trim()
+    .min(1, "title is required"),
+  subTitle: z
+    .string({
+      invalid_type_error: "subTitle must be string",
+      required_error: "subTitle is required",
+    })
+    .trim()
+    .min(1, "subTitle is required"),
   email: z
     .string({
       invalid_type_error: "email must be string",

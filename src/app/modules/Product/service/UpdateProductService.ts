@@ -47,24 +47,59 @@ const UpdateProductService = async (productId: string, payload: Partial<IProduct
     if (!category) {
       throw new ApiError(404, 'This categoryId not found');
     }
+    //check categoryId is associated with specific type
+    if (payload.typeId) {
+      if (category.typeId.toString() !== payload.typeId.toString()) {
+        throw new ApiError(400, "This categoryId is not associated with this type")
+      }
+    } else {
+      if (category.typeId.toString() !== product.typeId.toString()) {
+        throw new ApiError(400, "This categoryId is not associated with this type")
+      }
+    } 
   }
 
   //check brandId
   if (brandId) {
-    const brand = await BrandModel.findById(brandId)
-    if (!brand) {
+    const existingBrand = await BrandModel.findById(brandId);
+    if (!existingBrand) {
       throw new ApiError(404, 'This brandId not found');
     }
+
+    //check brandId is associated with specific type
+    if (payload.typeId) {
+      if (existingBrand.typeId.toString() !== payload.typeId.toString()) {
+        throw new ApiError(400, "This brandId is not associated with this type")
+      }
+    } else {
+      if (existingBrand.typeId.toString() !== product.typeId.toString()) {
+        throw new ApiError(400, "This brandId is not associated with this type")
+      }
+    }
+    payload.brandId = brandId
   }
 
   //check flavorId
   if (flavorId) {
-    const flavor = await FlavorModel.findById(flavorId)
-    if (!flavor) {
+    const existingFlavor = await FlavorModel.findById(flavorId);
+    if (!existingFlavor) {
       throw new ApiError(404, 'This flavorId not found');
     }
+
+    //check flavorId is associated with specific type
+    if (payload.typeId) {
+      if (existingFlavor.typeId.toString() !== payload.typeId.toString()) {
+        throw new ApiError(400, "This flavorId is not associated with this type")
+      }
+    } else {
+      if (existingFlavor.typeId.toString() !== product.typeId.toString()) {
+        throw new ApiError(400, "This flavorId is not associated with this type")
+      }
+    } 
+    payload.flavorId = flavorId
   }
- 
+
+
   //check product name is already existed
   if (name) {
     const slug = slugify(name).toLowerCase();

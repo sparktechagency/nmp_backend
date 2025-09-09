@@ -26,11 +26,13 @@ const productSchema = new Schema<IProduct>({
   },
   brandId: {
     type: Schema.Types.ObjectId,
-    ref: "Brand"
+    ref: "Brand",
+    default: null
   },
   flavorId: {
     type: Schema.Types.ObjectId,
-    ref: "Flavor"
+    ref: "Flavor",
+    default: null
   },
   currentPrice: {
     type: Number,

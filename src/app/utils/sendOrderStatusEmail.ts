@@ -1,7 +1,7 @@
 import config from "../config";
 import nodemailer from "nodemailer";
 
-const sendReplyEmail = async (email: string, replyMessage: string) => {
+const sendOrderStatusEmail = async (email: string, replyMessage: string) => {
   //transporter
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -15,7 +15,7 @@ const sendReplyEmail = async (email: string, replyMessage: string) => {
 
 
   const mailOptions = {
-    from: `NMP Ecommerce ${config.smtp_from}`, //sender email address//smtp-username
+    from: `MTK Ecommerce ${config.smtp_from}`, //sender email address//smtp-username
     to: email, //receiver email address
     subject: "Reply Message - MTK Ecommerce",
     html: `
@@ -121,4 +121,4 @@ const sendReplyEmail = async (email: string, replyMessage: string) => {
   return await transporter.sendMail(mailOptions);
 };
 
-export default sendReplyEmail;
+export default sendOrderStatusEmail;
