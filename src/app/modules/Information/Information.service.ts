@@ -25,11 +25,14 @@ const getInformationService = async () => {
   const result = await InformationModel.findOne().select("-createdAt -updatedAt -_id");
   if (!result) {
     return {
-      "email": "",
-      "phone": "",
-      "address": "",
-      "instagram": "",
-      "facebook": ""
+      "title": "Transform Every Puff into Pure Satisfaction",
+      "subTitle": "Explore Our Premium Collection of Vapes and Accessories That Deliver Unmatched Quality and Flavor.",
+      "heroImg": "https://res.cloudinary.com/dwok2hmb7/image/upload/v1757327095/NMP-Ecommerce/moltzcyv0wfpbiigq6o2.jpg",
+      "email": "supportnmp@gmail.com",
+      "phone": "01823969823",
+      "address": "Washition",
+      "instagram": "https://www.instagram.com/",
+      "facebook": "https://www.facebook.com/"
     }
   }
   return result;

@@ -1,37 +1,51 @@
 import { Schema, model } from 'mongoose';
 import { IInformation } from './Information.interface';
-      
+
 const informationSchema = new Schema<IInformation>({
-  email: { 
+  title: {
     type: String,
     required: true,
     trim: true
   },
-  phone: { 
+  subTitle: {
     type: String,
     required: true,
     trim: true
   },
-  address: { 
+  email: {
     type: String,
     required: true,
     trim: true
   },
-  instagram: { 
+  phone: {
     type: String,
     required: true,
     trim: true
   },
-  facebook: { 
+  address: {
     type: String,
     required: true,
     trim: true
-  }
+  },
+  instagram: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  facebook: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  heroImg: {
+    type: String,
+    required: true,
+    trim: true
+  },
 }, {
-    timestamps: false,
-    versionKey: false
+  timestamps: false,
+  versionKey: false
 })
-      
+
 const InformationModel = model<IInformation>('Information', informationSchema);
 export default InformationModel;
-      
