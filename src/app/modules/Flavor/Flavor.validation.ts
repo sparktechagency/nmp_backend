@@ -47,5 +47,11 @@ export const updateFlavorValidationSchema = z.object({
         })
         .refine((id) => Types.ObjectId.isValid(id), {
             message: "typeId must be a valid ObjectId",
-        }).optional()
+        }).optional(),
+    status: z.string({
+        invalid_type_error: "status must be a valid string value.",
+    })
+        .refine((val) => ['visible', 'hidden'].includes(val), {
+            message: "status must be one of: 'visible', 'hidden'",
+        }).optional(),
 });

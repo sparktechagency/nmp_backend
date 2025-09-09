@@ -109,7 +109,7 @@ const getFilterOptionsService = async (typeId: string) => {
 
   const categoryDropDown = await CategoryModel.find(filterQuery).select('name').sort('-createdAt');
   const brandDropDown = await BrandModel.find(filterQuery).select('name').sort('-createdAt');
-  const flavorDropDown = await FlavorModel.find(filterQuery).select('-createdAt -updatedAt -slug').sort('-createdAt');
+  const flavorDropDown = await FlavorModel.find(filterQuery).select('name').sort('-createdAt');
   
   return {
     categoryDropDown,

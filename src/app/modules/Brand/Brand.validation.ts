@@ -40,7 +40,7 @@ export const updateBrandValidationSchema = z.object({
         })
         .regex(/^[^~!@#$%\^*\+\?><=;:"]*$/, {
             message: 'name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
-        }),
+        }).optional(),
     typeId: z
         .string({
             invalid_type_error: "typeId must be a string",

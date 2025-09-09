@@ -4,6 +4,7 @@ import { makeFilterQuery, makeSearchQuery } from "../../../helper/QueryBuilder";
 import { ProductSearchableFields } from "../Product.constant";
 import { TProductQuery } from "../Product.interface";
 import ProductModel from "../Product.model";
+import getStockStatus from "../../../utils/getStockStatus";
 
 
 const GetProductsService = async (query: TProductQuery) => {
@@ -48,6 +49,17 @@ const GetProductsService = async (query: TProductQuery) => {
 
 
     const result = await ProductModel.aggregate([
+        {
+            $lookup: {
+                from: "types",
+                localField: "typeId",
+                foreignField: "_id",
+                as: "type"
+            }
+        },
+        {
+            $unwind: "$type"
+        },
         {
             $lookup: {
                 from: "categories",
@@ -108,6 +120,7 @@ const GetProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
+                type: "$type.name",
                 category: "$category.name",
                 brand: {
                     $cond: {
@@ -223,6 +236,11 @@ const GetProductsService = async (query: TProductQuery) => {
     ]);
 
 
+    const modifiedResult = result?.length > 0 ? result?.map((cv)=>({
+        ...cv,
+        stockStatus: getStockStatus(cv.quantity)
+    })): []
+
     const totalCount = totalCountResult[0]?.totalCount || 0;
     const totalPages = Math.ceil(totalCount / Number(limit));
 
@@ -233,7 +251,7 @@ const GetProductsService = async (query: TProductQuery) => {
             totalPages,
             total: totalCount,
         },
-        data: result,
+        data: modifiedResult,
     };
 };
 
