@@ -76,7 +76,7 @@ const getBestSellerProducts = catchAsync(async (req, res) => {
 });
 
 const getFeatureProducts = catchAsync(async (req, res) => {
-  const validatedQuery = pickValidFields(req.query, BestSellerValidFields);
+  const validatedQuery = pickValidFields(req.query, ProductValidFields);
   const result = await GetFeatureProductsService(validatedQuery);
 
   sendResponse(res, {
