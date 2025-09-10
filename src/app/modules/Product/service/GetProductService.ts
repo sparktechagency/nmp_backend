@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
 import ObjectId from "../../../utils/ObjectId";
+import getStockStatus from "../../../utils/getStockStatus";
 
 
 const getProductService = async (productId: string) => {
@@ -132,7 +133,10 @@ const getProductService = async (productId: string) => {
         throw new ApiError(404, 'Product Not Found');
     }
 
-    return product[0];
+    return {
+        ...product[0],
+        stockStatus: getStockStatus(product[0].quantity)
+    };
 
 };
 

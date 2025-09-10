@@ -2,9 +2,12 @@ import { Types } from "mongoose";
 import { TProductQuery } from "../Product.interface";
 import ProductModel from "../Product.model";
 import ApiError from "../../../errors/ApiError";
+import { makeSearchQuery } from "../../../helper/QueryBuilder";
+import { ProductSearchableFields } from "../Product.constant";
 
 const GetFeatureProductsService = async (query: TProductQuery) => {
     const {
+        searchTerm,
         page = 1,
         limit = 10,
         typeId,
@@ -13,6 +16,11 @@ const GetFeatureProductsService = async (query: TProductQuery) => {
     // 2. Set up pagination
     const skip = (Number(page) - 1) * Number(limit);
 
+    //4. setup searching
+    let searchQuery = {};
+    if (searchTerm) {
+        searchQuery = makeSearchQuery(searchTerm, ProductSearchableFields);
+    }
     //5 setup filters
     let filterQuery = {};
 
@@ -31,7 +39,8 @@ const GetFeatureProductsService = async (query: TProductQuery) => {
         {
             $match: {
                 isFeatured: true,
-                ...filterQuery
+                ...filterQuery,
+                ...searchQuery
             }
         },
         { $sort: { createdAt: -1 } },
@@ -106,7 +115,8 @@ const GetFeatureProductsService = async (query: TProductQuery) => {
         {
             $match: {
                 isFeatured: true,
-                 ...filterQuery
+                 ...filterQuery,
+                 ...searchQuery
             }
         },
         { $limit: 20 },
