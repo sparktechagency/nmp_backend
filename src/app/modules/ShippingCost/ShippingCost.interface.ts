@@ -2,6 +2,7 @@
 
 export interface IShippingCost {
   name: string;
+  slug: string;
   minSubTotal: number;
   maxSubTotal: number;
   cost: number;

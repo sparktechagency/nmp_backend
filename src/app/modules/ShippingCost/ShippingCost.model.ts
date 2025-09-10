@@ -3,8 +3,16 @@ import { IShippingCost } from './ShippingCost.interface';
 
 const shippingcostSchema = new Schema<IShippingCost>({
   name: {
-    type: String, required: true
+    type: String,
+    required: true,
+    unique: true
   }, // e.g., "Standard Shipping", "Free Above 100"
+  slug: {
+    type: String,
+    required: true,
+    trim: true,
+    unique: true
+  },
   minSubTotal: {
     type: Number,
     default: 0

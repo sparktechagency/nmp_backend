@@ -1,6 +1,6 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { createShippingCostService, getSingleShippingCostService, getAllShippingCostsService, updateShippingCostService, deleteShippingCostService } from './ShippingCost.service';
+import { createShippingCostService, getSingleShippingCostService, getAllShippingCostsService, updateShippingCostService, deleteShippingCostService, getMyShippingCostService } from './ShippingCost.service';
 
 const createShippingCost = catchAsync(async (req, res) => {
   const result = await createShippingCostService(req.body);
@@ -13,6 +13,17 @@ const createShippingCost = catchAsync(async (req, res) => {
   });
 });
 
+const getMyShippingCost = catchAsync(async (req, res) => {
+  const loginUserId = req.headers.id;
+  const result = await getMyShippingCostService(loginUserId as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Shipping Cost is retrieved successfully',
+    data: result,
+  });
+});
 const getSingleShippingCost = catchAsync(async (req, res) => {
   const { shippingcostId } = req.params;
   const result = await getSingleShippingCostService(shippingcostId);
@@ -64,6 +75,7 @@ const deleteShippingCost = catchAsync(async (req, res) => {
 const ShippingCostController = {
   createShippingCost,
   getSingleShippingCost,
+  getMyShippingCost,
   getAllShippingCosts,
   updateShippingCost,
   deleteShippingCost,

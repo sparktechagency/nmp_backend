@@ -14,6 +14,7 @@ import sendProcessingEmail from '../../utils/sendProcessingEmail';
 import sendShippedEmail from '../../utils/sendShippedEmail';
 import sendDeliveredEmail from '../../utils/sendDeliveredEmail';
 import sendCancelledEmail from '../../utils/sendCancelledEmail';
+import calculateShippingCost from '../../utils/calculateShippingCost';
 
 const stripe = new Stripe(config.stripe_secret_key as string);
 
@@ -45,8 +46,15 @@ const createOrderService = async (
     throw new ApiError(404, "No items in cart.")
   }
   
-  //count totalPrice
-  const totalPrice = carts?.reduce((total, currentValue)=>total+ (currentValue.price*currentValue.quantity), 0);
+  //count subTotal
+  const subTotal = carts?.reduce((total, currentValue) => total + (currentValue.price * currentValue.quantity), 0);
+
+  //count shipping cost
+  const shippingCost = await calculateShippingCost(subTotal);
+
+  //count total
+  const total = Number(subTotal + shippingCost);
+
   const cartProducts = carts?.map((cv) => ({
     ...cv,
     total: Number(cv.price) * Number(cv.quantity)
@@ -117,7 +125,9 @@ const createOrderService = async (
           userId: loginUserId,
           token,
           products: cartProducts,
-          totalPrice,
+          subTotal,
+          shippingCost,
+          total,
           transactionId,
           shipping: payload
         }

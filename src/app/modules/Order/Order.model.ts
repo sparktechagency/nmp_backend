@@ -96,7 +96,16 @@ const orderSchema = new Schema<IOrder>({
       message: "At least one product is required in the order."
     }
   },
-  totalPrice: {
+  subTotal: {
+    type: Number,
+    required: true,
+  },
+  shippingCost: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  total: {
     type: Number,
     required: true,
   },

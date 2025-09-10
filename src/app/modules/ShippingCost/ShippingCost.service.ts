@@ -4,12 +4,37 @@ import { ShippingCostSearchableFields } from './ShippingCost.constant';
 import { IShippingCost, TShippingCostQuery } from './ShippingCost.interface';
 import ShippingCostModel from './ShippingCost.model';
 import { makeFilterQuery, makeSearchQuery } from '../../helper/QueryBuilder';
+import slugify from 'slugify';
+import CartModel from '../Cart/Cart.model';
+import ObjectId from '../../utils/ObjectId';
 import calculateShippingCost from '../../utils/calculateShippingCost';
 
 const createShippingCostService = async (
   payload: IShippingCost,
 ) => {
-  //const cost = await calculateShippingCost(130);
+  const { name, priority } = payload;
+  //make slug
+  const slug = slugify(name).toLowerCase();
+  payload.slug = slug;
+
+  //check shipping cost name is already existed
+  const existingName = await ShippingCostModel.findOne({
+    slug
+  });
+
+  if (existingName) {
+    throw new ApiError(409, "This name is already taken.")
+  }
+
+
+  //check priority
+  const existingPriority = await ShippingCostModel.findOne({
+    priority
+  });
+
+  if (existingPriority) {
+    throw new ApiError(409, "Priority can not be same")
+  }
 
   const result = await ShippingCostModel.create(payload);
   return result;
@@ -50,21 +75,14 @@ const getAllShippingCostsService = async (query: TShippingCostQuery) => {
         ...filterQuery, // Apply filters
       },
     },
+    { $sort: { [sortBy]: sortDirection } }, 
     {
       $project: {
-        _id: 1,
-        fullName: 1,
-        email: 1,
-        phone: 1,
-        gender:1,
-        role: 1,
-        status: 1,
-        profileImg: 1,
-        createdAt: 1,
-        updatedAt: 1,
+        slug:0,
+        createdAt: 0,
+        updatedAt: 0,
       },
     },
-    { $sort: { [sortBy]: sortDirection } }, 
     { $skip: skip }, 
     { $limit: Number(limit) }, 
   ]);
@@ -93,6 +111,41 @@ return {
   data: result,
 };
 };
+
+const getMyShippingCostService = async (loginUserId: string) => {
+  const carts = await CartModel.aggregate([
+    {
+      $match: {
+        userId: new ObjectId(loginUserId)
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        userId: 0,
+        createdAt: 0,
+        updatedAt: 0
+      }
+    }
+  ]);
+
+  if (carts?.length === 0) {
+    throw new ApiError(404, "No items in cart.")
+  }
+  //count subTotal
+  const subTotal = carts?.reduce((total, currentValue) => total + (currentValue.price * currentValue.quantity), 0);
+
+  //count shipping cost
+  const shippingCost = await calculateShippingCost(subTotal);
+
+  //count total
+  const total = Number(subTotal + shippingCost);
+  return {
+    subTotal,
+    shippingCost,
+    total
+  }
+}
 
 const getSingleShippingCostService = async (shippingcostId: string) => {
   const result = await ShippingCostModel.findById(shippingcostId);
@@ -130,6 +183,7 @@ export {
   createShippingCostService,
   getAllShippingCostsService,
   getSingleShippingCostService,
+  getMyShippingCostService,
   updateShippingCostService,
   deleteShippingCostService,
 };

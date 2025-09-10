@@ -25,7 +25,9 @@ export interface IOrder {
   token: string;
   userId: Types.ObjectId;
   products: IOrderItem[];
-  totalPrice: number;
+  shippingCost: number;
+  subTotal: number;
+  total: number;
   transactionId: string;
   paymentMethod?: string;
   paymentStatus?: TPaymentStatus,

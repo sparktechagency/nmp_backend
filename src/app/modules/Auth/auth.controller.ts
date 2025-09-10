@@ -54,8 +54,7 @@ const loginUser = catchAsync(async (req, res) => {
     success: true,
     message: "Login Success",
     data: {
-      accessToken,
-      refreshToken
+      accessToken
     }
   })
 });

@@ -15,6 +15,11 @@ router.post(
 );
 
 router.get(
+  '/get-my-shipping-cost',
+  AuthMiddleware("user"),
+  ShippingCostController.getMyShippingCost,
+);
+router.get(
   '/get-single-shipping-cost/:shippingcostId',
   ShippingCostController.getSingleShippingCost,
 );
