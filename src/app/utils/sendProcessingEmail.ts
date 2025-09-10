@@ -62,11 +62,19 @@ const sendProcessingEmail = async (email: string, orderData:any) => {
                                 <table width="100%" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td style="color: #6b7280; font-size: 14px; padding: 5px 0;">Order Number:</td>
-                                        <td style="color: #1f2937; font-size: 14px; font-weight: bold; text-align: right; padding: 5px 0;">${orderData?.token}</td>
+                                        <td style="color: #1f2937; font-size: 16px; font-weight: bold; text-align: right; padding: 5px 0;">${orderData?.token}</td>
                                     </tr>
                                     <tr>
-                                        <td style="color: #6b7280; font-size: 14px; padding: 5px 0;">Total:</td>
-                                        <td style="color: #1f2937; font-size: 16px; font-weight: bold; text-align: right; padding: 5px 0;">$${orderData?.totalPrice}</td>
+                                        <td style="color: #6b7280; font-size: 14px; padding: 5px 0;">Sub Total:</td>
+                                        <td style="color: #1f2937; font-size: 14px; font-weight: bold; text-align: right; padding: 5px 0;">${orderData?.subTotal}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #6b7280; font-size: 14px; padding: 5px 0;">Shipping Cost:</td>
+                                        <td style="color: #1f2937; font-size: 14px; font-weight: bold; text-align: right; padding: 5px 0;">${orderData?.shippingCost}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color: #6b7280; font-size: 14px; font-weight: bold; padding: 5px 0;">Total:</td>
+                                        <td style="color: #1f2937; font-size: 16px; font-weight: bold; text-align: right; padding: 5px 0;">$${orderData?.total}</td>
                                     </tr>
                                 </table>
                             </div>
