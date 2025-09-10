@@ -8,6 +8,7 @@ import slugify from 'slugify';
 import CartModel from '../Cart/Cart.model';
 import ObjectId from '../../utils/ObjectId';
 import calculateShippingCost from '../../utils/calculateShippingCost';
+import { Types } from 'mongoose';
 
 const createShippingCostService = async (
   payload: IShippingCost,
@@ -39,7 +40,6 @@ const createShippingCostService = async (
   const result = await ShippingCostModel.create(payload);
   return result;
 };
-
 
 const getAllShippingCostsService = async (query: TShippingCostQuery) => {
   const {
@@ -75,7 +75,6 @@ const getAllShippingCostsService = async (query: TShippingCostQuery) => {
         ...filterQuery, // Apply filters
       },
     },
-    { $sort: { [sortBy]: sortDirection } }, 
     {
       $project: {
         slug:0,
@@ -83,6 +82,7 @@ const getAllShippingCostsService = async (query: TShippingCostQuery) => {
         updatedAt: 0,
       },
     },
+    { $sort: { priority: 1 } }, 
     { $skip: skip }, 
     { $limit: Number(limit) }, 
   ]);
@@ -147,21 +147,43 @@ const getMyShippingCostService = async (loginUserId: string) => {
   }
 }
 
-const getSingleShippingCostService = async (shippingcostId: string) => {
-  const result = await ShippingCostModel.findById(shippingcostId);
-  if (!result) {
-    throw new ApiError(404, 'ShippingCost Not Found');
+const updateShippingCostService = async (shippingcostId: string, payload: Partial<IShippingCost>) => {
+  const { name, priority } = payload;
+  if (!Types.ObjectId.isValid(shippingcostId)) {
+    throw new ApiError(400, "shippingCostId must be a valid ObjectId")
   }
 
-  return result;
-};
-
-const updateShippingCostService = async (shippingcostId: string, payload: any) => {
- 
   const shippingcost = await ShippingCostModel.findById(shippingcostId);
-  if(!shippingcost){
-    throw new ApiError(404, "ShippingCost Not Found");
+  if (!shippingcost) {
+    throw new ApiError(404, "ShippingCostId Not Found");
   }
+
+  //check name
+  if (name) {
+    const slug = slugify(name).toLowerCase();
+    //set slug
+    payload.slug = slug;
+    const costExist = await ShippingCostModel.findOne({
+      _id: { $ne: shippingcostId },
+      slug
+    })
+    if (costExist) {
+      throw new ApiError(409, 'Sorry! This Name is already existed');
+    }
+  }
+
+
+  //check priority
+  if (priority) {
+    const priorityExist = await ShippingCostModel.findOne({
+      _id: { $ne: shippingcostId },
+      priority
+    })
+    if (priorityExist) {
+      throw new ApiError(409, "Priority can not be same")
+    }
+  }
+
   const result = await ShippingCostModel.updateOne(
     { _id: shippingcostId },
     payload,
@@ -182,7 +204,6 @@ const deleteShippingCostService = async (shippingcostId: string) => {
 export {
   createShippingCostService,
   getAllShippingCostsService,
-  getSingleShippingCostService,
   getMyShippingCostService,
   updateShippingCostService,
   deleteShippingCostService,

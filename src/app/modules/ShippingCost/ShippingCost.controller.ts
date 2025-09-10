@@ -1,6 +1,6 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { createShippingCostService, getSingleShippingCostService, getAllShippingCostsService, updateShippingCostService, deleteShippingCostService, getMyShippingCostService } from './ShippingCost.service';
+import { createShippingCostService, getAllShippingCostsService, updateShippingCostService, deleteShippingCostService, getMyShippingCostService } from './ShippingCost.service';
 
 const createShippingCost = catchAsync(async (req, res) => {
   const result = await createShippingCostService(req.body);
@@ -24,17 +24,7 @@ const getMyShippingCost = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getSingleShippingCost = catchAsync(async (req, res) => {
-  const { shippingcostId } = req.params;
-  const result = await getSingleShippingCostService(shippingcostId);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'ShippingCost is retrieved successfully',
-    data: result,
-  });
-});
 
 const getAllShippingCosts = catchAsync(async (req, res) => {
   const result = await getAllShippingCostsService(req.query);
@@ -49,8 +39,8 @@ const getAllShippingCosts = catchAsync(async (req, res) => {
 });
 
 const updateShippingCost = catchAsync(async (req, res) => {
-  const { shippingcostId } = req.params;
-  const result = await updateShippingCostService(shippingcostId, req.body);
+  const { shippingCostId } = req.params;
+  const result = await updateShippingCostService(shippingCostId, req.body);
 
   sendResponse(res, {
     statusCode: 200,
@@ -61,8 +51,8 @@ const updateShippingCost = catchAsync(async (req, res) => {
 });
 
 const deleteShippingCost = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await deleteShippingCostService(id);
+  const { shippingCostId } = req.params;
+  const result = await deleteShippingCostService(shippingCostId);
 
   sendResponse(res, {
     statusCode: 200,
@@ -74,7 +64,6 @@ const deleteShippingCost = catchAsync(async (req, res) => {
 
 const ShippingCostController = {
   createShippingCost,
-  getSingleShippingCost,
   getMyShippingCost,
   getAllShippingCosts,
   updateShippingCost,

@@ -19,24 +19,23 @@ router.get(
   AuthMiddleware("user"),
   ShippingCostController.getMyShippingCost,
 );
-router.get(
-  '/get-single-shipping-cost/:shippingcostId',
-  ShippingCostController.getSingleShippingCost,
-);
 
 router.patch(
-  '/update-shipping-cost/:shippingcostId',
+  '/update-shipping-cost/:shippingCostId',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   validationMiddleware(updateShippingCostValidationSchema),
   ShippingCostController.updateShippingCost,
 );
 
 router.delete(
-  '/delete-shipping-cost/:shippingcostId',
+  '/delete-shipping-cost/:shippingCostId',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
   ShippingCostController.deleteShippingCost,
 );
 
 router.get(
   '/get-all-shipping-costs',
+   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   ShippingCostController.getAllShippingCosts,
 );
 
