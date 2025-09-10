@@ -89,6 +89,21 @@ const createOrderService = async (
     quantity: product.quantity,
   }));
 
+
+    // add shipping as one item for the order
+  if (shippingCost > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Shipping Cost",
+        },
+        unit_amount: shippingCost * 100, // in cents
+      },
+      quantity: 1,
+    });
+  }
+
    //generate token
   const token = Math.floor(100000 + Math.random() * 900000);
 
