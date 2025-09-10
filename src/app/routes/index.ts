@@ -14,6 +14,7 @@ import PolicyRoutes from '../modules/Policy/Policy.route';
 import AdminRoutes from '../modules/Admin/admin.route';
 import DashboardRoutes from '../modules/Dashboard/Dashboard.route';
 import TypeRoutes from '../modules/Type/Type.route';
+import ShippingCostRoutes from '../modules/ShippingCost/ShippingCost.route';
 
 
 
@@ -80,6 +81,10 @@ const moduleRoutes = [
     {
         path: "/dashboard",
         route: DashboardRoutes
+    },
+    {
+        path: "/shipping-cost",
+        route: ShippingCostRoutes
     }
 ]
 

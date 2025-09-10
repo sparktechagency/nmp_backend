@@ -1,4 +1,4 @@
-export const ShippingCostSearchableFields = ['name', 'description'];
+export const ShippingCostSearchableFields = ['name'];
 
 export const ShippingCostValidFields: string[] = [
   "searchTerm",

@@ -2,7 +2,11 @@
 
 export interface IShippingCost {
   name: string;
-  description?: string;
+  minSubTotal: number;
+  maxSubTotal: number;
+  cost: number;
+  isActive: boolean;
+  priority: number;
 };
 
 export type TShippingCostQuery = {

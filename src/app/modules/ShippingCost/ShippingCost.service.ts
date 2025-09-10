@@ -4,13 +4,17 @@ import { ShippingCostSearchableFields } from './ShippingCost.constant';
 import { IShippingCost, TShippingCostQuery } from './ShippingCost.interface';
 import ShippingCostModel from './ShippingCost.model';
 import { makeFilterQuery, makeSearchQuery } from '../../helper/QueryBuilder';
+import calculateShippingCost from '../../utils/calculateShippingCost';
 
 const createShippingCostService = async (
   payload: IShippingCost,
 ) => {
+  //const cost = await calculateShippingCost(130);
+
   const result = await ShippingCostModel.create(payload);
   return result;
 };
+
 
 const getAllShippingCostsService = async (query: TShippingCostQuery) => {
   const {
