@@ -1,6 +1,6 @@
 import express from 'express';
 import validationMiddleware from '../../middlewares/validationMiddleware';
-import { createInformationValidationSchema } from './Information.validation';
+import { countDownDateSchema, createInformationValidationSchema } from './Information.validation';
 import { UserRole } from '../User/user.constant';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import InformationController from './Information.controller';
@@ -25,6 +25,20 @@ router.patch(
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   upload.single("image"),
   InformationController.updateHeroImg,
+);
+
+router.patch(
+  '/update-count-down-img',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  upload.single("image"),
+  InformationController.updateCountDownImg,
+);
+
+router.patch(
+  '/update-count-down-time',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  validationMiddleware(countDownDateSchema),
+  InformationController.updateCountDownTime,
 );
 
 

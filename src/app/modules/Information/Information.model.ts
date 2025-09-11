@@ -44,11 +44,15 @@ const informationSchema = new Schema<IInformation>({
   },
   age: {
     type: Number,
-    trim: true,
+    required: true
   },
   countDownDate: {
     type: Date,
-    required: true
+  },
+  countDownImg: {
+    type: String,
+    trim: true,
+    default: ""
   },
 }, {
   timestamps: false,

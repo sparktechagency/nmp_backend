@@ -1,6 +1,6 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { createInformationService, getInformationService, updateHeroImgService } from './Information.service';
+import { createInformationService, getInformationService, updateCountDownImgService, updateCountDownTimeService, updateHeroImgService } from './Information.service';
 
 const createInformation = catchAsync(async (req, res) => {
   const result = await createInformationService(req.body);
@@ -37,11 +37,35 @@ const updateHeroImg = catchAsync(async (req, res) => {
   });
 });
 
+const updateCountDownImg = catchAsync(async (req, res) => {
+  const result = await updateCountDownImgService(req);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `Image is updated successfully`,
+    data: result,
+  });
+});
+
+const updateCountDownTime = catchAsync(async (req, res) => {
+  const result = await updateCountDownTimeService(req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `Count Down Time is updated successfully`,
+    data: result,
+  });
+});
+
 
 
 const InformationController = {
   createInformation,
   getInformation,
-  updateHeroImg
+  updateHeroImg,
+  updateCountDownImg,
+  updateCountDownTime
 };
 export default InformationController;

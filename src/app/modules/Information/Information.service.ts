@@ -4,6 +4,7 @@ import InformationModel from './Information.model';
 import ApiError from '../../errors/ApiError';
 import cloudinary from '../../helper/cloudinary';
 import { Request } from 'express';
+import convertUTCtimeString from '../../utils/convertUTCtimeString';
 
 const createInformationService = async (
   payload: IInformation,
@@ -77,9 +78,70 @@ const updateHeroImgService = async (req: Request) => {
   return result;
 }
 
+const updateCountDownImgService = async (req: Request) => {
+  const file = req?.file as Express.Multer.File;
+  if (!file) {
+    throw new ApiError(400, "Upload image");
+  }
+
+  //upload a image
+  let image: string = "";
+  if (req.file && (req.file as Express.Multer.File)) {
+    const file = req.file as Express.Multer.File;
+    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
+      folder: 'NMP-Ecommerce',
+      // width: 300,
+      // crop: 'scale',
+    });
+    image = cloudinaryRes?.secure_url;
+    // fs.unlink(file.path);
+  }
+
+  if (!image) {
+    throw new ApiError(400, "upload a image")
+  }
+
+  const result = await InformationModel.updateOne(
+    { },
+    { countDownImg: image },
+    { runValidators: true }
+  );
+
+  return result;
+}
+
+const updateCountDownTimeService = async (payload: {date:string, time: string}) => {
+
+ const countDownDate = new Date(payload.date);
+ const hours = payload.time.split(":")[0]
+ const minutes = payload.time.split(":")[1]
+ const seconds = payload.time.split(":")[2]
+ 
+
+ //convert local Date as utc Date// by default new Date() converts the local date time into utc date time
+  const countDownUTCDate = new Date(
+    Date.UTC(
+      countDownDate.getUTCFullYear(),
+      countDownDate.getUTCMonth(),
+      countDownDate.getUTCDate(),
+      Number(hours), 
+      Number(minutes),
+      Number(seconds),
+    )
+  );
+
+  const result = await InformationModel.updateOne(
+    {},
+    { countDownDate: countDownUTCDate },
+    { runValidators: true }
+  );
+}
+
 
 export {
   createInformationService,
   getInformationService,
-  updateHeroImgService
+  updateHeroImgService,
+  updateCountDownImgService,
+  updateCountDownTimeService
 };

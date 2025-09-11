@@ -63,7 +63,7 @@ export const createShippingCostValidationSchema = z.object({
         .refine((val) => val > 0, { message: "priority must be greater than 0" })
     ),
 })
-  .superRefine((values, ctx) => {
+.superRefine((values, ctx) => {
     const { minSubTotal, maxSubTotal } = values
     if (Number(minSubTotal) && Number(maxSubTotal) && (Number(minSubTotal) > Number(maxSubTotal))) {
       ctx.addIssue({
@@ -141,8 +141,11 @@ export const updateShippingCostValidationSchema = z.object({
         .refine((val) => !isNaN(val), { message: "priority must be a valid number" })
         .refine((val) => val > 0, { message: "priority must be greater than 0" })
     ).optional(),
+  isActive: z.boolean({
+    invalid_type_error: "isActive must be boolean value"
+  }).optional()
 })
-  .superRefine((values, ctx) => {
+.superRefine((values, ctx) => {
     const { minSubTotal, maxSubTotal } = values
     if (Number(minSubTotal) && Number(maxSubTotal) && (Number(minSubTotal) > Number(maxSubTotal))) {
       ctx.addIssue({
@@ -156,5 +159,5 @@ export const updateShippingCostValidationSchema = z.object({
         code: z.ZodIssueCode.custom,
       });
     }
-  });
+});
 

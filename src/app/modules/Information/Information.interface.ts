@@ -11,6 +11,7 @@ export interface IInformation {
   heroImg: string;
   age: number;
   countDownDate: Date;
+  countDownImg: string;
 };
 
 export type TContactQuery = {
