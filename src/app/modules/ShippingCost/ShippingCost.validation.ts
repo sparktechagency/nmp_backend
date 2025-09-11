@@ -1,10 +1,15 @@
+/* eslint-disable no-useless-escape */
 import { z } from 'zod';
 
 export const createShippingCostValidationSchema = z.object({
   name: z.string({
-    required_error: "name is required!"
+    required_error: "name is required!",
+    invalid_type_error: "name must be string"
   }).
-    min(1, "Name is required"),
+    min(1, "Name is required")
+    .regex(/^[^~!@#$%\^*\+\?><=;:"]*$/, {
+      message: 'Name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
+    }),
   minSubTotal: z
     .preprocess(
       (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
@@ -56,15 +61,34 @@ export const createShippingCostValidationSchema = z.object({
         })
         .refine((val) => !isNaN(val), { message: "priority must be a valid number" })
         .refine((val) => val > 0, { message: "priority must be greater than 0" })
-  ),
-});
+    ),
+})
+  .superRefine((values, ctx) => {
+    const { minSubTotal, maxSubTotal } = values
+    if (Number(minSubTotal) && Number(maxSubTotal) && (Number(minSubTotal) > Number(maxSubTotal))) {
+      ctx.addIssue({
+        path: ["maxSubTotal"],
+        message: "Maximum value must be greater than Minimum value",
+        code: z.ZodIssueCode.custom,
+      });
+      ctx.addIssue({
+        path: ["minSubTotal"],
+        message: "Minimum value must be less than Maximum value",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  });
 
 
 export const updateShippingCostValidationSchema = z.object({
   name: z.string({
-    required_error: "name is required!"
+    required_error: "name is required!",
+    invalid_type_error: "name must be string"
   }).
-    min(1, "Name is required").optional(),
+    min(1, "Name is required")
+    .regex(/^[^~!@#$%\^*\+\?><=;:"]*$/, {
+      message: 'Name cannot contain special characters: ~ ! @ # $ % ^ * + ? > < = ; : "',
+    }).optional(),
   minSubTotal: z
     .preprocess(
       (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
@@ -79,7 +103,7 @@ export const updateShippingCostValidationSchema = z.object({
         .refine((val) => val >= 0, {
           message: "minSubTotal cannot be negative",
         })
-    ),
+    ).optional(),
   maxSubTotal: z
     .preprocess(
       (val) => (val === '' || val === undefined || val === null ? undefined : Number(val)),
@@ -116,6 +140,21 @@ export const updateShippingCostValidationSchema = z.object({
         })
         .refine((val) => !isNaN(val), { message: "priority must be a valid number" })
         .refine((val) => val > 0, { message: "priority must be greater than 0" })
-  ).optional(),
-});
+    ).optional(),
+})
+  .superRefine((values, ctx) => {
+    const { minSubTotal, maxSubTotal } = values
+    if (Number(minSubTotal) && Number(maxSubTotal) && (Number(minSubTotal) > Number(maxSubTotal))) {
+      ctx.addIssue({
+        path: ["maxSubTotal"],
+        message: "Maximum value must be greater than Minimum value",
+        code: z.ZodIssueCode.custom,
+      });
+      ctx.addIssue({
+        path: ["minSubTotal"],
+        message: "Minimum value must be less than Maximum value",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  });
 

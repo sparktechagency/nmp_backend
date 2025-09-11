@@ -90,14 +90,15 @@ export const updateProductValidationSchema = z.object({
       required_error: "description is required"
     })
     .min(1, { message: "description is required" })
-    .refine(
-      (val) =>
-        /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(val.trim()) ||
-        val.includes("<"),
-      {
-        message: "description must be valid HTML.",
-      }
-    ).optional(),
+    // .refine(
+    //   (val) =>
+    //     /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(val.trim()) ||
+    //     val.includes("<"),
+    //   {
+    //     message: "description must be valid HTML.",
+    //   }
+    // )
+    .optional(),
   status: z.string({
     invalid_type_error: "status must be a valid string value.",
   })
