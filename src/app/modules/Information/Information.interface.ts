@@ -9,6 +9,8 @@ export interface IInformation {
   instagram: string;
   facebook: string;
   heroImg: string;
+  age: number;
+  countDownDate: Date;
 };
 
 export type TContactQuery = {

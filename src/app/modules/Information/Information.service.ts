@@ -35,7 +35,9 @@ const getInformationService = async () => {
       "phone": "01823969823",
       "address": "Washition",
       "instagram": "https://www.instagram.com/",
-      "facebook": "https://www.facebook.com/"
+      "facebook": "https://www.facebook.com/",
+      "age": 21,
+      "countDownDate": "2025-09-12T07:31:45.137+00:00"
     }
   }
   return result;
