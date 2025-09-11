@@ -37,7 +37,8 @@ const getInformationService = async () => {
       "instagram": "https://www.instagram.com/",
       "facebook": "https://www.facebook.com/",
       "age": 21,
-      "countDownDate": "2025-09-12T07:31:45.137+00:00"
+      "countDownDate": "2025-09-12T07:31:45.137+00:00",
+      "countDownImg": "https://res.cloudinary.com/dwok2hmb7/image/upload/v1757327095/NMP-Ecommerce/moltzcyv0wfpbiigq6o2.jpg",
     }
   }
   return result;
