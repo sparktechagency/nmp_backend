@@ -1,6 +1,6 @@
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createBrandService, deleteBrandService, getBrandDropDownService, getBrandsService, updateBrandService } from "./Brand.service";
+import { createBrandService, deleteBrandService, getBrandDropDownService, getBrandsService, getExportBrandsService, updateBrandService } from "./Brand.service";
 
 
 const createBrand = catchAsync(async (req, res) => {
@@ -24,6 +24,17 @@ const getBrands = catchAsync(async (req, res) => {
     message: 'Brands are retrieved successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const getExportBrands = catchAsync(async (req, res) => {
+  const result = await getExportBrandsService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Brands are retrieved successfully',
+    data: result
   });
 });
 
@@ -70,6 +81,7 @@ const deleteBrand = catchAsync(async (req, res) => {
 const BrandController = {
   createBrand,
   getBrands,
+  getExportBrands,
   getBrandDropDown,
   updateBrand,
   deleteBrand

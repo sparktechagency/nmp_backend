@@ -95,6 +95,20 @@ return {
 };
 };
 
+const getExportTypesService = async () => {
+  const result = await TypeModel.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  return result;
+};
+
 const getTypeDropDownService = async () => {
     const result = await TypeModel.find().select('-createdAt -updatedAt -slug').sort('-createdAt');
     return result;
@@ -196,6 +210,7 @@ const deleteTypeService = async (typeId: string) => {
 export {
     createTypeService,
     getTypesService,
+    getExportTypesService,
     getTypeDropDownService,
     updateTypeService,
     deleteTypeService,

@@ -18,6 +18,12 @@ router.get(
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   CategoryController.getCategories,
 );
+
+router.get(
+  '/get-export-categories',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  CategoryController.getExportCategories,
+);
 router.get(
   "/get-category-drop-down/:typeId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),

@@ -133,6 +133,33 @@ return {
 };
 };
 
+const getExportBrandsService = async () => {
+  const result = await BrandModel.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: "types",
+        localField: "typeId",
+        foreignField: "_id",
+        as: "type"
+      }
+    },
+    {
+      $unwind: "$type"
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        type: "$type.name",
+      },
+    },
+  ]);
+
+
+  return result;
+};
+
 
 const getBrandDropDownService = async (typeId: string) => {
   if (!Types.ObjectId.isValid(typeId)) {
@@ -210,6 +237,7 @@ const deleteBrandService = async (brandId: string) => {
 export {
     createBrandService,
     getBrandsService,
+    getExportBrandsService,
     getBrandDropDownService,
     updateBrandService,
     deleteBrandService

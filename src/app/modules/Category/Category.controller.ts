@@ -2,7 +2,7 @@ import catchAsync from "../../utils/catchAsync";
 import pickValidFields from "../../utils/pickValidFields";
 import sendResponse from "../../utils/sendResponse";
 import { CategoryValidFields } from "./Category.constant";
-import { createCategoryService, deleteCategoryService, getCategoriesService, getCategoryDropDownService, updateCategoryService } from "./Category.service";
+import { createCategoryService, deleteCategoryService, getCategoriesService, getCategoryDropDownService, getExportCategoriesService, updateCategoryService } from "./Category.service";
 
 
 const createCategory = catchAsync(async (req, res) => {
@@ -27,6 +27,17 @@ const getCategories = catchAsync(async (req, res) => {
     message: 'Categories are retrieved successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const getExportCategories = catchAsync(async (req, res) => {
+  const result = await getExportCategoriesService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Categories are retrieved successfully',
+    data: result
   });
 });
 
@@ -73,6 +84,7 @@ const deleteCategory = catchAsync(async (req, res) => {
 const CategoryController = {
   createCategory,
   getCategories,
+  getExportCategories,
   getCategoryDropDown,
   updateCategory,
   deleteCategory

@@ -139,6 +139,33 @@ return {
 };
 };
 
+const getExportFlavorsService = async () => {
+  const result = await FlavorModel.aggregate([
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: "types",
+        localField: "typeId",
+        foreignField: "_id",
+        as: "type"
+      }
+    },
+    {
+      $unwind: "$type"
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        type: "$type.name",
+      },
+    },
+  ]);
+
+
+  return result;
+};
+
 const getFlavorDropDownService = async (typeId: string) => {
   if (!Types.ObjectId.isValid(typeId)) {
     throw new ApiError(400, "typeId must be a valid ObjectId");
@@ -219,6 +246,7 @@ const deleteFlavorService = async (flavorId: string) => {
 export {
     createFlavorService,
     getFlavorsService,
+    getExportFlavorsService,
     getFlavorDropDownService,
     updateFlavorService,
     deleteFlavorService

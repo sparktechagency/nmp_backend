@@ -12,6 +12,7 @@ import UpdateProductImgService from './service/UpdateProductImgService';
 import DeleteProductService from './service/DeleteProductService';
 import GetBestSellerProductsService from './service/GetBestSellerProductsService';
 import GetFeatureProductsService from './service/GetFeatureProductsService';
+import GetExportProductsService from './service/GetExportProductsService';
 
 const createProduct = catchAsync(async (req, res) => {
   const result = await CreateProductService(req, req.body);
@@ -59,6 +60,17 @@ const getUserProducts = catchAsync(async (req, res) => {
     message: 'Products are retrieved successfully',
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const getExportsProducts = catchAsync(async (req, res) => {
+  const result = await GetExportProductsService();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Products are retrieved successfully',
+    data: result
   });
 });
 
@@ -142,6 +154,7 @@ const ProductController = {
   getSingleProduct,
   getProduct,
   getUserProducts,
+  getExportsProducts,
   getBestSellerProducts,
   getFeatureProducts,
   getProducts,

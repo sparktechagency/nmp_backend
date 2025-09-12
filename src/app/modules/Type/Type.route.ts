@@ -19,6 +19,11 @@ router.get(
   TypeController.getTypes,
 );
 router.get(
+  '/get-export-types',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  TypeController.getExportTypes,
+);
+router.get(
   "/get-type-drop-down",
   TypeController.getTypeDropDown
 );

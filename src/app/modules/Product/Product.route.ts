@@ -50,6 +50,10 @@ router.get(
   '/get-user-products',
   ProductController.getUserProducts,
 );
+router.get(
+  '/get-export-products',
+  ProductController.getExportsProducts,
+);
 
 router.get(
   '/get-best-seller-products',

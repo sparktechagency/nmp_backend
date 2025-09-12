@@ -19,6 +19,11 @@ router.get(
   FlavorController.getFlavors,
 );
 router.get(
+  '/get-export-flavors',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  FlavorController.getExportFlavors,
+);
+router.get(
   "/get-flavor-drop-down/:typeId",
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   FlavorController.getFlavorDropDown
