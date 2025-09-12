@@ -39,6 +39,11 @@ router.get(
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   OrderController.getAllOrders,
 );
+router.get(
+  '/get-export-orders',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  OrderController.getExportOrders,
+);
 
 router.get('/verify-session', OrderController.verifySession);
 

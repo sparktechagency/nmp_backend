@@ -2,7 +2,7 @@ import catchAsync from "../../utils/catchAsync";
 import pickValidFields from "../../utils/pickValidFields";
 import sendResponse from "../../utils/sendResponse";
 import { UserValidFields } from "./user.constant";
-import { editMyProfileService, getMeForSuperAdminService, getMyProfileService, getSingleUserService, getUsersService, updateProfileImgService } from "./user.service";
+import { editMyProfileService, getExportUsersService, getMeForSuperAdminService, getMyProfileService, getSingleUserService, getUsersService, updateProfileImgService } from "./user.service";
 
 
 const getUsers = catchAsync(async (req, res) => {
@@ -14,6 +14,16 @@ const getUsers = catchAsync(async (req, res) => {
     message: "Users are retrieved successfully",
     meta: result.meta,
     data: result.data
+  });
+});
+
+const getExportUsers = catchAsync(async (req, res) => {
+  const result = await getExportUsersService();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Users are retrieved successfully",
+    data: result
   });
 });
 
@@ -91,7 +101,8 @@ const UserController = {
     getMyProfile,
     getMeForSuperAdmin,
     editMyProfile,
-    updateProfileImg
+    updateProfileImg,
+    getExportUsers
 }
 
 export default UserController;

@@ -14,6 +14,13 @@ router.get(
   AuthMiddleware(UserRole.super_admin, UserRole.admin),
   UserController.getUsers
 );
+
+router.get(
+  "/get-export-users",
+  AuthMiddleware(UserRole.super_admin, UserRole.admin),
+  UserController.getExportUsers
+);
+
 router.get(
   "/get-single-user/:id",
   AuthMiddleware(UserRole.super_admin, UserRole.admin),

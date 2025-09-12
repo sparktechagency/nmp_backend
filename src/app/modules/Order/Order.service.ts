@@ -425,6 +425,43 @@ return {
 };
 };
 
+const getExportOrdersService = async () => {
+
+  const result = await OrderModel.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user"
+      }
+    },
+    {
+      $unwind: "$user"
+    },
+    {
+      $project: {
+        _id: 1,
+        token:1,
+        subTotal: 1,
+        shippingCost:1,
+        total:1,
+        fullName: "$user.fullName",
+        email: "$user.email",
+        phone: "$user.phone",
+        status: "$status",
+        paymentStatus: "$paymentStatus",
+        deliveryAt: "$deliveryAt",
+        createdAt: "$createdAt"
+      },
+    },
+    { $sort: { createdAt:1 } }, 
+  ]);
+
+
+  return result;
+};
+
 const getSingleOrderService = async (orderId: string) => {
   if (!Types.ObjectId.isValid(orderId)) {
     throw new ApiError(400, "orderId must be a valid ObjectId")
@@ -609,6 +646,7 @@ export {
   createOrderService,
   getUserOrdersService,
   getAllOrdersService,
+  getExportOrdersService,
   getSingleOrderService,
   updateOrderService,
   deleteOrderService,

@@ -81,6 +81,28 @@ const getUsersService = async (query: TUserQuery) => {
 }
 
 
+const getExportUsersService = async () => {
+  const result = await UserModel.aggregate([
+    {
+      $match: {
+        role: "user",
+      },
+    },
+    { $sort: { createdAt: -1 } },
+    {
+      $project: {
+        _id: 1,
+        fullName: 1,
+        email: 1,
+        phone: 1,
+      },
+    },
+  ]);
+
+  return result;
+}
+
+
 const getSingleUserService = async (userId: string) => {
   const user = await UserModel.findById(userId).select('-role -status -address');
   if(!user){
@@ -172,4 +194,5 @@ export {
   getMyProfileService,
   editMyProfileService,
   updateProfileImgService,
+  getExportUsersService
 };
