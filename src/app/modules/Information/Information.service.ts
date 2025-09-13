@@ -124,7 +124,7 @@ const updateCountDownTimeService = async (payload: {date:string, time: string}) 
       countDownDate.getUTCFullYear(),
       countDownDate.getUTCMonth(),
       countDownDate.getUTCDate(),
-      Number(hours), 
+      Number(hours), //
       Number(minutes),
       Number(seconds),
     )
