@@ -65,7 +65,7 @@ export const createInformationValidationSchema = z.object({
       required_error: "Age is required",
       invalid_type_error: "Age must be a number",
     })
-    .min(1, { message: "Age must be positive value" })
+    .min(0, { message: "Age can't be negative value" })
 });
 
 
