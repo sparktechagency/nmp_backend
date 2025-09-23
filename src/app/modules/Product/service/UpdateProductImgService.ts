@@ -1,8 +1,8 @@
 import { Request } from "express";
-import cloudinary from "../../../helper/cloudinary";
 import ApiError from "../../../errors/ApiError";
 import ProductModel from "../Product.model";
 import { Types } from "mongoose";
+import uploadImage from "../../../utils/uploadImage";
 
 
 const UpdateProductImgService = async (req: Request, productId: string) => {
@@ -24,14 +24,7 @@ const UpdateProductImgService = async (req: Request, productId: string) => {
   //upload a image
   let image: string = "";
   if (req.file && (req.file as Express.Multer.File)) {
-    const file = req.file as Express.Multer.File;
-    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
-      folder: 'NMP-Ecommerce',
-      // width: 300,
-      // crop: 'scale',
-    });
-    image = cloudinaryRes?.secure_url;
-    // fs.unlink(file.path);
+    image = await uploadImage(req);
   }
 
   if (!image) {

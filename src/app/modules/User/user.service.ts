@@ -5,8 +5,8 @@ import { Request } from "express";
 import { makeFilterQuery, makeSearchQuery } from "../../helper/QueryBuilder";
 import { UserSearchFields } from "./user.constant";
 import ObjectId from "../../utils/ObjectId";
-import cloudinary from "../../helper/cloudinary";
 import ApiError from "../../errors/ApiError";
+import uploadImage from "../../utils/uploadImage";
 
 
 const getUsersService = async (query: TUserQuery) => {
@@ -167,17 +167,13 @@ const updateProfileImgService = async (req:Request, loginUserId: string) => {
   }
 
   //uploaded-image
-  //const image = await uploadImage(req);
-  const cloudinaryRes = await cloudinary.uploader.upload(req?.file?.path, {
-    folder: 'NMP-Ecommerce',
-    // width: 300,
-    // crop: 'scale',
-  });
+  const image = await uploadImage(req);
+
 
   
   const result = await UserModel.updateOne(
     { _id: loginUserId },
-    { profile_img : cloudinaryRes?.secure_url }
+    { profile_img : image }
   )
 
   return result;

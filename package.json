@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/body-parser": "^1.19.6",
     "@types/nodemailer": "^6.4.17",
+    "aws-sdk": "^2.1692.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.7.0",

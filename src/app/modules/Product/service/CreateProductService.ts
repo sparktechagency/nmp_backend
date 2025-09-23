@@ -7,8 +7,8 @@ import ProductModel from "../Product.model";
 import CategoryModel from "../../Category/Category.model";
 import BrandModel from "../../Brand/Brand.model";
 import FlavorModel from "../../Flavor/Flavor.model";
-import cloudinary from "../../../helper/cloudinary";
 import TypeModel from "../../Type/Type.model";
+import uploadImage from "../../../utils/uploadImage";
 
 
 
@@ -179,13 +179,7 @@ const CreateProductService = async (
 
   //upload a image
   if (req.file && (req.file as Express.Multer.File)) {
-    const file = req.file as Express.Multer.File;
-    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
-          folder: 'NMP-Ecommerce',
-          // width: 300,
-          // crop: 'scale',
-        });
-        payload.image=cloudinaryRes?.secure_url;
+    payload.image= await uploadImage(req);
     // fs.unlink(file.path);
   }
 
