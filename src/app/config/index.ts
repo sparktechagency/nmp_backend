@@ -25,4 +25,7 @@ export default {
     aws_s3_bucket_name: process.env.AWS_S3_BUCKET_NAME,
     stripe_secret_key: process.env.STRIPE_SECRET_KEY,
     frontend_url: process.env.FRONTEND_URL,
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET_KEY
 }
