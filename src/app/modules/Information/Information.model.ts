@@ -44,7 +44,8 @@ const informationSchema = new Schema<IInformation>({
   },
   age: {
     type: Number,
-    required: true
+    required: true,
+    default:0
   },
   countDownDate: {
     type: Date,
