@@ -620,6 +620,8 @@ const verifySessionService = async (sessionId: string) => {
       throw new ApiError(403, "Payment Failled");
     }
 
+    console.log(session)
+
     const metadata = session?.metadata;
     if(!metadata){
       throw new ApiError(400, "Invalid Session Id")
