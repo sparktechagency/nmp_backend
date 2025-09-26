@@ -27,7 +27,9 @@ app.use(
             "http://16.171.171.18:5173",
             "http://16.171.171.18:3000",
             "http://16.171.171.18:30001",
-            "http://10.10.20.24:3000"
+            "http://10.10.20.24:3000",
+            "https://onlinecornerstore.com",
+            "https://dashboard.onlinecornerstore.com"
         ],
         credentials: true,
     }),
