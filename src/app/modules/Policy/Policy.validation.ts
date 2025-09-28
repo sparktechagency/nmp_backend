@@ -10,14 +10,14 @@ export const createPolicyValidationSchema = z.object({
   content: z
     .string()
     .min(1, { message: "Content must not be empty." })
-    .refine(
-      (val) =>
-        /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(val.trim()) ||
-        val.includes("<"),
-      {
-        message: "Content must be valid HTML.",
-      }
-    ),
+    // .refine(
+    //   (val) =>
+    //     /^<([a-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)$/i.test(val.trim()) ||
+    //     val.includes("<"),
+    //   {
+    //     message: "Content must be valid HTML.",
+    //   }
+    // ),
 });
 
 
