@@ -378,7 +378,7 @@ const getUserOrdersService = async (userEmail: string, query: TUserOrderQuery) =
                 $and: [
                   { $eq: ["$productId", "$$productId"] },
                   { $eq: ["$orderId", "$$orderId"] },
-                  // { $eq: ["$userId", "$$userId"] },
+                  { $eq: ["$email", "$$email"] },
                 ],
               },
             },
@@ -500,16 +500,11 @@ const getAllOrdersService = async (query: TOrderQuery) => {
     filterQuery = makeFilterQuery(filters);
   }
   const result = await OrderModel.aggregate([
-    {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    {
-      $unwind: "$user"
+     {
+      $match: {
+        ...searchQuery,
+        ...filterQuery
+      },
     },
     {
       $project: {
@@ -518,19 +513,12 @@ const getAllOrdersService = async (query: TOrderQuery) => {
         subTotal: 1,
         shippingCost:1,
         total:1,
-        fullName: "$user.fullName",
-        email: "$user.email",
-        phone: "$user.phone",
+        fullName: 1,
+        email: 1,
         status: "$status",
         paymentStatus: "$paymentStatus",
         deliveryAt: "$deliveryAt",
         createdAt: "$createdAt"
-      },
-    },
-    {
-      $match: {
-        ...searchQuery,
-        ...filterQuery
       },
     },
     { $sort: { [sortBy]: sortDirection } }, 
@@ -540,30 +528,6 @@ const getAllOrdersService = async (query: TOrderQuery) => {
 
   // total count result
   const totalCountResult = await OrderModel.aggregate([
-     {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    {
-      $unwind: "$user"
-    },
-    {
-      $project: {
-        _id: 1,
-        token:1,
-        fullName: "$user.fullName",
-        email: "$user.email",
-        phone: "$user.phone",
-        status: "$status",
-        paymentStatus: "$paymentStatus",
-        deliveryAt: "$deliveryAt",
-        createdAt: "$createdAt"
-      },
-    },
     {
       $match: {
         ...searchQuery,
@@ -636,26 +600,14 @@ const getSingleOrderService = async (orderId: string) => {
       }
     },
     {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    {
-      $unwind: "$user"
-    },
-    {
       $project: {
         _id: 1,
         token:1,
         subTotal: 1,
         shippingCost:1,
         total:1,
-        customerName: "$user.fullName",
-        customerEmail: "$user.email",
-        customerPhone: "$user.phone",
+        customerName: "$fullName",
+        customerEmail: "$email",
         shipping:1,
         totalPrice: 1,
         paymentStatus: 1,
@@ -768,8 +720,6 @@ const deleteOrderService = async (orderId: string) => {
   return result;
 };
 
-
-
 const verifySessionService = async (sessionId: string) => {
   if (!sessionId) {
     throw new ApiError(400, "sessionId is required");
@@ -790,7 +740,7 @@ const verifySessionService = async (sessionId: string) => {
     //update database base on metadata = session.metadata
     const result = await OrderModel.updateOne({
       _id: metadata.orderId,
-      userId: metadata.userId
+      email: metadata.email
     }, {
       paymentStatus: "paid"
     })
