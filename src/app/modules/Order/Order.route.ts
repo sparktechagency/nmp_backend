@@ -9,7 +9,6 @@ const router = express.Router();
 
 router.post(
   '/create-order',
-  AuthMiddleware("user"),
   validationMiddleware(createOrderValidationSchema),
   OrderController.createOrder,
 );

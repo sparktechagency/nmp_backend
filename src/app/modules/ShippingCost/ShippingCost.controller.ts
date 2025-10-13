@@ -14,8 +14,8 @@ const createShippingCost = catchAsync(async (req, res) => {
 });
 
 const getMyShippingCost = catchAsync(async (req, res) => {
-  const loginUserId = req.headers.id;
-  const result = await getMyShippingCostService(loginUserId as string);
+  const { subTotal } = req.params;
+  const result = await getMyShippingCostService(subTotal);
 
   sendResponse(res, {
     statusCode: 200,

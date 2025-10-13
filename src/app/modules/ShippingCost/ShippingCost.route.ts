@@ -15,8 +15,7 @@ router.post(
 );
 
 router.get(
-  '/get-my-shipping-cost',
-  AuthMiddleware("user"),
+  '/get-my-shipping-cost/:subTotal',
   ShippingCostController.getMyShippingCost,
 );
 

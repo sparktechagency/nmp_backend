@@ -81,10 +81,14 @@ const orderSchema = new Schema<IOrder>({
     minlength: [6, "Token must be 6 characters long"],
     maxlength: [6, "Token must be 6 characters long"]
   },
-  userId: {
-    type: Schema.Types.ObjectId,
+  fullName: {
+    type: String,
+    required: [true, 'fullName is required'],
+    trim: true
+  },
+  email: {
+    type: String,
     required: true,
-    ref: "User"
   },
   products: {
     type: [orderItemSchema],

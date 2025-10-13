@@ -5,14 +5,12 @@ import { OrderValidFields, UserOrderValidFields } from './Order.constant';
 import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService, getExportOrdersService } from './Order.service';
 
 const createOrder = catchAsync(async (req, res) => {
-  const loginUserId = req.headers.id;
-  const userEmail = req.headers.email;
-  const result = await createOrderService(loginUserId as string, userEmail as string, req.body);
+   const result = await createOrderService(req.body);
 
   sendResponse(res, {
     statusCode: 201,
     success: true,
-    message: 'Order is created successfully',
+    message: 'Order is initiated successfully',
     data: result,
   });
 });

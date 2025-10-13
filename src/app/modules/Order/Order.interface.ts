@@ -23,7 +23,8 @@ export type TDeliveryStatus = 'processing' | 'shipped' | 'delivered' | 'cancelle
 
 export interface IOrder {
   token: string;
-  userId: Types.ObjectId;
+  fullName: string;
+  email: string;
   products: IOrderItem[];
   shippingCost: number;
   subTotal: number;
@@ -52,3 +53,18 @@ export type TUserOrderQuery = {
   sortOrder?: "asc" | "desc";
   status?: string,
 };
+
+
+export interface ICart {
+  productId: Types.ObjectId;
+  quantity: number;
+}
+
+export type TOrderPayload = {
+  userData: {
+    fullName: string;
+    email: string;
+  },
+  shippingAddress: IShipping,
+  cartProducts: ICart[]
+}

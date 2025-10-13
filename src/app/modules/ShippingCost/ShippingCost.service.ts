@@ -112,31 +112,19 @@ return {
 };
 };
 
-const getMyShippingCostService = async (loginUserId: string) => {
-  const carts = await CartModel.aggregate([
-    {
-      $match: {
-        userId: new ObjectId(loginUserId)
-      }
-    },
-    {
-      $project: {
-        _id: 0,
-        userId: 0,
-        createdAt: 0,
-        updatedAt: 0
-      }
-    }
-  ]);
-
-  if (carts?.length === 0) {
-    throw new ApiError(404, "No items in cart.")
+const getMyShippingCostService = async (subTotal: string) => {
+ 
+  if(typeof Number(subTotal) != "number"){
+    throw new ApiError(400, "subTotal must be number value !")
   }
-  //count subTotal
-  const subTotal = carts?.reduce((total, currentValue) => total + (currentValue.price * currentValue.quantity), 0);
+
+  if( Number(subTotal) <= 0){
+    throw new ApiError(400, "subTotal must be greater than 0")
+  }
+
 
   //count shipping cost
-  const shippingCost = await calculateShippingCost(subTotal);
+  const shippingCost = await calculateShippingCost(Number(subTotal));
 
   //count total
   const total = Number(subTotal + shippingCost);
@@ -146,6 +134,41 @@ const getMyShippingCostService = async (loginUserId: string) => {
     total
   }
 }
+
+// const getMyShippingCostService = async (loginUserId: string) => {
+//   const carts = await CartModel.aggregate([
+//     {
+//       $match: {
+//         userId: new ObjectId(loginUserId)
+//       }
+//     },
+//     {
+//       $project: {
+//         _id: 0,
+//         userId: 0,
+//         createdAt: 0,
+//         updatedAt: 0
+//       }
+//     }
+//   ]);
+
+//   if (carts?.length === 0) {
+//     throw new ApiError(404, "No items in cart.")
+//   }
+//   //count subTotal
+//   const subTotal = carts?.reduce((total, currentValue) => total + (currentValue.price * currentValue.quantity), 0);
+
+//   //count shipping cost
+//   const shippingCost = await calculateShippingCost(subTotal);
+
+//   //count total
+//   const total = Number(subTotal + shippingCost);
+//   return {
+//     subTotal,
+//     shippingCost,
+//     total
+//   }
+// }
 
 const updateShippingCostService = async (shippingcostId: string, payload: Partial<IShippingCost>) => {
   const { name, priority } = payload;
