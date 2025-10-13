@@ -471,7 +471,6 @@ return {
 };
 };
 
-
 const getAllOrdersService = async (query: TOrderQuery) => {
   const {
     searchTerm, 
@@ -555,26 +554,14 @@ const getExportOrdersService = async () => {
 
   const result = await OrderModel.aggregate([
     {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    {
-      $unwind: "$user"
-    },
-    {
       $project: {
         _id: 1,
         token:1,
         subTotal: 1,
         shippingCost:1,
         total:1,
-        fullName: "$user.fullName",
-        email: "$user.email",
-        phone: "$user.phone",
+        fullName: 1,
+        email: 1,
         status: "$status",
         paymentStatus: "$paymentStatus",
         deliveryAt: "$deliveryAt",
