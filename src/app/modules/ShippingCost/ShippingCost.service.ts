@@ -127,9 +127,9 @@ const getMyShippingCostService = async (subTotal: string) => {
   const shippingCost = await calculateShippingCost(Number(subTotal));
 
   //count total
-  const total = Number(subTotal + shippingCost);
+  const total = Number(subTotal) + shippingCost;
   return {
-    subTotal,
+    subTotal: Number(subTotal),
     shippingCost,
     total
   }

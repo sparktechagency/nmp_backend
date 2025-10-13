@@ -339,7 +339,7 @@ const createOrderService = async (
 
 // };
 
-const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery) => {
+const getUserOrdersService = async (userEmail: string, query: TUserOrderQuery) => {
   const {
     searchTerm, 
     page = 1, 
@@ -359,7 +359,7 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
   const result = await OrderModel.aggregate([
     {
       $match: {
-        userId: new ObjectId(loginUserId)
+        email: userEmail
       }
     },
     { $unwind: "$products" },
@@ -369,7 +369,7 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
         let: {
           productId: "$products.productId",
           orderId: "$_id",
-          userId: new ObjectId(loginUserId),
+         email: userEmail
         },
         pipeline: [
           {
@@ -378,7 +378,7 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
                 $and: [
                   { $eq: ["$productId", "$$productId"] },
                   { $eq: ["$orderId", "$$orderId"] },
-                  { $eq: ["$userId", "$$userId"] },
+                  // { $eq: ["$userId", "$$userId"] },
                 ],
               },
             },
@@ -451,7 +451,7 @@ const getUserOrdersService = async (loginUserId: string, query: TUserOrderQuery)
   const totalCountResult = await OrderModel.aggregate([
      {
       $match: {
-        userId: new ObjectId(loginUserId)
+        email: userEmail
       }
     },
     { $count: "totalCount" }

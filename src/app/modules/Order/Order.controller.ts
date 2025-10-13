@@ -28,9 +28,9 @@ const getSingleOrder = catchAsync(async (req, res) => {
 });
 
 const getUserOrders = catchAsync(async (req, res) => {
-  const loginUserId = req.headers.id;
+  const userEmail = req.headers.email;
   const validatedQuery = pickValidFields(req.query, UserOrderValidFields);
-  const result = await getUserOrdersService(loginUserId as string, validatedQuery);
+  const result = await getUserOrdersService(userEmail as string, validatedQuery);
 
   sendResponse(res, {
     statusCode: 200,
