@@ -625,24 +625,12 @@ const updateOrderService = async (orderId: string, payload: Partial<IOrder>) => 
         _id: new ObjectId(orderId)
       }
     },
-    {
-      $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user"
-      }
-    },
-    {
-      $unwind: "$user"
-    },
      {
       $project: {
         _id: 1,
         token:1,
-        customerName: "$user.fullName",
-        customerEmail: "$user.email",
-        customerPhone: "$user.phone",
+        customerName: "$fullName",
+        customerEmail: "$email",
         shippingCost:1,
         total: 1,
         subTotal: 1,

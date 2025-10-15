@@ -5,8 +5,6 @@ import { IShippingCost, TShippingCostQuery } from './ShippingCost.interface';
 import ShippingCostModel from './ShippingCost.model';
 import { makeFilterQuery, makeSearchQuery } from '../../helper/QueryBuilder';
 import slugify from 'slugify';
-import CartModel from '../Cart/Cart.model';
-import ObjectId from '../../utils/ObjectId';
 import calculateShippingCost from '../../utils/calculateShippingCost';
 import { Types } from 'mongoose';
 
