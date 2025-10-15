@@ -141,13 +141,13 @@ const loginUserService = async (payload: ILoginUser) => {
 
   //create accessToken
   const accessToken = createToken(
-    { email: user.email, id: String(user._id), role: user.role },
+    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
     config.jwt_access_secret as Secret,
     config.jwt_access_expires_in as TExpiresIn
   );
   //create refreshToken
   const refreshToken = createToken(
-    { email: user.email, id: String(user._id), role: user.role },
+    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
     config.jwt_refresh_secret as Secret,
     config.jwt_refresh_expires_in as TExpiresIn
   );

@@ -5,6 +5,7 @@ export type TExpiresIn = number | `${number}${'s' | 'm' | 'h' | 'd'}`
 type TPayload = {
     email: string;
     id: string;
+    fullName?: string;
     role: 'user' | 'owner' | 'super_admin' | "admin"
 }
 
