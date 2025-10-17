@@ -1,9 +1,8 @@
 import ApiError from '../../errors/ApiError';
 import { OrderSearchableFields } from './Order.constant';
-import { IOrder, IShipping, TOrderPayload, TOrderQuery, TUserOrderQuery } from './Order.interface';
+import { ICart, IOrder, TOrderPayload, TOrderQuery, TUserOrderQuery } from './Order.interface';
 import OrderModel from './Order.model';
 import { makeFilterQuery, makeSearchQuery } from '../../helper/QueryBuilder';
-import CartModel from '../Cart/Cart.model';
 import ObjectId from '../../utils/ObjectId';
 import mongoose, { Types } from "mongoose";
 import generateTransactionId from '../../utils/generateTransactionId';
@@ -77,7 +76,6 @@ const createOrderService = async (
   }
 
 
-
   //count subTotal
   const subTotal = cartItems?.reduce((total, currentValue) => total + (currentValue?.price * currentValue.quantity), 0);
   // //count shipping cost
@@ -124,19 +122,6 @@ const createOrderService = async (
     try {
       session.startTransaction();
 
-      // update product sales in bulk
-      //bulkWrite send one request to MongoDB:
-      await ProductModel.bulkWrite(
-        cartProducts.map(item => ({
-          updateOne: {
-            filter: { _id: item.productId },
-            update: { $inc: { total_sold: item.quantity, quantity: -item.quantity } },
-          }
-        })),
-        { session }
-      );
-
-  
       const order = await OrderModel.create([
         {
           fullName,
@@ -158,7 +143,8 @@ const createOrderService = async (
           mode: "payment",
           metadata: {
             orderId: (order[0]._id).toString(),
-            email
+            email,
+            cartProducts: JSON.stringify(cartProducts)
           },
           customer_email: email,
           client_reference_id: (order[0]._id).toString(),
@@ -700,29 +686,79 @@ const verifySessionService = async (sessionId: string) => {
     throw new ApiError(400, "sessionId is required");
   }
 
-  try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    //payment_status = "no_payment_required", "paid", "unpaid"
-    if (session.payment_status !== "paid") {
-      throw new ApiError(403, "Payment Failled");
-    }
+  const paymentSession = await stripe.checkout.sessions.retrieve(sessionId);
+  //payment_status = "no_payment_required", "paid", "unpaid"
+  if (paymentSession.payment_status !== "paid") {
+    throw new ApiError(403, "Payment Failled");
+  }
 
-    const metadata = session?.metadata;
-    if(!metadata){
-      throw new ApiError(400, "Invalid Session Id")
-    }
-    
-    //update database base on metadata = session.metadata
+  const metadata = paymentSession?.metadata;
+  if (!metadata) {
+    throw new ApiError(400, "Invalid Session Id")
+  }
+
+  //check already payment is completed
+  const order = await OrderModel.findOne({
+    _id: metadata.orderId,
+    email: metadata.email,
+    paymentStatus: "paid"
+  });
+
+  if (order) {
+    throw new ApiError(400, "Payment already completed");
+  }  
+
+  //parse cartProducts
+  const cartProducts = JSON.parse(metadata?.cartProducts);
+
+   //transaction & rollback
+  const session = await mongoose.startSession();
+
+  try {
+    //start transaction
+    session.startTransaction();
+
+    // update product sales in bulk
+    //bulkWrite send one request to MongoDB:
+    await ProductModel.bulkWrite(
+      cartProducts.map((item: ICart) => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: [
+            {
+              $set: {
+                quantity: {
+                  $max: [
+                    { $subtract: ["$quantity", item.quantity] }, //quantity can't be negative, but 0
+                    0
+                  ]
+                }
+              }
+            }
+          ],
+        }
+      })),
+      { session }
+    );
+
+    //update payment status
     const result = await OrderModel.updateOne({
       _id: metadata.orderId,
       email: metadata.email
     }, {
       paymentStatus: "paid"
+    }, {
+      session
     })
 
+    //transaction success
+    await session.commitTransaction();
+    await session.endSession();
     return result;
-  } catch (err:any) {
-    throw new Error(err)
+  }catch (err:any) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw new Error(err);
   }
 };
 
