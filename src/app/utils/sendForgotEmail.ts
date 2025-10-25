@@ -1,7 +1,7 @@
 import config from "../config";
 import nodemailer from "nodemailer";
 
-const sendEmailUtility = async (EmailTo: string, name: string, otp: string) => {
+const sendForgotEmail = async (EmailTo: string, name: string, otp: string) => {
   //transporter
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -14,14 +14,14 @@ const sendEmailUtility = async (EmailTo: string, name: string, otp: string) => {
   });
 
   const mailOptions = {
-    from: `NMP Ecommerce ${config.smtp_from}`, //sender email address//smtp-username
+    from: `Online Corner Store ${config.smtp_from}`, //sender email address//smtp-username
     to: EmailTo, //receiver email address
-    subject: "NMP Ecommerce Reset Password",
+    subject: "Reset Password",
      html: `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8fafc;">
       <!-- Header -->
       <div style="background-color: #1f2937; padding: 40px 20px; text-align: center; border-radius: 12px 12px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">NMP Ecommerce</h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 700;">Online Corner Store</h1>
         <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 16px;">Password Reset Request</p>
       </div>
       
@@ -49,7 +49,7 @@ const sendEmailUtility = async (EmailTo: string, name: string, otp: string) => {
       
       <!-- Footer -->
       <div style="background-color: #f9fafb; padding: 30px 20px; text-align: center; border-radius: 0 0 12px 12px;">
-        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2024 MTK Ecommerce. All rights reserved.</p>
+        <p style="color: #9ca3af; margin: 0; font-size: 12px;">© 2024 OnlineCornerStore. All rights reserved.</p>
       </div>
     </div>
   `
@@ -58,4 +58,4 @@ const sendEmailUtility = async (EmailTo: string, name: string, otp: string) => {
   return await transporter.sendMail(mailOptions);
 };
 
-export default sendEmailUtility;
+export default sendForgotEmail;

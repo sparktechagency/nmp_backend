@@ -18,7 +18,7 @@ export interface IShipping {
   zipCode: string
 };
 
-export type TPaymentStatus = "paid" | "unpaid" | "failled";
+export type TPaymentStatus = "paid" | "unpaid" | "failled" | "cash";
 export type TDeliveryStatus = 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface IOrder {

@@ -13,14 +13,20 @@ const getStatsService = async () => {
 
   const completedOrders = await OrderModel.countDocuments({
     status: "delivered",
-    paymentStatus: "paid"
+    $or: [
+      { paymentStatus: "paid" },
+      { paymentStatus: "cash" }
+    ]
   })
 
   const totalIncomeResult = await OrderModel.aggregate([
     {
       $match: {
         status: "delivered",
-        paymentStatus: "paid"
+        $or: [
+          { paymentStatus: "paid" },
+          { paymentStatus: "cash" }
+        ]
       }
     },
     {

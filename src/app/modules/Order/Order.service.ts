@@ -166,6 +166,160 @@ const createOrderService = async (
 
 };
 
+const createOrderWithCashService = async (
+  payload: TOrderPayload
+) => {
+
+
+  const { userData: { email, fullName}, shippingAddress, cartProducts } = payload;
+
+  //check duplicate cart products
+  const cartProductIds = cartProducts?.map((cv)=> cv.productId);
+
+  if(hasDuplicates(cartProductIds)){
+    throw new ApiError(400, "Duplicate products cannot be added to the cart !")
+  }
+  
+  // check product 
+  for (let i = 0; i < cartProducts?.length; i++) {
+    const product = await ProductModel.findById(cartProducts[i].productId);
+    if (!product) {
+      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
+    }
+  }
+
+  let cartItems: {
+    productId: Types.ObjectId;
+    name: string;
+    price: number;
+    quantity: number;
+    total: number;
+    image: string;
+  }[] = []
+
+  // check product availability during order
+  for (let i = 0; i < cartProducts?.length; i++) {
+    const product = await ProductModel.findById(cartProducts[i].productId);
+    const availableQty = Number(product?.quantity);
+
+    if (cartProducts[i].quantity > availableQty) {
+      throw new ApiError(
+        400,
+        availableQty > 0
+          ? `Sorry, only ${availableQty} unit(s) of '${product?.name}' are left in stock. Please update your order.`
+          : `Sorry, "${product?.name}" is currently out of stock.`
+      );
+    }
+
+    if (product) {
+      cartItems.push({
+        productId: cartProducts[i].productId,
+        name: product?.name,
+        price: product?.currentPrice,
+        quantity: cartProducts[i].quantity,
+        total: Number(product?.currentPrice) * Number(cartProducts[i].quantity),
+        image: product?.image
+      })
+    }
+  }
+
+
+  //count subTotal
+  const subTotal = cartItems?.reduce((total, currentValue) => total + (currentValue?.price * currentValue.quantity), 0);
+  // //count shipping cost
+  const shippingCost = await calculateShippingCost(subTotal);
+  //count total
+  const total = Number(subTotal + shippingCost);
+ 
+  const lineItems = cartItems?.map((product) => ({
+    price_data: {
+      currency: "usd",
+      product_data: {
+        name: product.name,
+      },
+      unit_amount: product.price * 100, // price in cents
+    },
+    quantity: product.quantity,
+  }));
+
+
+    // add shipping as one item for the order
+  if (shippingCost > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Shipping Cost",
+        },
+        unit_amount: shippingCost * 100, // in cents
+      },
+      quantity: 1,
+    });
+  }
+
+   //generate token
+  const token = Math.floor(100000 + Math.random() * 900000);
+
+  //generate transactionId
+  const transactionId = generateTransactionId();
+  
+     //transaction & rollback
+    const session = await mongoose.startSession();
+  
+    try {
+      session.startTransaction();
+
+      // update product sales in bulk
+      //bulkWrite send one request to MongoDB:
+      await ProductModel.bulkWrite(
+        cartProducts.map((item: ICart) => ({
+          updateOne: {
+            filter: { _id: item.productId },
+            update: [
+              {
+                $set: {
+                  quantity: {
+                    $max: [
+                      { $subtract: ["$quantity", item.quantity] }, //quantity can't be negative, but 0
+                      0
+                    ]
+                  }
+                }
+              }
+            ],
+          }
+        })),
+        { session }
+      );
+
+      //create an order
+      await OrderModel.create([
+        {
+          fullName,
+          email,
+          token,
+          products: cartItems,
+          subTotal,
+          shippingCost,
+          paymentStatus: "cash",
+          total,
+          transactionId,
+          shipping: shippingAddress
+        }
+      ], {session});
+
+      //transaction success
+      await session.commitTransaction();
+      await session.endSession();
+      return null;
+    } catch (err: any) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw new Error(err);
+    }
+
+};
+
 // const createOrderService = async (
 //   loginUserId: string,
 //   userEmail: string,
@@ -774,4 +928,5 @@ export {
   updateOrderService,
   deleteOrderService,
   verifySessionService,
+  createOrderWithCashService
 };

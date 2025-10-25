@@ -16,7 +16,7 @@ const sendCancelledEmail = async (email: string, orderData:any) => {
 
 
     const mailOptions = {
-        from: `NMP Ecommerce ${config.smtp_from}`, //sender email address//smtp-username
+        from: `Online Corner Store ${config.smtp_from}`, //sender email address//smtp-username
         to: email, //receiver email address
         subject:`Order Cancelled - ${orderData.token}`,
         html: `
@@ -76,13 +76,6 @@ const sendCancelledEmail = async (email: string, orderData:any) => {
                                     </tr>
                                 </table>
                             </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-radius: 0 0 8px 8px;">
-                            <p style="color: #6b7280; margin: 0; font-size: 14px;">We're sorry to see you go. Contact supportnmp@gmail.com for assistance.</p>
                         </td>
                     </tr>
                 </table>

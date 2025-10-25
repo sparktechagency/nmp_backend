@@ -2,7 +2,7 @@ import catchAsync from '../../utils/catchAsync';
 import pickValidFields from '../../utils/pickValidFields';
 import sendResponse from '../../utils/sendResponse';
 import { OrderValidFields, UserOrderValidFields } from './Order.constant';
-import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService, getExportOrdersService } from './Order.service';
+import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService, getExportOrdersService, createOrderWithCashService } from './Order.service';
 
 const createOrder = catchAsync(async (req, res) => {
    const result = await createOrderService(req.body);
@@ -11,6 +11,17 @@ const createOrder = catchAsync(async (req, res) => {
     statusCode: 201,
     success: true,
     message: 'Order is initiated successfully',
+    data: result,
+  });
+});
+
+const createOrderWithCash = catchAsync(async (req, res) => {
+   const result = await createOrderWithCashService(req.body);
+
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Order is placed successfully',
     data: result,
   });
 });
@@ -106,6 +117,7 @@ const verifySession = catchAsync(async (req, res) => {
 
 const OrderController = {
   createOrder,
+  createOrderWithCash,
   getSingleOrder,
   getUserOrders,
   getAllOrders,

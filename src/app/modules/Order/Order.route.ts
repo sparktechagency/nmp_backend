@@ -12,6 +12,11 @@ router.post(
   validationMiddleware(createOrderValidationSchema),
   OrderController.createOrder,
 );
+router.post(
+  '/create-order-with-cash',
+  validationMiddleware(createOrderValidationSchema),
+  OrderController.createOrderWithCash,
+);
 router.get(
   '/get-single-order/:orderId',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),

@@ -16,7 +16,7 @@ const sendDeliveredEmail = async (email: string, orderData:any) => {
 
 
     const mailOptions = {
-        from: `NMP Ecommerce ${config.smtp_from}`, //sender email address//smtp-username
+        from: `Online Corner Store ${config.smtp_from}`, //sender email address//smtp-username
         to: email, //receiver email address
         subject: `Order Delivered - ${orderData.token}`,
         html: `
@@ -59,13 +59,6 @@ const sendDeliveredEmail = async (email: string, orderData:any) => {
                                 <h3 style="color: #065f46; margin: 0 0 15px 0; font-size: 18px;">Delivery Confirmed</h3>
                                 <p style="color: #6b7280; margin: 0 0 20px 0; font-weight: bold; font-size: 16px;">Order #${orderData?.token}</p>
                             </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-radius: 0 0 8px 8px;">
-                            <p style="color: #6b7280; margin: 0; font-size: 14px;">Thank you for choosing us! Contact support@yourstore.com for any questions.</p>
                         </td>
                     </tr>
                 </table>

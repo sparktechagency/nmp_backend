@@ -5,7 +5,6 @@ import UserModel from "../User/user.model";
 import { IChangePass, ILoginUser, INewPassword, IVerifyOTp } from "./auth.interface";
 import createToken, { TExpiresIn } from "../../utils/createToken";
 import config from "../../config";
-import sendEmailUtility from "../../utils/sendEmailUtility";
 import hashedPassword from "../../utils/hashedPassword";
 import mongoose, { Types } from "mongoose";
 import verifyToken from "../../utils/verifyToken";
@@ -13,6 +12,7 @@ import { isJWTIssuedBeforePassChanged } from "../../utils/isJWTIssuedBeforePassC
 import { IUser } from "../User/user.interface";
 import ApiError from "../../errors/ApiError";
 import sendVerificationEmail from "../../utils/sendVerificationEmail";
+import sendForgotEmail from "../../utils/sendForgotEmail";
 
 
 const registerUserService = async (reqBody: IUser) => {
@@ -241,7 +241,7 @@ const forgotPassSendOtpService = async (email: string) => {
   await UserModel.updateOne({ email }, { resetOtp: otp, resetOtpstatus:0, resetOtpExpires: new Date(+new Date() + 600000)})
 
   //send otp to the email address
-  await sendEmailUtility(email, user?.fullName, String(otp));
+  await sendForgotEmail(email, user?.fullName, String(otp));
   return null;
 };
 
