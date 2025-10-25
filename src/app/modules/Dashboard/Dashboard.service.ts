@@ -140,7 +140,11 @@ const getIncomeOverviewService = async (year: string) => {
     {
       $match: {
         createdAt: { $gte: new Date(start), $lte: new Date(end) },
-        paymentStatus: "paid"
+        status: "delivered",
+        $or: [
+          { paymentStatus: "paid" },
+          { paymentStatus: "cash" }
+        ]
       }
     },
     {
