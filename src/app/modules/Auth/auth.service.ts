@@ -2,7 +2,7 @@ import { Secret } from "jsonwebtoken";
 import AppError from "../../errors/ApiError";
 import checkPassword from "../../utils/checkPassword";
 import UserModel from "../User/user.model";
-import { IChangePass, ILoginUser, INewPassword, IVerifyOTp, TSocialLoginPayload } from "./auth.interface";
+import { IChangePass, ILoginUser, INewPassword, IVerifyOTp } from "./auth.interface";
 import createToken, { TExpiresIn } from "../../utils/createToken";
 import config from "../../config";
 import sendEmailUtility from "../../utils/sendEmailUtility";
@@ -17,6 +17,7 @@ import sendVerificationEmail from "../../utils/sendVerificationEmail";
 
 const registerUserService = async (reqBody: IUser) => {
   const { email, fullName, password } = reqBody;
+  //return reqBody
 
   //check email
   const existingUser = await UserModel.findOne({ email });
@@ -86,7 +87,24 @@ const verifyEmailService = async (payload: IVerifyOTp) => {
 
   //update the user 
   await UserModel.updateOne({ email: user?.email }, { isVerified: true, otp:"000000" })
-  return null;
+  
+  //create accessToken
+  const accessToken = createToken(
+    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
+    config.jwt_access_secret as Secret,
+    config.jwt_access_expires_in as TExpiresIn
+  );
+  //create refreshToken
+  const refreshToken = createToken(
+    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
+    config.jwt_refresh_secret as Secret,
+    config.jwt_refresh_expires_in as TExpiresIn
+  );
+
+  return {
+    accessToken,
+    refreshToken
+  }
 
 }
 
