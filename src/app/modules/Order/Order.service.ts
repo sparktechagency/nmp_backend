@@ -705,6 +705,7 @@ const getExportOrdersService = async () => {
         total:1,
         fullName: 1,
         email: 1,
+        phone:1,
         status: "$status",
         paymentStatus: "$paymentStatus",
         deliveryAt: "$deliveryAt",
