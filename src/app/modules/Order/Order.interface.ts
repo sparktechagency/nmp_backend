@@ -25,6 +25,7 @@ export interface IOrder {
   token: string;
   fullName: string;
   email: string;
+  phone: string;
   products: IOrderItem[];
   shippingCost: number;
   subTotal: number;
@@ -64,6 +65,7 @@ export type TOrderPayload = {
   userData: {
     fullName: string;
     email: string;
+    phone: string;
   },
   shippingAddress: IShipping,
   cartProducts: ICart[]

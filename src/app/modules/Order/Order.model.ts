@@ -90,6 +90,10 @@ const orderSchema = new Schema<IOrder>({
     type: String,
     required: true,
   },
+  phone: {
+    type: String,
+    required: true,
+  },
   products: {
     type: [orderItemSchema],
     required: true,

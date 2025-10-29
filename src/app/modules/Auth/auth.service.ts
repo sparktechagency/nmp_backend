@@ -90,7 +90,7 @@ const verifyEmailService = async (payload: IVerifyOTp) => {
   
   //create accessToken
   const accessToken = createToken(
-    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
+    { email: user.email, fullName: user?.fullName, phone: user?.phone, id: String(user._id), role: user.role },
     config.jwt_access_secret as Secret,
     config.jwt_access_expires_in as TExpiresIn
   );
@@ -159,7 +159,7 @@ const loginUserService = async (payload: ILoginUser) => {
 
   //create accessToken
   const accessToken = createToken(
-    { email: user.email, fullName: user?.fullName, id: String(user._id), role: user.role },
+    { email: user.email, fullName: user?.fullName, phone: user?.phone, id: String(user._id), role: user.role },
     config.jwt_access_secret as Secret,
     config.jwt_access_expires_in as TExpiresIn
   );

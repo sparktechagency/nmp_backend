@@ -23,6 +23,16 @@ export const createOrderValidationSchema = z.object({
       .email({
         message: "Invalid email address"
       }),
+    phone: z
+      .string({
+        invalid_type_error: "phone must be string",
+        required_error: "phone is required",
+      })
+      .trim()
+      .min(1, "phone is required")
+      .regex(/^\+?\d+$/, {
+        message: "Phone number can contain only numbers and +",
+      }),
   }),
   shippingAddress: z.object({
     streetAddress: z

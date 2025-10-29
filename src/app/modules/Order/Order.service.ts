@@ -23,7 +23,7 @@ const createOrderService = async (
   payload: TOrderPayload
 ) => {
 
-  const { userData: { email, fullName}, shippingAddress, cartProducts } = payload;
+  const { userData: { email, fullName, phone }, shippingAddress, cartProducts } = payload;
 
   //check duplicate cart products
   const cartProductIds = cartProducts?.map((cv)=> cv.productId);
@@ -126,6 +126,7 @@ const createOrderService = async (
         {
           fullName,
           email,
+          phone,
           token,
           products: cartItems,
           subTotal,
@@ -171,7 +172,7 @@ const createOrderWithCashService = async (
 ) => {
 
 
-  const { userData: { email, fullName}, shippingAddress, cartProducts } = payload;
+  const { userData: { email, fullName, phone }, shippingAddress, cartProducts } = payload;
 
   //check duplicate cart products
   const cartProductIds = cartProducts?.map((cv)=> cv.productId);
@@ -297,6 +298,7 @@ const createOrderWithCashService = async (
         {
           fullName,
           email,
+          phone,
           token,
           products: cartItems,
           subTotal,
@@ -654,6 +656,7 @@ const getAllOrdersService = async (query: TOrderQuery) => {
         total:1,
         fullName: 1,
         email: 1,
+        phone: 1,
         status: "$status",
         paymentStatus: "$paymentStatus",
         deliveryAt: "$deliveryAt",
@@ -735,6 +738,7 @@ const getSingleOrderService = async (orderId: string) => {
         total:1,
         customerName: "$fullName",
         customerEmail: "$email",
+        customerPhone: "$phone",
         shipping:1,
         totalPrice: 1,
         paymentStatus: 1,

@@ -6,6 +6,7 @@ type TPayload = {
     email: string;
     id: string;
     fullName?: string;
+    phone?: string;
     role: 'user' | 'owner' | 'super_admin' | "admin"
 }
 
