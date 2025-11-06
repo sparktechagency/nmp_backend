@@ -4,7 +4,8 @@ import InformationModel from './Information.model';
 import ApiError from '../../errors/ApiError';
 import cloudinary from '../../helper/cloudinary';
 import { Request } from 'express';
-import convertUTCtimeString from '../../utils/convertUTCtimeString';
+//import convertUTCtimeString from '../../utils/convertUTCtimeString';
+import uploadImage from '../../utils/uploadImage';
 
 const createInformationService = async (
   payload: IInformation,
@@ -55,13 +56,13 @@ const updateHeroImgService = async (req: Request) => {
   //upload a image
   let image: string = "";
   if (req.file && (req.file as Express.Multer.File)) {
-    const file = req.file as Express.Multer.File;
-    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
-      folder: 'NMP-Ecommerce',
-      // width: 300,
-      // crop: 'scale',
-    });
-    image = cloudinaryRes?.secure_url;
+    //const file = req.file as Express.Multer.File;
+    // const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
+    //   folder: 'NMP-Ecommerce',
+    //   // width: 300,
+    //   // crop: 'scale',
+    // });
+    image = await uploadImage(req);
     // fs.unlink(file.path);
   }
 
