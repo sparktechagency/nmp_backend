@@ -167,6 +167,87 @@ const createOrderService = async (
 
 };
 
+const verifySessionService = async (sessionId: string) => {
+  if (!sessionId) {
+    throw new ApiError(400, "sessionId is required");
+  }
+
+  const paymentSession = await stripe.checkout.sessions.retrieve(sessionId);
+  //payment_status = "no_payment_required", "paid", "unpaid"
+  if (paymentSession.payment_status !== "paid") {
+    throw new ApiError(403, "Payment Failled");
+  }
+
+  const metadata = paymentSession?.metadata;
+  if (!metadata) {
+    throw new ApiError(400, "Invalid Session Id")
+  }
+
+  //check already payment is completed
+  const order = await OrderModel.findOne({
+    _id: metadata.orderId,
+    email: metadata.email,
+    paymentStatus: "paid"
+  });
+
+  if (order) {
+    throw new ApiError(400, "Payment already completed");
+  }  
+
+  //parse cartProducts
+  const cartProducts = JSON.parse(metadata?.cartProducts);
+
+   //transaction & rollback
+  const session = await mongoose.startSession();
+
+  try {
+    //start transaction
+    session.startTransaction();
+
+    // update product sales in bulk
+    //bulkWrite send one request to MongoDB:
+    await ProductModel.bulkWrite(
+      cartProducts.map((item: ICart) => ({
+        updateOne: {
+          filter: { _id: item.productId },
+          update: [
+            {
+              $set: {
+                quantity: {
+                  $max: [
+                    { $subtract: ["$quantity", item.quantity] }, //quantity can't be negative, but 0
+                    0
+                  ]
+                }
+              }
+            }
+          ],
+        }
+      })),
+      { session }
+    );
+
+    //update payment status
+    const result = await OrderModel.updateOne({
+      _id: metadata.orderId,
+      email: metadata.email
+    }, {
+      paymentStatus: "paid"
+    }, {
+      session
+    })
+
+    //transaction success
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  }catch (err:any) {
+      await session.abortTransaction();
+      await session.endSession();
+      throw new Error(err);
+  }
+};
+
 const createOrderWithCashService = async (
   payload: TOrderPayload
 ) => {
@@ -321,6 +402,7 @@ const createOrderWithCashService = async (
     }
 
 };
+
 
 // const createOrderService = async (
 //   loginUserId: string,
@@ -795,11 +877,14 @@ const updateOrderService = async (orderId: string, payload: Partial<IOrder>) => 
 
 
   //if status==="delivered"
-  if(payload.status==="delivered"){
-    if(order[0].paymentStatus !=="paid"){
-      throw new ApiError(403, "This order has not been paid for yet.")
+  if (payload.status === "delivered") {
+    //payment status is not cash
+    if (order[0].paymentStatus !== "cash") {
+      if (order[0].paymentStatus !== "paid") {
+        throw new ApiError(403, "This order has not been paid for yet.")
+      }
     }
-    payload.deliveryAt=new Date()
+    payload.deliveryAt = new Date()
   }
 
 
@@ -840,98 +925,30 @@ const deleteOrderService = async (orderId: string) => {
   return result;
 };
 
-const verifySessionService = async (sessionId: string) => {
-  if (!sessionId) {
-    throw new ApiError(400, "sessionId is required");
+
+const updateOrderTipsService = async (orderId: string) => {
+  const order = await OrderModel.findById(orderId);
+  if(!order){
+    throw new ApiError(404, "Order Not Found");
   }
-
-  const paymentSession = await stripe.checkout.sessions.retrieve(sessionId);
-  //payment_status = "no_payment_required", "paid", "unpaid"
-  if (paymentSession.payment_status !== "paid") {
-    throw new ApiError(403, "Payment Failled");
-  }
-
-  const metadata = paymentSession?.metadata;
-  if (!metadata) {
-    throw new ApiError(400, "Invalid Session Id")
-  }
-
-  //check already payment is completed
-  const order = await OrderModel.findOne({
-    _id: metadata.orderId,
-    email: metadata.email,
-    paymentStatus: "paid"
-  });
-
-  if (order) {
-    throw new ApiError(400, "Payment already completed");
-  }  
-
-  //parse cartProducts
-  const cartProducts = JSON.parse(metadata?.cartProducts);
-
-   //transaction & rollback
-  const session = await mongoose.startSession();
-
-  try {
-    //start transaction
-    session.startTransaction();
-
-    // update product sales in bulk
-    //bulkWrite send one request to MongoDB:
-    await ProductModel.bulkWrite(
-      cartProducts.map((item: ICart) => ({
-        updateOne: {
-          filter: { _id: item.productId },
-          update: [
-            {
-              $set: {
-                quantity: {
-                  $max: [
-                    { $subtract: ["$quantity", item.quantity] }, //quantity can't be negative, but 0
-                    0
-                  ]
-                }
-              }
-            }
-          ],
-        }
-      })),
-      { session }
-    );
-
-    //update payment status
-    const result = await OrderModel.updateOne({
-      _id: metadata.orderId,
-      email: metadata.email
-    }, {
-      paymentStatus: "paid"
-    }, {
-      session
-    })
-
-    //transaction success
-    await session.commitTransaction();
-    await session.endSession();
-    return result;
-  }catch (err:any) {
-      await session.abortTransaction();
-      await session.endSession();
-      throw new Error(err);
-  }
+  const result = await OrderModel.deleteOne({ _id:orderId });
+  return result;
 };
+
+
 
 
 
 
 export {
   createOrderService,
+  verifySessionService,
+  createOrderWithCashService,
   getUserOrdersService,
   getAllOrdersService,
   getExportOrdersService,
   getSingleOrderService,
   updateOrderService,
   deleteOrderService,
-  verifySessionService,
-  createOrderWithCashService
+  updateOrderTipsService
 };
