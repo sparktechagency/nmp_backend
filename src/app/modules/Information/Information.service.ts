@@ -29,10 +29,10 @@ const getInformationService = async () => {
     {
       $addFields: {
         longitude: {
-          $arrayElemAt: [ "$location.coordinates", 1],
+          $arrayElemAt: [ "$location.coordinates", 0],
         },
         latitude: {
-          $arrayElemAt: [ "$location.coordinates", 0],
+          $arrayElemAt: [ "$location.coordinates", 1],
         }
       }
     },
