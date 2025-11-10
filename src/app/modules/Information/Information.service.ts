@@ -2,7 +2,6 @@
 import { IInformation, IMapLoaction, INearbyQuery } from './Information.interface';
 import InformationModel from './Information.model';
 import ApiError from '../../errors/ApiError';
-import cloudinary from '../../helper/cloudinary';
 import { Request } from 'express';
 import uploadImage from '../../utils/uploadImage';
 
@@ -77,14 +76,7 @@ const updateHeroImgService = async (req: Request) => {
   //upload a image
   let image: string = "";
   if (req.file && (req.file as Express.Multer.File)) {
-    //const file = req.file as Express.Multer.File;
-    // const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
-    //   folder: 'NMP-Ecommerce',
-    //   // width: 300,
-    //   // crop: 'scale',
-    // });
     image = await uploadImage(req);
-    // fs.unlink(file.path);
   }
 
   if (!image) {
@@ -109,14 +101,7 @@ const updateCountDownImgService = async (req: Request) => {
   //upload a image
   let image: string = "";
   if (req.file && (req.file as Express.Multer.File)) {
-    const file = req.file as Express.Multer.File;
-    const cloudinaryRes = await cloudinary.uploader.upload(file.path, {
-      folder: 'NMP-Ecommerce',
-      // width: 300,
-      // crop: 'scale',
-    });
-    image = cloudinaryRes?.secure_url;
-    // fs.unlink(file.path);
+    image = await uploadImage(req);
   }
 
   if (!image) {
@@ -203,10 +188,14 @@ const checkNearbyLocationService = async (query: INearbyQuery) => {
     throw new ApiError(400, "latitude must be between -90 and 90");
   }
 
+  //check distance
+  const information = await InformationModel.findOne();
+  if(!information?.distance){
+    throw new ApiError(404, "distance not found");
+  }
 
-  const radiusInMiles = 5;
+  const radiusInMiles = information.distance || 5; //miles
   const earthRadiusInMiles = 3958.8; // Earth's radius in miles
-
   
   const result = await InformationModel.aggregate([
     {
