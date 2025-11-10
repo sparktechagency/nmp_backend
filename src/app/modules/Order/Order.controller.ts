@@ -2,7 +2,7 @@ import catchAsync from '../../utils/catchAsync';
 import pickValidFields from '../../utils/pickValidFields';
 import sendResponse from '../../utils/sendResponse';
 import { OrderValidFields, UserOrderValidFields } from './Order.constant';
-import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, deleteOrderService, getUserOrdersService, verifySessionService, getExportOrdersService, createOrderWithCashService } from './Order.service';
+import { createOrderService, getSingleOrderService, getAllOrdersService, updateOrderService, getUserOrdersService, verifySessionService, getExportOrdersService, createOrderWithCashService, updateTipsService } from './Order.service';
 
 const createOrder = catchAsync(async (req, res) => {
    const result = await createOrderService(req.body);
@@ -14,6 +14,21 @@ const createOrder = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+
+
+const verifySession = catchAsync(async (req, res) => {
+  const { sessionId } = req.query;
+  const result = await verifySessionService(sessionId as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Payment Successful',
+    data: result,
+  });
+});
+
 
 const createOrderWithCash = catchAsync(async (req, res) => {
    const result = await createOrderWithCashService(req.body);
@@ -87,43 +102,32 @@ const updateOrder = catchAsync(async (req, res) => {
   });
 });
 
-const deleteOrder = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await deleteOrderService(id);
+
+const updateTips = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const { tips } = req.body;
+  const result = await updateTipsService(orderId, tips);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Order is deleted successfully',
+    message: 'Order is updated successfully',
     data: result,
   });
 });
 
-
-
-const verifySession = catchAsync(async (req, res) => {
-  const { sessionId } = req.query;
-  const result = await verifySessionService(sessionId as string);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Payment Successful',
-    data: result,
-  });
-});
 
 
 
 const OrderController = {
   createOrder,
+  verifySession,
   createOrderWithCash,
   getSingleOrder,
   getUserOrders,
   getAllOrders,
   getExportOrders,
   updateOrder,
-  deleteOrder,
-  verifySession,
+  updateTips
 };
 export default OrderController;

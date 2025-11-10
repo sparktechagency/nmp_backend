@@ -1,6 +1,6 @@
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
-import { createInformationService, getInformationService, updateCountDownImgService, updateCountDownTimeService, updateHeroImgService } from './Information.service';
+import { createInformationService, getInformationService, updateCountDownImgService, updateCountDownTimeService, updateHeroImgService, updateMapLoactionService } from './Information.service';
 
 const createInformation = catchAsync(async (req, res) => {
   const result = await createInformationService(req.body);
@@ -59,6 +59,17 @@ const updateCountDownTime = catchAsync(async (req, res) => {
   });
 });
 
+const updateMapLocation = catchAsync(async (req, res) => {
+  const result = await updateMapLoactionService(req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `Map location is updated successfully`,
+    data: result,
+  });
+});
+
 
 
 const InformationController = {
@@ -66,6 +77,7 @@ const InformationController = {
   getInformation,
   updateHeroImg,
   updateCountDownImg,
-  updateCountDownTime
+  updateCountDownTime,
+  updateMapLocation
 };
 export default InformationController;

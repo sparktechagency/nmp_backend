@@ -117,3 +117,46 @@ export const countDownDateSchema = z.object({
       }
     )
 });
+
+export const mapLocationSchema = z.object({
+  latitude: z
+    .number({
+      invalid_type_error: "latitude must be number value"
+    })
+    .finite()
+    .min(-90, { message: "latitude must be >= -90" })
+    .max(90, { message: "latitude must be <= 90" })
+    .optional(),
+  longitude: z
+    .number({
+      invalid_type_error: "longitude must be number value"
+    })
+    .finite()
+    .min(-180, { message: "longitude must be >= -180" })
+    .max(180, { message: "longitude must be <= 180" })
+    .optional(),
+  distance: z
+    .number({
+      invalid_type_error: "distance must be a number",
+    })
+    .refine((val) => !isNaN(val), { message: "distance must be a valid number" })
+    .refine((val) => val > 0, { message: "distance must be minimum 1" })
+    .optional()
+})
+  .superRefine((values, ctx) => {
+    const { longitude, latitude } = values;
+    if (longitude && !latitude) {
+      ctx.addIssue({
+        path: ["latitude"],
+        message: "latitude value must be required",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+    if (!longitude && latitude) {
+      ctx.addIssue({
+        path: ["longitude"],
+        message: "longitude value must be required",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+  })

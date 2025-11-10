@@ -736,6 +736,7 @@ const getAllOrdersService = async (query: TOrderQuery) => {
         subTotal: 1,
         shippingCost:1,
         total:1,
+        tips:1,
         fullName: 1,
         email: 1,
         phone: 1,
@@ -819,6 +820,7 @@ const getSingleOrderService = async (orderId: string) => {
         subTotal: 1,
         shippingCost:1,
         total:1,
+        tips: 1,
         customerName: "$fullName",
         customerEmail: "$email",
         customerPhone: "$phone",
@@ -895,43 +897,42 @@ const updateOrderService = async (orderId: string, payload: Partial<IOrder>) => 
 
 
   if(payload.status==="delivered"){
-      await sendDeliveredEmail(order[0].customerEmail, order[0])
-    return;
+    await sendDeliveredEmail(order[0].customerEmail, order[0])
+    return null;
   }
   if(payload.status==="processing"){
     await sendProcessingEmail(order[0].customerEmail, order[0])
-    return;
+    return null;
   }
 
   if (payload.status === "shipped") {
     await sendShippedEmail(order[0].customerEmail, order[0])
-    return;
+    return null;
   }
 
   if (payload.status === "cancelled") {
     await sendCancelledEmail(order[0].customerEmail, order[0])
-    return;
+    return null;
   }
 
-  return result;
 };
 
-const deleteOrderService = async (orderId: string) => {
+
+const updateTipsService = async (orderId: string, tips:number) => {
   const order = await OrderModel.findById(orderId);
   if(!order){
     throw new ApiError(404, "Order Not Found");
   }
-  const result = await OrderModel.deleteOne({ _id:orderId });
-  return result;
-};
 
-
-const updateOrderTipsService = async (orderId: string) => {
-  const order = await OrderModel.findById(orderId);
-  if(!order){
-    throw new ApiError(404, "Order Not Found");
+  if (order.status !== "delivered"){
+    throw new ApiError (400, "Tips can be added only after delivery");
   }
-  const result = await OrderModel.deleteOne({ _id:orderId });
+
+  const result = await OrderModel.updateOne(
+    { _id: orderId },
+    { tips }, 
+    {runValidators: true}
+  );
   return result;
 };
 
@@ -949,6 +950,5 @@ export {
   getExportOrdersService,
   getSingleOrderService,
   updateOrderService,
-  deleteOrderService,
-  updateOrderTipsService
+  updateTipsService
 };

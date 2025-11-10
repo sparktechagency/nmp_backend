@@ -12,13 +12,16 @@ export interface IInformation {
   age: number;
   countDownDate: Date;
   countDownImg: string;
+  location: {
+    type: 'Point';
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+  distance: number
 };
 
-export type TContactQuery = {
-  searchTerm?: string;
-  page?: string;
-  limit?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  status?: string,
-};
+
+export interface IMapLoaction {
+  longitude?: number;
+  latitude?: number;
+  distance?: number;
+}

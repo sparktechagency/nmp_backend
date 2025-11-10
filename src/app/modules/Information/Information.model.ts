@@ -55,6 +55,20 @@ const informationSchema = new Schema<IInformation>({
     trim: true,
     default: ""
   },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'], // 'type' must be "Point"
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+    },
+  },
+  distance: {
+    type: Number,
+    trim: true,
+    min:1
+  },
 }, {
   timestamps: false,
   versionKey: false

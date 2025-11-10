@@ -1,7 +1,7 @@
 import express from 'express';
 import OrderController from './Order.controller';
 import validationMiddleware from '../../middlewares/validationMiddleware';
-import { createOrderValidationSchema, updateOrderValidationSchema } from './Order.validation';
+import { createOrderValidationSchema, updateOrderValidationSchema, updateTipsValidationSchema } from './Order.validation';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import { UserRole } from '../User/user.constant';
 
@@ -12,6 +12,7 @@ router.post(
   validationMiddleware(createOrderValidationSchema),
   OrderController.createOrder,
 );
+router.get('/verify-session', OrderController.verifySession);
 router.post(
   '/create-order-with-cash',
   validationMiddleware(createOrderValidationSchema),
@@ -28,10 +29,11 @@ router.patch(
   validationMiddleware(updateOrderValidationSchema),
   OrderController.updateOrder,
 );
-
-router.delete(
-  '/delete-order/:orderId',
-  OrderController.deleteOrder,
+router.patch(
+  '/update-tips/:orderId',
+   AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  validationMiddleware(updateTipsValidationSchema),
+  OrderController.updateTips,
 );
 router.get(
   '/get-user-orders',
@@ -49,7 +51,6 @@ router.get(
   OrderController.getExportOrders,
 );
 
-router.get('/verify-session', OrderController.verifySession);
 
 const OrderRoutes = router;
 export default OrderRoutes;

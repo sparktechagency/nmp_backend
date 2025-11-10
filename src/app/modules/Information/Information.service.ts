@@ -1,10 +1,9 @@
 
-import { IInformation } from './Information.interface';
+import { IInformation, IMapLoaction } from './Information.interface';
 import InformationModel from './Information.model';
 import ApiError from '../../errors/ApiError';
 import cloudinary from '../../helper/cloudinary';
 import { Request } from 'express';
-//import convertUTCtimeString from '../../utils/convertUTCtimeString';
 import uploadImage from '../../utils/uploadImage';
 
 const createInformationService = async (
@@ -27,23 +26,45 @@ const createInformationService = async (
 };
 
 const getInformationService = async () => {
-  const result = await InformationModel.findOne().select("-createdAt -updatedAt -_id");
-  if (!result) {
+  const result = await InformationModel.aggregate([
+    {
+      $addFields: {
+        longitude: {
+          $arrayElemAt: [ "$location.coordinates", 1],
+        },
+        latitude: {
+          $arrayElemAt: [ "$location.coordinates", 0],
+        }
+      }
+    },
+    {
+      $project: {
+        _id:0,
+        location:0
+      }
+    }
+  ]);
+
+  if (result.length === 0) {
     return {
-      "title": "Transform Every Puff into Pure Satisfaction",
-      "subTitle": "Explore Our Premium Collection of Vapes and Accessories That Deliver Unmatched Quality and Flavor.",
-      "heroImg": "https://res.cloudinary.com/dwok2hmb7/image/upload/v1757327095/NMP-Ecommerce/moltzcyv0wfpbiigq6o2.jpg",
-      "email": "supportnmp@gmail.com",
-      "phone": "01823969823",
-      "address": "Washition",
-      "instagram": "https://www.instagram.com/",
-      "facebook": "https://www.facebook.com/",
-      "age": 21,
-      "countDownDate": "2025-09-12T07:31:45.137+00:00",
-      "countDownImg": "https://res.cloudinary.com/dwok2hmb7/image/upload/v1757327095/NMP-Ecommerce/moltzcyv0wfpbiigq6o2.jpg",
+      "title": "",
+      "subTitle": "",
+      "email": "",
+      "phone": "",
+      "address": "",
+      "instagram": "",
+      "facebook": "",
+      "heroImg": "",
+      "age": 0,
+      "countDownImg": "",
+      "countDownDate": "",
+      "distance": 0,
+      "longitude": 0,
+      "latitude": 0
     }
   }
-  return result;
+
+  return result[0]
 };
 
 
@@ -138,11 +159,40 @@ const updateCountDownTimeService = async (payload: {date:string, time: string}) 
   );
 }
 
+const updateMapLoactionService = async (payload: IMapLoaction) => {
+  const { longitude, latitude, distance } = payload;
+
+  const updateData: Record<string, unknown> = {};
+
+  //if longitude & latitude is available
+  if (longitude && latitude) {
+    updateData.location = {
+      type: "Point",
+      coordinates: [longitude, latitude],
+    }
+  }
+
+  //if distance is available
+  if(distance){
+    updateData.distance=distance
+  }
+
+
+  const result = await InformationModel.updateOne(
+    {},
+    updateData,
+    { runValidators: true }
+  );
+
+  return result;
+}
+
 
 export {
   createInformationService,
   getInformationService,
   updateHeroImgService,
   updateCountDownImgService,
-  updateCountDownTimeService
+  updateCountDownTimeService,
+  updateMapLoactionService
 };

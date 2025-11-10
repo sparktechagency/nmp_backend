@@ -95,3 +95,13 @@ export const updateOrderValidationSchema = z.object({
       message: "status must be one of: 'processing', 'shipped', 'delivered', 'cancelled'",
     })
 });
+
+export const updateTipsValidationSchema = z.object({
+  tips: z
+    .number({
+      required_error: "tips is required",
+      invalid_type_error: "tips must be a number",
+    })
+    .refine((val) => !isNaN(val), { message: "tips must be a valid number" })
+    .refine((val) => val > 0, { message: "tips must be minimum 1" })
+});

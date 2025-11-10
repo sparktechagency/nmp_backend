@@ -1,6 +1,6 @@
 import express from 'express';
 import validationMiddleware from '../../middlewares/validationMiddleware';
-import { countDownDateSchema, createInformationValidationSchema } from './Information.validation';
+import { countDownDateSchema, createInformationValidationSchema, mapLocationSchema } from './Information.validation';
 import { UserRole } from '../User/user.constant';
 import AuthMiddleware from '../../middlewares/AuthMiddleware';
 import InformationController from './Information.controller';
@@ -39,6 +39,13 @@ router.patch(
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
   validationMiddleware(countDownDateSchema),
   InformationController.updateCountDownTime,
+);
+
+router.patch(
+  '/update-map-location',
+  AuthMiddleware(UserRole.admin, UserRole.super_admin),
+  validationMiddleware(mapLocationSchema),
+  InformationController.updateMapLocation,
 );
 
 
