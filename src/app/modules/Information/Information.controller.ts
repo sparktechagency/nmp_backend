@@ -1,6 +1,8 @@
 import catchAsync from '../../utils/catchAsync';
+import pickValidFields from '../../utils/pickValidFields';
 import sendResponse from '../../utils/sendResponse';
-import { createInformationService, getInformationService, updateCountDownImgService, updateCountDownTimeService, updateHeroImgService, updateMapLoactionService } from './Information.service';
+import { NearbyValidFields } from './Information.constant';
+import { checkNearbyLocationService, createInformationService, getInformationService, updateCountDownImgService, updateCountDownTimeService, updateHeroImgService, updateMapLoactionService } from './Information.service';
 
 const createInformation = catchAsync(async (req, res) => {
   const result = await createInformationService(req.body);
@@ -71,6 +73,18 @@ const updateMapLocation = catchAsync(async (req, res) => {
 });
 
 
+const checkNearbyLocation = catchAsync(async (req, res) => {
+  const validatedQuery = pickValidFields(req.query, NearbyValidFields);
+  const result = await checkNearbyLocationService(validatedQuery);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Location is checked successfully',
+    data: result,
+  });
+});
+
 
 const InformationController = {
   createInformation,
@@ -78,6 +92,7 @@ const InformationController = {
   updateHeroImg,
   updateCountDownImg,
   updateCountDownTime,
-  updateMapLocation
+  updateMapLocation,
+  checkNearbyLocation
 };
 export default InformationController;

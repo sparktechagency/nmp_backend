@@ -1,5 +1,5 @@
 
-import { IInformation, IMapLoaction } from './Information.interface';
+import { IInformation, IMapLoaction, INearbyQuery } from './Information.interface';
 import InformationModel from './Information.model';
 import ApiError from '../../errors/ApiError';
 import cloudinary from '../../helper/cloudinary';
@@ -187,6 +187,49 @@ const updateMapLoactionService = async (payload: IMapLoaction) => {
   return result;
 }
 
+const checkNearbyLocationService = async (query: INearbyQuery) => {
+  const { longitude, latitude} = query;
+  if (!longitude || !latitude) {
+    throw new ApiError(400, "Longitude and latitude are required");
+  }
+
+  //check longitude
+  if(!(longitude >= -180) || !(longitude <= 180)){
+    throw new ApiError(400, "longitude must be between -180 and 180");
+  }
+
+  //check latitude
+  if(!(latitude >= -90) || !(latitude <= 90)){
+    throw new ApiError(400, "latitude must be between -90 and 90");
+  }
+
+
+  const radiusInMiles = 5;
+  const earthRadiusInMiles = 3958.8; // Earth's radius in miles
+
+  
+  const result = await InformationModel.aggregate([
+    {
+      $match: {
+        location: {
+          $geoWithin: {
+            $centerSphere: [
+              [Number(longitude), Number(latitude)], // [longitude, latitude]
+              Number(radiusInMiles) / earthRadiusInMiles, // convert miles to radians
+            ],
+          },
+        },
+      },
+    }]);
+
+  
+  if(result.length ===0){
+    throw new ApiError(400, `Sorry, this location is outside our ${radiusInMiles}-miles delivery range`);
+  }
+
+  return null;
+}
+
 
 export {
   createInformationService,
@@ -194,5 +237,6 @@ export {
   updateHeroImgService,
   updateCountDownImgService,
   updateCountDownTimeService,
-  updateMapLoactionService
+  updateMapLoactionService,
+  checkNearbyLocationService
 };

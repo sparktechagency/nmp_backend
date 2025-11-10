@@ -20,6 +20,11 @@ export interface IInformation {
 };
 
 
+export type INearbyQuery = {
+  longitude?: number;
+  latitude?: number;
+}
+
 export interface IMapLoaction {
   longitude?: number;
   latitude?: number;

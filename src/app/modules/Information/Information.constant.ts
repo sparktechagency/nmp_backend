@@ -7,5 +7,10 @@ export const ContactValidFields: string[] = [
   "sortBy",
   "sortOrder",
 ];
-      
+ 
+
+export const NearbyValidFields: string[] = [
+  "longitude",
+  "latitude"
+]
       

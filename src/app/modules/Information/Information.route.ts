@@ -40,7 +40,6 @@ router.patch(
   validationMiddleware(countDownDateSchema),
   InformationController.updateCountDownTime,
 );
-
 router.patch(
   '/update-map-location',
   AuthMiddleware(UserRole.admin, UserRole.super_admin),
@@ -48,6 +47,10 @@ router.patch(
   InformationController.updateMapLocation,
 );
 
+router.get(
+  '/check-nearby-location',
+  InformationController.checkNearbyLocation
+);
 
 const InformationRoutes = router;
 export default InformationRoutes;
