@@ -32,14 +32,6 @@ const createOrderService = async (
     throw new ApiError(400, "Duplicate products cannot be added to the cart !")
   }
   
-  // check product 
-  for (let i = 0; i < cartProducts?.length; i++) {
-    const product = await ProductModel.findById(cartProducts[i].productId);
-    if (!product) {
-      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
-    }
-  }
-
   let cartItems: {
     productId: Types.ObjectId;
     name: string;
@@ -49,10 +41,14 @@ const createOrderService = async (
     image: string;
   }[] = []
 
-  // check product availability during order
+  // check product & product availability during order
   for (let i = 0; i < cartProducts?.length; i++) {
     const product = await ProductModel.findById(cartProducts[i].productId);
     const availableQty = Number(product?.quantity);
+
+    if (!product) {
+      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
+    }
 
     if (cartProducts[i].quantity > availableQty) {
       throw new ApiError(
@@ -60,6 +56,14 @@ const createOrderService = async (
         availableQty > 0
           ? `Sorry, only ${availableQty} unit(s) of '${product?.name}' are left in stock. Please update your order.`
           : `Sorry, "${product?.name}" is currently out of stock.`
+      );
+    }
+
+    //check price
+    if (cartProducts[i].price !== product?.currentPrice) {
+      throw new ApiError(
+        400,
+        `Sorry, The price for '${product?.name}' has been changed. Please update your cart before proceeding.`
       );
     }
 
@@ -251,8 +255,6 @@ const verifySessionService = async (sessionId: string) => {
 const createOrderWithCashService = async (
   payload: TOrderPayload
 ) => {
-
-
   const { userData: { email, fullName, phone }, shippingAddress, cartProducts } = payload;
 
   //check duplicate cart products
@@ -262,13 +264,6 @@ const createOrderWithCashService = async (
     throw new ApiError(400, "Duplicate products cannot be added to the cart !")
   }
   
-  // check product 
-  for (let i = 0; i < cartProducts?.length; i++) {
-    const product = await ProductModel.findById(cartProducts[i].productId);
-    if (!product) {
-      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
-    }
-  }
 
   let cartItems: {
     productId: Types.ObjectId;
@@ -284,12 +279,24 @@ const createOrderWithCashService = async (
     const product = await ProductModel.findById(cartProducts[i].productId);
     const availableQty = Number(product?.quantity);
 
+     if (!product) {
+      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
+    }
+
     if (cartProducts[i].quantity > availableQty) {
       throw new ApiError(
         400,
         availableQty > 0
           ? `Sorry, only ${availableQty} unit(s) of '${product?.name}' are left in stock. Please update your order.`
           : `Sorry, "${product?.name}" is currently out of stock.`
+      );
+    }
+
+    //check product price
+    if (cartProducts[i].price !== product?.currentPrice) {
+      throw new ApiError(
+        400,
+        `Sorry, The price for '${product?.name}' has been changed. Please update your cart before proceeding.`
       );
     }
 

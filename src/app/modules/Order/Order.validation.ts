@@ -82,6 +82,14 @@ export const createOrderValidationSchema = z.object({
         .refine((val) => !isNaN(val), { message: "quantity must be a valid number" })
         .refine((val) => val > 0, { message: "quantity must be minimum 1" })
       ,
+      price: z
+        .number({
+          required_error: "price is required",
+          invalid_type_error: "price must be a number",
+        })
+        .refine((val) => !isNaN(val), { message: "price must be a valid number" })
+        .refine((val) => val > 0, { message: "price must be minimum 1" })
+      ,
     })
   ).min(1, "You must add at least one product to the cart !")
 });

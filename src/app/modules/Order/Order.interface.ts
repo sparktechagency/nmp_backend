@@ -60,6 +60,7 @@ export type TUserOrderQuery = {
 export interface ICart {
   productId: Types.ObjectId;
   quantity: number;
+  price: number;
 }
 
 export type TOrderPayload = {
