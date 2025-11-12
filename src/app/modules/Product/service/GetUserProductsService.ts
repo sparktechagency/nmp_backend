@@ -259,6 +259,9 @@ const GetUserProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
+                categoryId:1,
+                brandId:1,
+                flavorId:1,
                 category: "$category.name",
                 brand: {
                     $cond: {
@@ -344,6 +347,9 @@ const GetUserProductsService = async (query: TProductQuery) => {
             $project: {
                 _id: 1,
                 name: 1,
+                categoryId:1,
+                brandId:1,
+                flavorId:1,
                 category: "$category.name",
                 brand: {
                     $cond: {
@@ -373,6 +379,9 @@ const GetUserProductsService = async (query: TProductQuery) => {
 
     const modifiedResult = result?.length > 0 ? result?.map((cv)=>({
         ...cv,
+        categoryId:undefined,
+        brandId: undefined,
+        flavorId: undefined,
         stockStatus: getStockStatus(cv.quantity)
     })): []
 
