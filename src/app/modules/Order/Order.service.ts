@@ -47,7 +47,7 @@ const createOrderService = async (
     const availableQty = Number(product?.quantity);
 
     if (!product) {
-      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
+      throw new ApiError(404, `Some products not found. Please update your cart before proceeding.`);
     }
 
     if (cartProducts[i].quantity > availableQty) {
@@ -279,8 +279,8 @@ const createOrderWithCashService = async (
     const product = await ProductModel.findById(cartProducts[i].productId);
     const availableQty = Number(product?.quantity);
 
-     if (!product) {
-      throw new ApiError(404, `This '${cartProducts[i].productId}' productId not found`);
+    if (!product) {
+      throw new ApiError(404, `Some products not found. Please update your cart before proceeding.`);
     }
 
     if (cartProducts[i].quantity > availableQty) {
